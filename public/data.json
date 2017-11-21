@@ -6,7 +6,7 @@
   }, 
   {
   "id": "2",
-  "title": "진실테스트",
+  "title": "test 테스트",
   "description": "나의 진실지수를 알아보는 심리테스트를 시작 할께요.",
   "questionList":[{"id":"1","yes":"A","no":"B","description":"you cannot imagine what we'll become"},{"id":"A","description":"‘TEST_1’ 타입, hihi"},{"id":"B","description":"‘TEST_2’ 타입, hehe"}]
   }

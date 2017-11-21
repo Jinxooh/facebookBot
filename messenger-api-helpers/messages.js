@@ -80,14 +80,14 @@ const welcomeReplies = {
   quick_replies: [
     {
       content_type: 'text',
-      title: '네',
+      title: '네!',
       payload: JSON.stringify({
         type: 'SAY_START_TEST',
       })
     },
     {
       content_type: 'text',
-      title: '아니요',
+      title: '아니요...',
       payload: JSON.stringify({
         type: 'SAY_STOP_TEST',
       })

@@ -9,8 +9,10 @@ class QuestionStore extends Store {
     super();
 
     this.current = null;
+    this.next = null;
     this.description = '';
   }
+
   getByQuestionId(questionId) {
     return [...this.data.values()]
     .filter((question) => question.id === questionId);
@@ -37,8 +39,12 @@ class QuestionStore extends Store {
     return this.description;
   }
 
+  getNext(next) {
+    return this.next;
+  }
+
   setNext(next) {
-    this.current = next;
+    this.next = next;
   }
 
   selectYes() {

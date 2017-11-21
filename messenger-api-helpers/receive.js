@@ -10,21 +10,32 @@ const handleReceivePostback = async (event) => {
   case 'GET_STARTED':
     const userInfo = await sendApi.sendGetUserProfile(senderId);
     sendApi.sendWelcomeMessage(senderId, userInfo);
-    // sendApi.sendServerUrl('psyTest');
     break;
   case 'SAY_YES_POSTBACK':
-    dataHelper.sayYes();
-    if(dataHelper.checkLast())
-      sendApi.sendTwoButtonMessage(senderId, dataHelper.getDescription());
-    else
-      sendApi.sendResultMessage(senderId, dataHelper.getDescription());
+    if(dataHelper.sayYes()) {
+      if(dataHelper.checkLast()) {
+        sendApi.sendResultMessage(senderId, dataHelper.getDescription());
+      }
+      else {
+        sendApi.sendTwoButtonMessage(senderId, dataHelper.getDescription());
+      }
+    } else {
+      // click postback when test is done
+      sendApi.sendSuggestRestartMessage(senderId);
+    }
   break;
   case 'SAY_NO_POSTBACK':
-    dataHelper.sayNo();
-    if(dataHelper.checkLast())
-      sendApi.sendTwoButtonMessage(senderId, dataHelper.getDescription());
-    else
+    if(dataHelper.sayNo()) {
+      if(dataHelper.checkLast()) {
+        sendApi.sendResultMessage(senderId, dataHelper.getDescription());
+      }
+      else {
+        sendApi.sendTwoButtonMessage(senderId, dataHelper.getDescription());
+      }
+    } else {
+      // click postback when test is done
       sendApi.sendResultMessage(senderId, dataHelper.getDescription());
+    }
   break;
   default:
     console.error(`Unknown Postback called: ${type}`);

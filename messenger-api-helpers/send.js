@@ -106,6 +106,13 @@ const sendResultMessage = (recipientId, message) => {
     ]);
 };
 
+const sendSuggestRestartMessage = (recipientId) => {
+  sendMessage(
+    recipientId,
+    messages.testResultMessage
+  )
+}
+
 const sendSayStartTestMessage = (recipientId, { psyStore, questionList}) => {
   sendMessage(
     recipientId,
@@ -153,6 +160,7 @@ export default {
   sendTwoButtonMessage,
   sendResultMessage,
   sendChooseItemsMessage,
+  sendSuggestRestartMessage,
 
   sendGetUserProfile,
   

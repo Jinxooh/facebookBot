@@ -24,7 +24,7 @@ router.post('/', (req, res) => {
     data.entry.forEach((pageEntry) => {
       // console.log({pageEntry});
       if(pageEntry.standby) {
-        console.log('STANDBY~');
+        // console.log('STANDBY~');
       }
       pageEntry.messaging && pageEntry.messaging.forEach((messagingEvent) => {
         console.log({messagingEvent});

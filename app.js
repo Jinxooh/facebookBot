@@ -32,7 +32,7 @@ try{
 
 ThreadSetup.setDomainWhitelisting();
 ThreadSetup.setGreeting();
-ThreadSetup.setPersistentMenu();
+// ThreadSetup.setPersistentMenu();
 ThreadSetup.setGetStarted();
 
 app.listen(app.get('port'), () => {

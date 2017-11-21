@@ -1,10 +1,9 @@
 import psyTestStore from '../stores/psyTest-store';
 import QuestionStore from '../stores/question-store';
 import PsyTest from '../models/psyTest';
-import sendApi from './send';
 
 const dataHelper = (() => {
-  let psyStore = psyTestStore;
+  let psyStore = null;
   let questionList = null;
 
   return {
@@ -12,12 +11,10 @@ const dataHelper = (() => {
       const { psyTest } = json;
       psyTest.map((item) => {
         const question = new QuestionStore();
-        const questionList = question.createStore(item.questionList);
+        const questionStore = question.createStore(item.questionList);
 
-        psyTestStore.insert(new PsyTest(item.id, item.title, item.description, questionList));
+        psyTestStore.insert(new PsyTest(item.id, item.title, item.description, questionStore));
       });
-      psyStore = psyTestStore;
-      console.log('set data done');
     },
     initialize: () => {
       [psyStore] = psyTestStore.getByPsyTestId(String(Math.floor(Math.random() * psyTestStore.getLength() + 1)));
@@ -28,23 +25,56 @@ const dataHelper = (() => {
       return { psyStore, questionList }
     },
     sayYes: () => {
-      if(questionList.getCurrent() === null) questionList.setCurrent('1');
       questionList.setNext(questionList.selectYes());
-      questionList.setDescription();
+      if(questionList.getNext()) {
+        questionList.setCurrent(questionList.getNext());
+        questionList.setDescription();
+        return true;
+      } else {
+        return false
+      }
     },
     sayNo: () => {
-      if(questionList.getCurrent() === null) questionList.setCurrent('1');
       questionList.setNext(questionList.selectNo());
-      questionList.setDescription();
+      if(questionList.getNext()) {
+        questionList.setCurrent(questionList.getNext());
+        questionList.setDescription();
+        return true;
+      } else {
+        return false
+      }
     },
     checkLast: () => {
-      if(/^\d+$/.test(questionList.getCurrent())) return true;
-      return false;
+      const current = questionList.getCurrent();
+      if(/^\d+$/.test(current)) return false; // 숫자면 false
+      return true;
     },
     getDescription: () => {
       return questionList.getDescription();
-    }
+    },
+    setEnd: () => {
+      // this.initialize();
+    },
+
   }
 })();
+
+////  타로 개인카드 알고리즘
+
+// const test = (text) => {
+//   let result = _.reduce(
+//     _.join(
+//       _.split("1999.02.12",".")
+//       // _.split(text, ".")
+//     , "")
+//   , (sum, n) => { return parseInt(sum) + parseInt(n) });
+  
+//   if(result < 23) {
+//     if(result === 22) result = 0;
+//   } else {
+//     result = parseInt(result/10) + (result % 10);
+//   }
+//   return result;
+// }
 
 export default dataHelper;
