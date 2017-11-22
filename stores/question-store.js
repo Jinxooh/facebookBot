@@ -35,8 +35,9 @@ class QuestionStore extends Store {
     this.description = question.description;
   }
 
-  getDescription() {
-    return this.description;
+  getDescription(questionId) {
+    const [ question ] = this.getByQuestionId(questionId)
+    return question.description;
   }
 
   getNext(next) {

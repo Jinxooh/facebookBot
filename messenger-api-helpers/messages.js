@@ -95,9 +95,9 @@ const welcomeReplies = {
   ]
 }
 
-const sayStartTestMessage = (psyTest) => {
+const sayStartTestMessage = (description) => {
   return {
-    text: `${psyTest.description}`
+    text: `${description}`
   }
 }
 

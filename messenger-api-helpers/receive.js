@@ -44,7 +44,7 @@ const handleReceivePostback = async (event) => {
   }
 }
 
-const handleReceiveMessage = (event) => {
+const handleReceiveMessage = async (event) => {
   const message = event.message;
   const senderId = event.sender.id;
   
@@ -68,7 +68,8 @@ const handleReceiveMessage = (event) => {
   }
   if (message.text) {
     if(/(시작)+/g.test(message.text)) {
-      sendApi.sendSayStartTestMessage(senderId, dataHelper.initialize());
+      const initData = await dataHelper.initialize(senderId);
+      sendApi.sendSayStartTestMessage(senderId, initData);
       return;
     }
     // sendApi.sendEchoMessage(senderId, message.text);
@@ -91,25 +92,20 @@ const handleTestReceive = (message, senderId) => {
   console.log('====== handleTestReceive START =========');
   console.log('message, ', message);
   if(message.text === '111') {
-    sendApi.sendSayStartTestMessage(senderId, dataHelper.initialize());
-  }
-  if(message.text === '222') {
-    sendApi.sendSayStartTestMessage(senderId, dataHelper.initialize());
-  }
-  if(message.text === '333') {
-    sendApi.sendServerUrl('psyTest');
+    sendApi.sendGetUserProfile(senderId);
   }
   console.log('====== handleTestReceive DONE =========');
   return;
 }
 
-const handleQuickRepliesMessage = (senderId, quick_reply) => {
+const handleQuickRepliesMessage = async (senderId, quick_reply) => {
   const { type } = JSON.parse(quick_reply.payload);
 
   switch(type) {
     case 'SAY_START_TEST':
       // store initializeCode
-      sendApi.sendSayStartTestMessage(senderId, dataHelper.initialize(senderId));
+      const initData = await dataHelper.initialize(senderId);
+      sendApi.sendSayStartTestMessage(senderId, initData);
     break;
     case 'SAY_STOP_TEST':
       sendApi.sendSayStopTestMessage(senderId);

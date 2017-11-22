@@ -1,3 +1,6 @@
+// modules
+import sendApi from './send';
+
 // stores
 import psyTestStore from '../stores/psyTest-store';
 import QuestionStore from '../stores/question-store';
@@ -5,11 +8,13 @@ import UserStore from '../stores/user-store';
 
 // models
 import PsyTest from '../models/psyTest';
-
+import _ from 'lodash/core';
 
 const dataHelper = (() => {
   let psyStore = null;
   let questionList = null;
+  let user = null;
+  let question = null;
 
   return {
     setData: (json) => {
@@ -21,15 +26,22 @@ const dataHelper = (() => {
         psyTestStore.insert(new PsyTest(item.id, item.title, item.description, questionStore));
       });
     },
-    initialize: (senderID) => {
-      const test = UserStore.getUserByPSID(senderID);
-      console.log('test, ', test);
+    initialize: async (senderId) => {
       [psyStore] = psyTestStore.getByPsyTestId(String(Math.floor(Math.random() * psyTestStore.getLength() + 1)));
-      questionList = psyStore.questionList;
-      questionList.setCurrent('1');
-      questionList.setDescription();
+      question = psyStore.questionList;
+      [user] = UserStore.getUserByPSID(senderId);
 
-      return { psyStore, questionList }
+      const questionId = '1';
+      if (_.isEmpty(user)) {
+        await sendApi.sendGetUserProfile(senderId);
+        [user] = UserStore.getUserByPSID(senderId);
+      }
+      user.setCurrent(questionId);
+      
+      const psyTestDescription = psyStore.description;
+      const questionDescription = question.getDescription(questionId);
+      
+      return { psyTestDescription, questionDescription }
     },
     sayYes: () => {
       questionList.setNext(questionList.selectYes());

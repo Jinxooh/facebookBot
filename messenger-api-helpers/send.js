@@ -113,12 +113,12 @@ const sendSuggestRestartMessage = (recipientId) => {
   )
 }
 
-const sendSayStartTestMessage = (recipientId, { psyStore, questionList}) => {
+const sendSayStartTestMessage = (recipientId, {psyTestDescription, questionDescription}) => {
   sendMessage(
     recipientId,
     [
-      messages.sayStartTestMessage(psyStore),
-      messages.twoButtonMessage(questionList.description)
+      messages.sayStartTestMessage(psyTestDescription),
+      messages.twoButtonMessage(questionDescription)
     ]
   );
 }
