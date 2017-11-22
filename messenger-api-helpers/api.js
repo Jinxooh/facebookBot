@@ -104,9 +104,9 @@ const callPSIDAsyncAPI = (psid, method = 'GET', retries = RETRIES) => {
           JSON.stringify(body)
         );
   
-        if(method === 'GET' && body) {
+        if(method === 'GET' && body) {ㅊ
           const { first_name, last_name, profile_pic } = JSON.parse(body);
-          const user = new UserInfo(first_name, last_name, profile_pic);
+          const user = new UserInfo(psid, first_name, last_name, profile_pic);
           resolve(user);
         }
       } else {

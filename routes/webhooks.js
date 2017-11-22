@@ -23,12 +23,9 @@ router.post('/', (req, res) => {
   if (data.object === 'page') {
     data.entry.forEach((pageEntry) => {
       // console.log({pageEntry});
-      if(pageEntry.standby) {
-        // console.log('STANDBY~');
-      }
       pageEntry.messaging && pageEntry.messaging.forEach((messagingEvent) => {
-        console.log({messagingEvent});
-        if (messagingEvent.message) {
+        // console.log({messagingEvent});
+        if (messagingEvent.message && !messagingEvent.message.is_echo) {
           receiveApi.handleReceiveMessage(messagingEvent);
         } else if (messagingEvent.postback) {
           receiveApi.handleReceivePostback(messagingEvent);

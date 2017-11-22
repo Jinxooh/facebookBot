@@ -1,6 +1,7 @@
 // modules
 import sendApi from './send';
 import dataHelper from './database';
+import _ from 'lodash/object';
 
 const handleReceivePostback = async (event) => {
   const {type, data} = JSON.parse(event.postback.payload);
@@ -50,10 +51,7 @@ const handleReceiveMessage = (event) => {
   if(process.env.BOT_DEV_ENV === 'dev') {
     handleTestReceive(message, senderId);
   }
-  
-  if (message.is_echo) {
-    return;
-  }
+
   sendApi.sendReadReceipt(senderId);
 
   if (message.quick_reply) {
@@ -61,13 +59,19 @@ const handleReceiveMessage = (event) => {
     handleQuickRepliesMessage(senderId, quick_reply);
     return;
   }
-
+  if (message.nlp) {
+    if (message.nlp.entities) {
+      console.log('has entities, ', message.nlp.entities);
+      const keyNames = _.keys(message.nlp.entities);
+      console.log(keyNames);
+    }
+  }
   if (message.text) {
     if(/(시작)+/g.test(message.text)) {
       sendApi.sendSayStartTestMessage(senderId, dataHelper.initialize());
       return;
     }
-    sendApi.sendEchoMessage(senderId, message.text);
+    // sendApi.sendEchoMessage(senderId, message.text);
   }
 };
 
