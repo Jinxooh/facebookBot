@@ -1,6 +1,11 @@
+// stores
 import psyTestStore from '../stores/psyTest-store';
 import QuestionStore from '../stores/question-store';
+import UserStore from '../stores/user-store';
+
+// models
 import PsyTest from '../models/psyTest';
+
 
 const dataHelper = (() => {
   let psyStore = null;
@@ -16,7 +21,9 @@ const dataHelper = (() => {
         psyTestStore.insert(new PsyTest(item.id, item.title, item.description, questionStore));
       });
     },
-    initialize: () => {
+    initialize: (senderID) => {
+      const test = UserStore.getUserByPSID(senderID);
+      console.log('test, ', test);
       [psyStore] = psyTestStore.getByPsyTestId(String(Math.floor(Math.random() * psyTestStore.getLength() + 1)));
       questionList = psyStore.questionList;
       questionList.setCurrent('1');

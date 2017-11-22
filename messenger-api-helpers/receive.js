@@ -109,7 +109,7 @@ const handleQuickRepliesMessage = (senderId, quick_reply) => {
   switch(type) {
     case 'SAY_START_TEST':
       // store initializeCode
-      sendApi.sendSayStartTestMessage(senderId, dataHelper.initialize());
+      sendApi.sendSayStartTestMessage(senderId, dataHelper.initialize(senderId));
     break;
     case 'SAY_STOP_TEST':
       sendApi.sendSayStopTestMessage(senderId);

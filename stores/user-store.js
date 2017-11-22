@@ -1,20 +1,18 @@
 // ===== STORES ================================================================
 import Store from './store';
 
-import { default as QuestionStore } from './question-store';
-
 class UserStore extends Store {
 
-  getByPsyTestId(psyTestId) {
+  getUserByPSID(userPSID) {
     return [...this.data.values()]
-    .filter((psyTest) => psyTest.id === psyTestId);
+    .filter((user) => user.psid === userPSID);
   }
 
-  insert(psyTest) {
-    return this.set(psyTest.id, psyTest);
+  insert(user) {
+    return this.set(user.psid, user);
   }
 }
 
-const UserStore = new UserStore();
+const USER_STORE = new UserStore();
 
-export default UserStore;
+export default USER_STORE;

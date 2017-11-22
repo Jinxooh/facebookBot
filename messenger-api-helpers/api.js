@@ -6,6 +6,7 @@ import isEmpty from 'lodash/isEmpty';
 import request from 'request';
 
 import UserInfo from '../models/userInfo';
+import UserStore from '../stores/user-store';
 
 const SERVER_URL = process.env.BOT_DEV_ENV == 'dev' ? process.env.TEST_SERVER_URL : process.env.SERVER_URL;
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
@@ -104,9 +105,11 @@ const callPSIDAsyncAPI = (psid, method = 'GET', retries = RETRIES) => {
           JSON.stringify(body)
         );
   
-        if(method === 'GET' && body) {ㅊ
+        if(method === 'GET' && body) {
           const { first_name, last_name, profile_pic } = JSON.parse(body);
           const user = new UserInfo(psid, first_name, last_name, profile_pic);
+          console.log('UserStore, ', UserStore);
+          UserStore.insert(user);
           resolve(user);
         }
       } else {
