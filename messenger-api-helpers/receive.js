@@ -44,7 +44,7 @@ const handleReceivePostback = async (event) => {
   }
 }
 
-const handleReceiveMessage = async (event) => {
+const handleReceiveMessage = (event) => {
   const message = event.message;
   const senderId = event.sender.id;
   
@@ -68,7 +68,7 @@ const handleReceiveMessage = async (event) => {
   }
   if (message.text) {
     if(/(시작)+/g.test(message.text)) {
-      const initData = await dataHelper.initialize(senderId);
+      const initData = dataHelper.initialize(senderId);
       sendApi.sendSayStartTestMessage(senderId, initData);
       return;
     }
@@ -98,13 +98,13 @@ const handleTestReceive = (message, senderId) => {
   return;
 }
 
-const handleQuickRepliesMessage = async (senderId, quick_reply) => {
+const handleQuickRepliesMessage = (senderId, quick_reply) => {
   const { type } = JSON.parse(quick_reply.payload);
 
   switch(type) {
     case 'SAY_START_TEST':
       // store initializeCode
-      const initData = await dataHelper.initialize(senderId);
+      const initData = dataHelper.initialize(senderId);
       sendApi.sendSayStartTestMessage(senderId, initData);
     break;
     case 'SAY_STOP_TEST':

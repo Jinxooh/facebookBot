@@ -1,5 +1,5 @@
 // modules
-import sendApi from './send';
+// import sendApi from './send';
 
 // stores
 import psyTestStore from '../stores/psyTest-store';
@@ -7,6 +7,7 @@ import QuestionStore from '../stores/question-store';
 import UserStore from '../stores/user-store';
 
 // models
+import UserInfo from '../models/userInfo';
 import PsyTest from '../models/psyTest';
 import _ from 'lodash/core';
 
@@ -26,14 +27,15 @@ const dataHelper = (() => {
         psyTestStore.insert(new PsyTest(item.id, item.title, item.description, questionStore));
       });
     },
-    initialize: async (senderId) => {
+    initialize: (senderId) => {
       [psyStore] = psyTestStore.getByPsyTestId(String(Math.floor(Math.random() * psyTestStore.getLength() + 1)));
       question = psyStore.questionList;
       [user] = UserStore.getUserByPSID(senderId);
 
       const questionId = '1';
       if (_.isEmpty(user)) {
-        await sendApi.sendGetUserProfile(senderId);
+        // await sendApi.sendGetUserProfile(senderId);
+        UserStore.insert(new UserInfo(senderId));
         [user] = UserStore.getUserByPSID(senderId);
       }
       user.setCurrent(questionId);
