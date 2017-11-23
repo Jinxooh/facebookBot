@@ -13,6 +13,7 @@ class UserInfo {
 
     this.current = null;
     this.next = null;
+    this.psyTestId = null;
   }
 
   setCurrent(current) {
@@ -29,6 +30,14 @@ class UserInfo {
 
   setNext(next) {
     this.next = next;
+  }
+
+  setPsyTestId(psyTestId) {
+    this.psyTestId = psyTestId;
+  }
+
+  getPsyTestId() {
+    return this.psyTestId;
   }
 }
 

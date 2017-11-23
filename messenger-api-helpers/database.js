@@ -7,15 +7,30 @@ import QuestionStore from '../stores/question-store';
 import UserStore from '../stores/user-store';
 
 // models
-import UserInfo from '../models/userInfo';
 import PsyTest from '../models/psyTest';
 import _ from 'lodash/core';
 
 const dataHelper = (() => {
-  let psyStore = null;
-  let questionList = null;
-  let user = null;
-  let question = null;
+
+  const initializeUser = (senderId, initialize) => {
+    let [user] = UserStore.getUserByPSID(senderId);
+
+    if (_.isEmpty(user)) [user] = UserStore.createNewUser(senderId);
+    
+    if(initialize || !user.getPsyTestId()){
+      const createPsyTestId = String(Math.floor(Math.random() * psyTestStore.getLength() + 1));
+      user.setPsyTestId(createPsyTestId);
+    }
+
+    return user;
+  }
+
+  const getQuestion = (psyTestId) => {
+    const [psyTest] = psyTestStore.getByPsyTestId(psyTestId);
+    const question = psyTest.questionList;
+
+    return { psyTest, question };
+  }
 
   return {
     setData: (json) => {
@@ -27,56 +42,56 @@ const dataHelper = (() => {
         psyTestStore.insert(new PsyTest(item.id, item.title, item.description, questionStore));
       });
     },
+    // user initialize
     initialize: (senderId) => {
-      [psyStore] = psyTestStore.getByPsyTestId(String(Math.floor(Math.random() * psyTestStore.getLength() + 1)));
-      question = psyStore.questionList;
-      [user] = UserStore.getUserByPSID(senderId);
+      const user = initializeUser(senderId, true);
+      const { psyTest, question }= getQuestion(user.getPsyTestId());
 
       const questionId = '1';
-      if (_.isEmpty(user)) {
-        // await sendApi.sendGetUserProfile(senderId);
-        UserStore.insert(new UserInfo(senderId));
-        [user] = UserStore.getUserByPSID(senderId);
-      }
       user.setCurrent(questionId);
       
-      const psyTestDescription = psyStore.description;
+      const psyTestDescription = psyTest.description;
       const questionDescription = question.getDescription(questionId);
       
       return { psyTestDescription, questionDescription }
     },
-    sayYes: () => {
-      questionList.setNext(questionList.selectYes());
-      if(questionList.getNext()) {
-        questionList.setCurrent(questionList.getNext());
-        questionList.setDescription();
+    sayYes: (senderId) => {
+      const user = initializeUser(senderId);
+      const { question } = getQuestion(user.getPsyTestId());
+
+      const current = user.getCurrent();
+      user.setNext(question.getYesNext(current));
+      if(user.getNext()) {
+        user.setCurrent(user.getNext());
         return true;
       } else {
         return false
       }
     },
-    sayNo: () => {
-      questionList.setNext(questionList.selectNo());
-      if(questionList.getNext()) {
-        questionList.setCurrent(questionList.getNext());
-        questionList.setDescription();
+    sayNo: (senderId) => {
+      const user = initializeUser(senderId);
+      const { question } = getQuestion(user.getPsyTestId());
+
+      const current = user.getCurrent();
+      user.setNext(question.getNoNext(current));
+      if(user.getNext()) {
+        user.setCurrent(user.getNext());
         return true;
       } else {
         return false
       }
     },
-    checkLast: () => {
-      const current = questionList.getCurrent();
+    checkLast: (senderId) => {
+      const user = initializeUser(senderId);
+      const current = user.getCurrent();
       if(/^\d+$/.test(current)) return false; // 숫자면 false
       return true;
     },
-    getDescription: () => {
-      return questionList.getDescription();
+    getDescription: (senderId) => {
+      const user = initializeUser(senderId);
+      const { question } = getQuestion(user.getPsyTestId());
+      return question.getDescription(user.getCurrent());
     },
-    setEnd: () => {
-      // this.initialize();
-    },
-
   }
 })();
 

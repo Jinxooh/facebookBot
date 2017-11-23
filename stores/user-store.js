@@ -1,6 +1,8 @@
 // ===== STORES ================================================================
 import Store from './store';
 
+import UserInfo from '../models/userInfo';
+
 class UserStore extends Store {
 
   getUserByPSID(userPSID) {
@@ -10,6 +12,11 @@ class UserStore extends Store {
 
   insert(user) {
     return this.set(user.psid, user);
+  }
+
+  createNewUser(psid) {
+    this.insert(new UserInfo(psid));
+    return this.getUserByPSID(psid);
   }
 }
 

@@ -13,12 +13,12 @@ const handleReceivePostback = async (event) => {
     sendApi.sendWelcomeMessage(senderId, userInfo);
     break;
   case 'SAY_YES_POSTBACK':
-    if(dataHelper.sayYes()) {
-      if(dataHelper.checkLast()) {
-        sendApi.sendResultMessage(senderId, dataHelper.getDescription());
+    if(dataHelper.sayYes(senderId)) {
+      if(dataHelper.checkLast(senderId)) {
+        sendApi.sendResultMessage(senderId, dataHelper.getDescription(senderId));
       }
       else {
-        sendApi.sendTwoButtonMessage(senderId, dataHelper.getDescription());
+        sendApi.sendTwoButtonMessage(senderId, dataHelper.getDescription(senderId));
       }
     } else {
       // click postback when test is done
@@ -26,16 +26,16 @@ const handleReceivePostback = async (event) => {
     }
   break;
   case 'SAY_NO_POSTBACK':
-    if(dataHelper.sayNo()) {
-      if(dataHelper.checkLast()) {
-        sendApi.sendResultMessage(senderId, dataHelper.getDescription());
+    if(dataHelper.sayNo(senderId)) {
+      if(dataHelper.checkLast(senderId)) {
+        sendApi.sendResultMessage(senderId, dataHelper.getDescription(senderId));
       }
       else {
-        sendApi.sendTwoButtonMessage(senderId, dataHelper.getDescription());
+        sendApi.sendTwoButtonMessage(senderId, dataHelper.getDescription(senderId));
       }
     } else {
       // click postback when test is done
-      sendApi.sendResultMessage(senderId, dataHelper.getDescription());
+      sendApi.sendSuggestRestartMessage(senderId);
     }
   break;
   default:
@@ -68,8 +68,7 @@ const handleReceiveMessage = (event) => {
   }
   if (message.text) {
     if(/(시작)+/g.test(message.text)) {
-      const initData = dataHelper.initialize(senderId);
-      sendApi.sendSayStartTestMessage(senderId, initData);
+      sendApi.sendSayStartTestMessage(senderId, dataHelper.initialize(senderId));
       return;
     }
     // sendApi.sendEchoMessage(senderId, message.text);
@@ -104,8 +103,7 @@ const handleQuickRepliesMessage = (senderId, quick_reply) => {
   switch(type) {
     case 'SAY_START_TEST':
       // store initializeCode
-      const initData = dataHelper.initialize(senderId);
-      sendApi.sendSayStartTestMessage(senderId, initData);
+      sendApi.sendSayStartTestMessage(senderId, dataHelper.initialize(senderId));
     break;
     case 'SAY_STOP_TEST':
       sendApi.sendSayStopTestMessage(senderId);

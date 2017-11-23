@@ -7,10 +7,6 @@ import Question from '../models/question';
 class QuestionStore extends Store {
   constructor() {
     super();
-
-    this.current = null;
-    this.next = null;
-    this.description = '';
   }
 
   getByQuestionId(questionId) {
@@ -22,39 +18,18 @@ class QuestionStore extends Store {
     return this.set(question.id, question);
   }
 
-  getCurrent() {
-    return this.current;
-  }
-
-  setCurrent(current) {
-    this.current = current;
-  }
-
-  setDescription() {
-    const [ question ] = this.getByQuestionId(this.current)
-    this.description = question.description;
-  }
-
   getDescription(questionId) {
     const [ question ] = this.getByQuestionId(questionId)
     return question.description;
   }
 
-  getNext(next) {
-    return this.next;
-  }
-
-  setNext(next) {
-    this.next = next;
-  }
-
-  selectYes() {
-    const [ question ] = this.getByQuestionId(this.current)
+  getYesNext(questionId) {
+    const [ question ] = this.getByQuestionId(questionId)
     return question.yes;
   }
 
-  selectNo() {
-    const [ question ] = this.getByQuestionId(this.current)
+  getNoNext(questionId) {
+    const [ question ] = this.getByQuestionId(questionId)
     return question.no;
   }
 
