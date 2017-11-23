@@ -133,7 +133,7 @@ const sendSayStopTestMessage = (recipientId) => {
 // get User Profile from facebook Reference 
 // https://developers.facebook.com/docs/messenger-platform/identity/user-profile
 const sendGetUserProfile = async (recipientId) => {
-  return await api.callPSIDAsyncAPI(recipientId);
+  return await api.callPsidAPI(recipientId);
 }
 
 const sendImageMessage = (recipientId) => {

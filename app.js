@@ -1,7 +1,6 @@
 // modules
 import bodyParser from 'body-parser';
 import express from 'express';
-import request from 'request';
 import path from 'path';
 import fs from 'fs';
 import dataHelper from './messenger-api-helpers/database';

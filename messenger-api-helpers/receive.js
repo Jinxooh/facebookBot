@@ -87,11 +87,14 @@ const handleReceiveReferral = (event) => {
   }
 }
 
-const handleTestReceive = (message, senderId) => {
+const handleTestReceive = async (message, senderId) => {
   console.log('====== handleTestReceive START =========');
   console.log('message, ', message);
   if(message.text === '111') {
     sendApi.sendGetUserProfile(senderId);
+  }
+  if(message.text === '222') {
+    sendApi.sendSuggestRestartMessage(senderId);
   }
   console.log('====== handleTestReceive DONE =========');
   return;

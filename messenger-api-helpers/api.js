@@ -3,16 +3,17 @@ import castArray from 'lodash/castArray';
 import isEmpty from 'lodash/isEmpty';
 
 // ===== MODULES ===============================================================
-import request from 'request';
+import fetch from 'node-fetch';
 
+// should remove later
 import UserInfo from '../models/userInfo';
 import UserStore from '../stores/user-store';
 
 const SERVER_URL = process.env.BOT_DEV_ENV == 'dev' ? process.env.TEST_SERVER_URL : process.env.SERVER_URL;
 const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
-const RETRIES = 0;
+const RETRIES = 5;
 
-const callAPI = (endPoint, messageDataArray, queryParams = {}, retries = RETRIES) => {
+const callAPI = (endPoint, messageDataArray, retries = RETRIES) => {
   // Error if developer forgot to specify an endpoint to send our request to
   if (!endPoint) {
     console.error('callAPI requires you specify an endpoint.');
@@ -23,114 +24,63 @@ const callAPI = (endPoint, messageDataArray, queryParams = {}, retries = RETRIES
   if (retries < 0) {
     console.error(
       'No more retries left.',
-      {endPoint, messageDataArray, queryParams}
+      {endPoint, messageDataArray}
     );
-
     return;
   }
-
-  const query = Object.assign({access_token: PAGE_ACCESS_TOKEN}, queryParams);
-
+  
+  const qs = `access_token=${encodeURIComponent(PAGE_ACCESS_TOKEN)}`;
   const [messageToSend, ...queue] = castArray(messageDataArray);
-  request({
-    uri: `https://graph.facebook.com/v2.6/me/${endPoint}`,
-    qs: query,
+  const body = JSON.stringify(messageToSend);
+  fetch(`https://graph.facebook.com/v2.6/me/${endPoint}?${qs}`, {
     method: 'POST',
-    json: messageToSend,
-
-  }, (error, response, body) => {
-    if (!error && response.statusCode === 200) {
-      // Message has been successfully received by Facebook.
-      console.log(
-        `Successfully sent message to ${endPoint} endpoint: `,
-        JSON.stringify(body)
-      );
-
-      // Continue sending payloads until queue empty.
-      if (!isEmpty(queue)) {
-        callAPI(endPoint, queue, queryParams);
-      }
-    } else {
-      // Message has not been successfully received by Facebook.
-      console.error(
-        `Failed calling Messenger API endpoint: '${endPoint}'`,
-        response.statusCode,
-        response.statusMessage,
-        body.error,
-        queryParams
-      );
-
-      // Retry the request
-      console.error(`Retrying Request: ${retries} left`);
-      callAPI(endPoint, messageDataArray, queryParams, retries - 1);
+    headers: {'Content-Type': 'application/json'},
+    body,
+  })
+  .then(rsp => rsp.json())
+  .then(json => {
+    console.log(json);
+    if (json.error && json.error.message) {
+      console.error(`Retrying Request: ${retries} left reason: ${json.error.message}`);
+      callAPI(endPoint, messageDataArray, retries - 1);
     }
+
+    if (!isEmpty(queue)) {
+      callAPI(endPoint, queue);
+    }
+    return json;
   });
 }
 
-const callMessagesAPI = (messageDataArray, queryParams = {}) => {
-  return callAPI('messages', messageDataArray, queryParams);
+const callMessagesAPI = (messageDataArray, ) => {
+  return callAPI('messages', messageDataArray);
 };
 
-const callThreadAPI = (messageDataArray, queryParams = {}) => {
-  return callAPI('thread_settings', messageDataArray, queryParams);
+const callThreadAPI = (messageDataArray) => {
+  return callAPI('thread_settings', messageDataArray);
 };
 
-const callPSIDAsyncAPI = (psid, method = 'GET', retries = RETRIES) => {
-  return new Promise((resolve, reject) => {
-    if (!psid) {
-      console.error('callPSIDAPI requires you specify an psid.');
-      return;
+const callPsidAPI = async (psid, retries = RETRIES) => {
+  const qs = `access_token=${encodeURIComponent(PAGE_ACCESS_TOKEN)}`;
+  return await fetch(`https://graph.facebook.com/v2.6/${psid}?${qs}`, {
+    method: 'GET',
+  })
+  .then(rsp => rsp.json())
+  .then(json => {
+    if (json && json.error && json.error.message) {
+      throw new Error(json.error.message);
     }
-  
-    // Error if we've run out of retries.
-    if (retries < 0) {
-      console.error(
-        'No more retries left.',
-        {psid}
-      );
-      return;
-    }
-  
-    const query = Object.assign({access_token: PAGE_ACCESS_TOKEN});
-    
-    request({
-      uri: `https://graph.facebook.com/v2.6/${psid}`,
-      qs: query,
-      method: method,
-    }, (error, response, body) => {
-      if (!error && response.statusCode === 200) {
-        // Message has been successfully received by Facebook.
-        console.log(
-          `Successfully sent message to ${psid} endpoint: `,
-          JSON.stringify(body)
-        );
-  
-        if(method === 'GET' && body) {
-          const { first_name, last_name, profile_pic } = JSON.parse(body);
-          const user = new UserInfo(psid, first_name, last_name, profile_pic);
-          console.log('UserStore, ', UserStore);
-          UserStore.insert(user);
-          resolve(user);
-        }
-      } else {
-        // Message has not been successfully received by Facebook.
-        console.error(
-          `Failed calling Messenger API endpoint: '${psid}'`,
-          response.statusCode,
-          response.statusMessage,
-          body.error,
-        );
-  
-        // Retry the request
-        console.error(`Retrying Request: ${retries} left`);
-        callPSIDAPI(psid, method, retries - 1);
-      }
-    });
-  }) 
-};
+    const { first_name, last_name, profile_pic } = json;
+    // [user] = UserStore.getUserByPSID(psid);
+    const user = new UserInfo(psid, first_name, last_name, profile_pic);
+    UserStore.insert(user);
+    // return json;
+    return user;
+  });
+}
 
 export default {
   callMessagesAPI,
   callThreadAPI,
-  callPSIDAsyncAPI,
+  callPsidAPI,
 };
