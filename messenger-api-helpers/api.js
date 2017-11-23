@@ -129,50 +129,8 @@ const callPSIDAsyncAPI = (psid, method = 'GET', retries = RETRIES) => {
   }) 
 };
 
-const callServer = (url, method = 'POST', retries = RETRIES) => {
-  if (!url) {
-    console.error('callServer requires you specify an url.');
-    return;
-  }
-
-  // Error if we've run out of retries.
-  if (retries < 0) {
-    console.error(
-      'No more retries left.',
-      {url}
-    );
-    return;
-  }
-
-  request({
-    uri: `${SERVER_URL}/${url}`,
-    method: method,
-  }, (error, response, body) => {
-    if (!error && response.statusCode === 200) {
-      // Message has been successfully received by Facebook.
-      console.log(
-        `Successfully sent to ${url} url: `,
-        JSON.stringify(body)
-      );
-    } else {
-      // Message has not been successfully received by Facebook.
-      console.error(
-        `Failed calling server url: '${url}'`,
-        response.statusCode,
-        response.statusMessage,
-        body.error,
-      );
-
-      // Retry the request
-      console.error(`Retrying Request: ${retries} left`);
-      callServer(url, method, retries - 1);
-    }
-  });
-}
-
 export default {
   callMessagesAPI,
   callThreadAPI,
   callPSIDAsyncAPI,
-  callServer,
 };

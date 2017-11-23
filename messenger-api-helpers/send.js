@@ -136,11 +136,6 @@ const sendGetUserProfile = async (recipientId) => {
   return await api.callPSIDAsyncAPI(recipientId);
 }
 
-// test
-const sendServerUrl = (url) => {
-  api.callServer(url);
-}
-
 const sendImageMessage = (recipientId) => {
   sendMessage(recipientId, messages.sendImageMessage);
 };
@@ -165,6 +160,5 @@ export default {
   sendGetUserProfile,
   
   // test
-  sendServerUrl,
   sendImageMessage,
 };
