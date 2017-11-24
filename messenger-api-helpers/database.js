@@ -8,14 +8,18 @@ import UserStore from '../stores/user-store';
 
 // models
 import PsyTest from '../models/psyTest';
-import _ from 'lodash/core';
+import isEmpty from 'lodash/isEmpty';
+// import reduce from 'lodash/reduce';
+// import split from 'lodash/split';
+// import join from 'lodash/join';
+
 
 const dataHelper = (() => {
 
   const initializeUser = (senderId, initialize) => {
     let [user] = UserStore.getUserByPSID(senderId);
 
-    if (_.isEmpty(user)) [user] = UserStore.createNewUser(senderId);
+    if (isEmpty(user)) [user] = UserStore.createNewUser(senderId);
     
     if(initialize || !user.getPsyTestId()){
       const createPsyTestId = String(Math.floor(Math.random() * psyTestStore.getLength() + 1));

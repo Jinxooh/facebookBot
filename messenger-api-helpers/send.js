@@ -1,7 +1,9 @@
 // ===== LODASH ================================================================
 import castArray from 'lodash/castArray';
 import isEmpty from 'lodash/isEmpty';
-
+import isArray from 'lodash/isArray';
+import concat from 'lodash/concat';
+import reduce from 'lodash/reduce';
 // ===== MESSENGER =============================================================
 import api from './api';
 import messages from './messages';
@@ -73,14 +75,6 @@ const sendWelcomeMessage = (recipientId, userInfo) => {
     ]);
 };
 
-const sendEchoMessage = (recipientId, message) => {
-  sendMessage(
-    recipientId,
-    [
-      {text: `Echo: ${message}❤️` }
-    ]);
-};
-
 const sendChooseItemsMessage = (recipientId) => {
   sendMessage(
     recipientId,
@@ -98,12 +92,20 @@ const sendTwoButtonMessage = (recipientId, description) => {
 };
 
 const sendResultMessage = (recipientId, message) => {
+  let text;
+  // 메세지가 배열로 올경우 나눠서 전달하기 위해
+  if(isArray(message))
+    text = reduce(message, (result, item, index) => {
+      result[index] = {text: item};
+      return result;
+    }, []);
+  else 
+    text = {text: message};
+
   sendMessage(
     recipientId,
-    [
-      {text: `${message}` },
-      messages.testResultMessage
-    ]);
+    concat(text, messages.testResultMessage)
+  );
 };
 
 const sendSuggestRestartMessage = (recipientId) => {
@@ -136,15 +138,10 @@ const sendGetUserProfile = async (recipientId) => {
   return await api.callPsidAPI(recipientId);
 }
 
-const sendImageMessage = (recipientId) => {
-  sendMessage(recipientId, messages.sendImageMessage);
-};
-
 export default {
   // basic
   sendMessage,
   sendReadReceipt,
-  sendEchoMessage,
 
   // functiioanl
   sendWelcomeMessage,
@@ -158,7 +155,4 @@ export default {
   sendSuggestRestartMessage,
 
   sendGetUserProfile,
-  
-  // test
-  sendImageMessage,
 };

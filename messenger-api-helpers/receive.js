@@ -1,7 +1,7 @@
 // modules
 import sendApi from './send';
 import dataHelper from './database';
-import _ from 'lodash/object';
+import keys from 'lodash/keys';
 
 const handleReceivePostback = async (event) => {
   const {type, data} = JSON.parse(event.postback.payload);
@@ -62,7 +62,7 @@ const handleReceiveMessage = (event) => {
   if (message.nlp) {
     if (message.nlp.entities) {
       console.log('has entities, ', message.nlp.entities);
-      const keyNames = _.keys(message.nlp.entities);
+      const keyNames = keys(message.nlp.entities);
       console.log(keyNames);
     }
   }
@@ -71,7 +71,6 @@ const handleReceiveMessage = (event) => {
       sendApi.sendSayStartTestMessage(senderId, dataHelper.initialize(senderId));
       return;
     }
-    // sendApi.sendEchoMessage(senderId, message.text);
   }
 };
 
