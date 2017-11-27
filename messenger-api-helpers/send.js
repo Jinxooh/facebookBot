@@ -38,19 +38,28 @@ const messageToJSON = (recipientId, messagePayload) => {
   };
 };
 
+const asyncForEach = async (array, callback) => {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array)
+  }
+}
+
 // Send one or more messages using the Send API.
 const sendMessage = (recipientId, messagePayloads) => {
-  console.log('sendMessage');
-  const messagePayloadArray = castArray(messagePayloads)
-    .map((messagePayload) => messageToJSON(recipientId, messagePayload));
-
-  api.callMessagesAPI(
-    [
-      typingOn(recipientId),
-      ...messagePayloadArray,
-      typingOff(recipientId),
-    ]);
+  const arr = castArray(messagePayloads);
+  
+  // 대화 하는것 처럼 지연을 주기위해서
+  const start = async () => {
+    await asyncForEach(arr, async (item) => {
+      await api.callAsyncMessagesAPI(typingOn(recipientId));
+      await api.callAsyncMessagesAPI(messageToJSON(recipientId, item))
+    })
+    api.callAsyncMessagesAPI(typingOff(recipientId))
+    console.log('Done')
+  }
+  start();
 };
+
 
 // Send a read receipt to indicate the message has been read
 const sendReadReceipt = (recipientId) => {
@@ -138,6 +147,34 @@ const sendGetUserProfile = async (recipientId) => {
   return await api.callPsidAPI(recipientId);
 }
 
+const sendSayHiMessage = (recipientId) => {
+  sendMessage(
+    recipientId,
+    messages.sendSayHiMessage[Math.floor(Math.random() * messages.sendSayHiMessage.length)]
+  );
+}
+
+const sendNiceMeetMessage = (recipientId) => {
+  sendMessage(
+    recipientId,
+    messages.sendNiceMeetMessage[Math.floor(Math.random() * messages.sendNiceMeetMessage.length)]
+  );
+}
+
+const sendCallMeMessage = (recipientId) => {
+  sendMessage(
+    recipientId,
+    messages.sendCallMeMessage[Math.floor(Math.random() * messages.sendCallMeMessage.length)]
+  );
+}
+
+const sendDontUnderstandMessage = (recipientId) => {
+  sendMessage(
+    recipientId,
+    messages.sendDontUnderstandMessage[Math.floor(Math.random() * messages.sendDontUnderstandMessage.length)]
+  );
+}
+
 export default {
   // basic
   sendMessage,
@@ -155,4 +192,11 @@ export default {
   sendSuggestRestartMessage,
 
   sendGetUserProfile,
+
+  // nlp
+  sendSayHiMessage,
+  sendNiceMeetMessage,
+  sendCallMeMessage,
+
+  sendDontUnderstandMessage,
 };

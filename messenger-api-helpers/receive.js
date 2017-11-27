@@ -1,7 +1,7 @@
 // modules
 import sendApi from './send';
 import dataHelper from './database';
-import keys from 'lodash/keys';
+import isEmpty from 'lodash/isEmpty';
 
 const handleReceivePostback = async (event) => {
   const {type, data} = JSON.parse(event.postback.payload);
@@ -60,31 +60,14 @@ const handleReceiveMessage = (event) => {
     return;
   }
   if (message.nlp) {
-    if (message.nlp.entities) {
-      console.log('has entities, ', message.nlp.entities);
-      const keyNames = keys(message.nlp.entities);
-      console.log(keyNames);
-    }
-  }
-  if (message.text) {
-    if(/(시작)+/g.test(message.text)) {
-      sendApi.sendSayStartTestMessage(senderId, dataHelper.initialize(senderId));
-      return;
+    if (!isEmpty(message.nlp.entities)) {
+      handleNlpMessage(senderId ,message.nlp.entities)
+    } else {
+      console.log('I DONT UNDERSTAND')
+      sendApi.sendDontUnderstandMessage(senderId);
     }
   }
 };
-
-const handleReceiveReferral = (event) => {
-  const senderId = event.sender.id;
-  let payload = {};
-
-  if (event.referral.ref){
-    payload["ref"] = event.referral.ref;
-  }
-  if (event.referral.ad_id){
-    payload["ad_id"] = event.referral.ad_id;
-  }
-}
 
 const handleTestReceive = async (message, senderId) => {
   console.log('====== handleTestReceive START =========');
@@ -97,6 +80,57 @@ const handleTestReceive = async (message, senderId) => {
   }
   console.log('====== handleTestReceive DONE =========');
   return;
+}
+
+const firstEntityValue = (entities, entity) => {
+  const val = entities && entities[entity] &&
+    Array.isArray(entities[entity]) &&
+    entities[entity].length > 0 &&
+    entities[entity][0].value;
+  if (!val) {
+    return null;
+  }
+  return typeof val === 'object' ? val.value : val;
+};
+
+const handleNlpMessage = (senderId, nlp) => {
+  const intent = firstEntityValue(nlp, "intent");
+  if(intent) {
+    switch(intent) {
+      case "start_test":
+      sendApi.sendSayStartTestMessage(senderId, dataHelper.initialize(senderId));
+      break;
+      case "positive":
+      sendApi.sendSayStartTestMessage(senderId, dataHelper.initialize(senderId));
+      break;
+      case "negative":
+      sendApi.sendSayStartTestMessage(senderId, dataHelper.initialize(senderId));
+      break;
+    }
+  }
+
+  const greeting = firstEntityValue(nlp, "greeting");
+  if(greeting) {
+    switch(greeting) {
+      case "say_hi":
+      sendApi.sendSayHiMessage(senderId);
+      break;
+      case "nice_meet":
+      sendApi.sendNiceMeetMessage(senderId);
+      break;
+    }
+  }
+
+  const myself = firstEntityValue(nlp, "myself");
+  if(myself) {
+    switch(myself) {
+      case "call_me":
+      sendApi.sendCallMeMessage(senderId);
+      break;
+    }
+  }
+
+
 }
 
 const handleQuickRepliesMessage = (senderId, quick_reply) => {
@@ -119,5 +153,4 @@ const handleQuickRepliesMessage = (senderId, quick_reply) => {
 export default {
   handleReceivePostback,
   handleReceiveMessage,
-  handleReceiveReferral,
 }

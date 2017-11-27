@@ -13,7 +13,6 @@ import isEmpty from 'lodash/isEmpty';
 // import split from 'lodash/split';
 // import join from 'lodash/join';
 
-
 const dataHelper = (() => {
 
   const initializeUser = (senderId, initialize) => {
@@ -24,6 +23,7 @@ const dataHelper = (() => {
     if(initialize || !user.getPsyTestId()){
       const createPsyTestId = String(Math.floor(Math.random() * psyTestStore.getLength() + 1));
       user.setPsyTestId(createPsyTestId);
+      user.setState("TESTING");
     }
 
     return user;
@@ -51,11 +51,11 @@ const dataHelper = (() => {
       const user = initializeUser(senderId, true);
       const { psyTest, question }= getQuestion(user.getPsyTestId());
 
-      const questionId = '1';
-      user.setCurrent(questionId);
+      const startId = '1';
+      user.setCurrent(startId);
       
       const psyTestDescription = psyTest.description;
-      const questionDescription = question.getDescription(questionId);
+      const questionDescription = question.getDescription(startId);
       
       return { psyTestDescription, questionDescription }
     },

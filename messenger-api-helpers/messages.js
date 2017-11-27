@@ -204,15 +204,53 @@ const sendImageMessage = {
   }
 }
 
-const selectLanguageMessage = {
-  attachment: {
-    type: 'template',
-    payload: {
-      template_type: 'button',
-      text: 'Choose your language!😉'
-    }
-  }
-}
+const sendSayHiMessage = [
+  {
+    text: '안녕?'
+  },
+  {
+    text: 'ㅎㅇ!'
+  },
+  {
+    text: `what's up dude?!`
+  },
+]
+
+const sendNiceMeetMessage = [
+  {
+    text: '방가방가!'
+  },
+  {
+    text: '만나서 반갑습니다.'
+  },
+  {
+    text: `헿..`
+  },
+]
+
+const sendCallMeMessage = [
+  {
+    text: '나 불렀어?!?'
+  },
+  {
+    text: '왜 불러?'
+  },
+  {
+    text: `what's happen?!`
+  },
+]
+
+const sendDontUnderstandMessage = [
+  {
+    text: '무슨말인지 모르겠어'
+  },
+  {
+    text: '?!?'
+  },
+  {
+    text: `... ?? ...`
+  },
+]
 
 export default {
   // init settings
@@ -234,6 +272,12 @@ export default {
   itemOptionsCarosel,
 
   // etc
-  selectLanguageMessage,
-  sendImageMessage,
+  // selectLanguageMessage,
+  // sendImageMessage,
+
+  sendSayHiMessage,
+  sendNiceMeetMessage,
+  sendCallMeMessage,
+
+  sendDontUnderstandMessage,
 };

@@ -14,6 +14,9 @@ class UserInfo {
     this.current = null;
     this.next = null;
     this.psyTestId = null;
+
+    // state : TESTING, TESTDONE, INIT,
+    this.state = "INIT";
   }
 
   setCurrent(current) {
@@ -38,6 +41,14 @@ class UserInfo {
 
   getPsyTestId() {
     return this.psyTestId;
+  }
+
+  setState(state) {
+    this.state = state;
+  }
+
+  getState() {
+    return this.state;
   }
 }
 
