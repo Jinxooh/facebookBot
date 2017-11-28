@@ -99,11 +99,11 @@ const handleNlpMessage = async (senderId, nlp) => {
   if(datetime) {
     if(nlp['datetime'][0].grain === 'day') { // 년/월/일까지 입력했을 경우 day
       const user = await dataHelper.getUser(senderId);
+      
       const date = new Date(datetime);
-      console.log(`${date.getFullYear()}${date.getMonth() + 1 }${date.getDate()}`);
       const tarotDate = `${date.getFullYear()}${date.getMonth() + 1 }${date.getDate()}`;
       const tarotNumber = dataHelper.selectTarot(tarotDate);
-      console.log(tarotNumber);
+
       sendApi.sendTarotResultMessage(senderId, user, tarotNumber);
     } else {
       console.log(' wrong date ');

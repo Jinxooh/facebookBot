@@ -100,7 +100,7 @@ const sayStartTarotMessage = (user) => {
 const tarotProcessMessage = (user) => {
   return [
     {
-      text: `${user.first_name}님의 성향을 알아보는 개인 타로카드를 뽑아보시겠어요??`,
+      text: `${user.first_name}님의 운명의 카드는 무엇인지 찾고 있어요.`,
     },
     {
       text: `잠시만 기다려 줄래요?`,

@@ -14,6 +14,7 @@ import split from 'lodash/split';
 import join from 'lodash/join';
 
 const dataHelper = (() => {
+  let tarotData= null;
 
   const initializeUser = async (senderId, initialize) => {
     let [user] = UserStore.getUserByPSID(senderId);
@@ -43,7 +44,8 @@ const dataHelper = (() => {
 
   return {
     setData: (json) => {
-      const { psyTest } = json;
+      const { psyTest, tarotName, tarotDescription } = json;
+      
       psyTest.map((item) => {
         const question = new QuestionStore();
         const questionStore = question.createStore(item.questionList);
@@ -78,7 +80,7 @@ const dataHelper = (() => {
     setTarotTest: (user) => {
       user.setState("TarotTest");
     },
-
+    
     // tarot 선택 알고리즘
     selectTarot: (text) => {
       let result = reduce(

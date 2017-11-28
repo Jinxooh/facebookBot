@@ -22,8 +22,9 @@ app.use('/', express.static(path.join(__dirname, 'views/')));
 app.use('/webhook', webhooks);
 
 try{
-    const file = fs.readFileSync(path.join(__dirname, 'public/data.json'));
-    const json = JSON.parse(file);
+    const psyTestData = fs.readFileSync(path.join(__dirname, 'public/data.json'));
+    const json = JSON.parse(psyTestData);
+
     dataHelper.setData(json);
 } catch(e) {
     console.log('error, ', e);
