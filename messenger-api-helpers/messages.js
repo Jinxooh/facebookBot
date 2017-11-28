@@ -263,12 +263,14 @@ const itemOptionsCarosel = (recipientId) => {
   };
 };
 
-const sendImageMessage = {
-  attachment: {
-    type: "image", 
-    payload: {
-      url: `${SERVER_URL}/media/test/30.jpg`, 
-      is_reusable: true
+const sendTarotImageMessage = (tarotNumber) => {
+  return {
+    attachment: {
+      type: "image", 
+      payload: {
+        url: `${SERVER_URL}/media/card-images/card_default_${tarotNumber}.jpeg`, 
+        is_reusable: true
+      }
     }
   }
 }
@@ -368,13 +370,13 @@ export default {
 
   // etc
   // selectLanguageMessage,
-  // sendImageMessage,
-
+  sendTarotImageMessage,
+  
   sendSayHiMessage,
   sendNiceMeetMessage,
   sendCallMeMessage,
-
+  
   sendDontUnderstandMessage,
-
+  
   sendTestText,
 };

@@ -137,6 +137,7 @@ const sendTarotResultMessage = (recipientId, user, tarotNumber) => {
     recipientId,
     concat(
       messages.tarotProcessMessage(user),
+      messages.sendTarotImageMessage(tarotNumber),
       messages.tarotResultMessage(user)
     )
   )

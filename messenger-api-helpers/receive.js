@@ -30,9 +30,7 @@ const handleReceiveMessage = (event) => {
   const senderId = event.sender.id;
   
   if(process.env.BOT_DEV_ENV === 'dev') {
-    if(handleTestReceive(message, senderId)){
-      return;
-    }
+    handleTestReceive(message, senderId)
   }
 
   sendApi.sendReadReceipt(senderId);
