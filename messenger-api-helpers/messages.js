@@ -69,25 +69,94 @@ const greetingMessage = {
   }
 };
 
-const welcomeMessage = (userInfo) => {
-  return {
-    text: `안녕하세요 ${userInfo.first_name}님`,
-  }
+const welcomeMessage = (user) => {
+  return [
+    {
+      text: `안녕하세요?`,
+    },
+    {
+      text: `저는 당신의 감정을 연구하는 감정케어 타로봇 자두에요.`,
+    },
+  ]
+};
+
+const sayStartTarotMessage = (user) => {
+  return [
+    {
+      text: `${user.first_name}님의 성향을 알아보는 개인 타로카드를 뽑아보시겠어요??`,
+    },
+    {
+      text: `개인 타로카드는 본인의 생년월일을 토대로 선택 됩니다. `,
+    },
+    {
+      text: `생년월일을 말씀해 주시겠어요?`,
+    },
+    {
+      text: `예시) 1991년05월19일 로 적어주세요. `,
+    },
+  ]
+};
+
+const tarotProcessMessage = (user) => {
+  return [
+    {
+      text: `${user.first_name}님의 성향을 알아보는 개인 타로카드를 뽑아보시겠어요??`,
+    },
+    {
+      text: `잠시만 기다려 줄래요?`,
+    },
+    {
+      text: `하쿠나마타타 폴레폴레❤️`,
+    },
+    {
+      text: `좋은 기운을 넣어줄 주문을 외우고 있어요!`,
+    },
+    {
+      text: `이제 결과가 다 나왔어요!`,
+    },
+    {
+      text: `당신의 운명의 카드는 바로 이 카드에요.`,
+    },
+  ]
+};
+
+const tarotResultMessage = (user, tarotNumber) => {
+  return [
+    {
+      text: `당신의 운명의 카드는 ${tarotNumber}`,
+    },
+    {
+      text: `어떠신가요?`,
+    },
+    {
+      text: `${user.first_name}님의 운명의카드에 대한 해설이?`,
+    },
+    {
+      text: `맘에드시나요??`,
+    },
+  ]
 };
 
 const welcomeReplies = {
-  text: "심리테스트 한번 해볼래요? ",
+  text: "어떤 테스트 해볼래요? ",
   quick_replies: [
+     {
+      content_type: 'text',
+      title: '성향테스트',
+      payload: JSON.stringify({
+        type: 'SAY_TAROT_TEST',
+      })
+    },
     {
       content_type: 'text',
-      title: '네!',
+      title: '심리테스트',
       payload: JSON.stringify({
         type: 'SAY_START_TEST',
       })
     },
     {
       content_type: 'text',
-      title: '아니요...',
+      title: '안할래...',
       payload: JSON.stringify({
         type: 'SAY_STOP_TEST',
       })
@@ -252,6 +321,27 @@ const sendDontUnderstandMessage = [
   },
 ]
 
+const sendTestText = [
+  {
+    text: '타고난 자유로운 영혼을 가진 사람이에요.'
+  },
+  {
+    text: '본성자체가 자유로운 사람이라, 무모한 도전에 두려워하지 않고, 모험을 즐기는 사람이죠.'
+  },
+  {
+    text: `단순하고 순수하기 때문에 많은 사람들이 도움을 주고,`
+  },
+  {
+    text: `당신을 좋아하기 때문에, 나름의 기준을 가지고 행복하게 살아가고 있대요.`
+  },
+  {
+    text: `사회에서는 조금 부족하거나, 조심성이 없다는 평을 들을때도 있지만,`
+  },
+  {
+    text: `무언가에 빠지면 열정적인 타입이라 미워할수 없는 타입이라고 해요.^^`
+  },
+]
+
 export default {
   // init settings
   persistentMenu,
@@ -262,9 +352,14 @@ export default {
   welcomeMessage,
   welcomeReplies,
 
+  sayStartTarotMessage,
+  tarotProcessMessage,
+  tarotResultMessage,
+
   sayStartTestMessage,
   sayStopTestMessage,
   testResultMessage,
+
   // 
   twoButtonMessage,
 
@@ -280,4 +375,6 @@ export default {
   sendCallMeMessage,
 
   sendDontUnderstandMessage,
+
+  sendTestText,
 };

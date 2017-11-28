@@ -23,14 +23,9 @@ class QuestionStore extends Store {
     return question.description;
   }
 
-  getYesNext(questionId) {
+  getYesOrNoNext(questionId, yesOrNo) {
     const [ question ] = this.getByQuestionId(questionId)
-    return question.yes;
-  }
-
-  getNoNext(questionId) {
-    const [ question ] = this.getByQuestionId(questionId)
-    return question.no;
+    return question[yesOrNo];
   }
 
   createStore(questionList) {

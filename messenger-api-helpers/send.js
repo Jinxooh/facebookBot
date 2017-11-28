@@ -51,10 +51,10 @@ const sendMessage = (recipientId, messagePayloads) => {
   // 대화 하는것 처럼 지연을 주기위해서
   const start = async () => {
     await asyncForEach(arr, async (item) => {
-      await api.callAsyncMessagesAPI(typingOn(recipientId));
-      await api.callAsyncMessagesAPI(messageToJSON(recipientId, item))
+      await api.callAsyncMessagesAPI(1000, typingOn(recipientId));
+      await api.callAsyncMessagesAPI(1000, messageToJSON(recipientId, item))
     })
-    api.callAsyncMessagesAPI(typingOff(recipientId))
+    api.callAsyncMessagesAPI(300, typingOff(recipientId))
     console.log('Done')
   }
   start();
@@ -78,10 +78,10 @@ const sendReadReceipt = (recipientId) => {
 const sendWelcomeMessage = (recipientId, userInfo) => {
   sendMessage(
     recipientId,
-    [
+    concat(
       messages.welcomeMessage(userInfo),
       messages.welcomeReplies,
-    ]);
+    ));
 };
 
 const sendChooseItemsMessage = (recipientId) => {
@@ -93,23 +93,24 @@ const sendChooseItemsMessage = (recipientId) => {
     ]);
 };
 
-const sendTwoButtonMessage = (recipientId, description) => {
+const sendTwoButtonMessage = (recipientId, { questionDescription }) => {
   sendMessage(
     recipientId,
-    messages.twoButtonMessage(description)
+    messages.twoButtonMessage(questionDescription)
   );
 };
 
-const sendResultMessage = (recipientId, message) => {
+const sendResultMessage = (recipientId, { questionDescription }) => {
   let text;
-  // 메세지가 배열로 올경우 나눠서 전달하기 위해
-  if(isArray(message))
-    text = reduce(message, (result, item, index) => {
+  // 메세지가 배열로 올경우 나눠서 전달하기 위해 
+  // 나중에 전체로 빼야할듯
+  if(isArray(questionDescription))
+    text = reduce(questionDescription, (result, item, index) => {
       result[index] = {text: item};
       return result;
     }, []);
   else 
-    text = {text: message};
+    text = {text: questionDescription};
 
   sendMessage(
     recipientId,
@@ -121,6 +122,23 @@ const sendSuggestRestartMessage = (recipientId) => {
   sendMessage(
     recipientId,
     messages.testResultMessage
+  )
+}
+
+const sendSayStartTarotMessage = (recipientId, user) => {
+  sendMessage(
+    recipientId,
+    concat(messages.sayStartTarotMessage(user))
+  );
+}
+
+const sendTarotResultMessage = (recipientId, user, tarotNumber) => {
+  sendMessage(
+    recipientId,
+    concat(
+      messages.tarotProcessMessage(user),
+      messages.tarotResultMessage(user)
+    )
   )
 }
 
@@ -148,6 +166,7 @@ const sendGetUserProfile = async (recipientId) => {
 }
 
 const sendSayHiMessage = (recipientId) => {
+  // 랜덤한 인사말을 위해서
   sendMessage(
     recipientId,
     messages.sendSayHiMessage[Math.floor(Math.random() * messages.sendSayHiMessage.length)]
@@ -175,6 +194,14 @@ const sendDontUnderstandMessage = (recipientId) => {
   );
 }
 
+const sendTestText = (recipientId) => {
+  sendMessage(
+    recipientId,
+    concat(messages.sendTestText)
+  );
+}
+
+
 export default {
   // basic
   sendMessage,
@@ -182,6 +209,9 @@ export default {
 
   // functiioanl
   sendWelcomeMessage,
+
+  sendSayStartTarotMessage,
+  sendTarotResultMessage,
 
   sendSayStartTestMessage,
   sendSayStopTestMessage,
@@ -199,4 +229,6 @@ export default {
   sendCallMeMessage,
 
   sendDontUnderstandMessage,
+  
+  sendTestText,
 };

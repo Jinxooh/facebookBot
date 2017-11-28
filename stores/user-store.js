@@ -14,8 +14,8 @@ class UserStore extends Store {
     return this.set(user.psid, user);
   }
 
-  createNewUser(psid) {
-    this.insert(new UserInfo(psid));
+  createNewUser(psid, first_name, last_name, profile_pic) {
+    this.insert(new UserInfo(psid, first_name, last_name, profile_pic));
     return this.getUserByPSID(psid);
   }
 }
