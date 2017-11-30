@@ -153,12 +153,8 @@ const sendAnswerTarotResultMessage = async (recipientId, message) => {
     recipientId,
     messages.sendImageMessage('/media/jadoo.png'),
   )
-  await done();
 }
 
-const done = () => {
-  console.log('all DONE!!')
-}
 const sendTarotFailureMessage = (recipientId, user) => {
     const userFailureRetries = user.getState()['retires'];
     user.setState("retries", userFailureRetries + 1);

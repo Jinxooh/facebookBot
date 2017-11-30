@@ -22,6 +22,16 @@ class UserInfo {
       name: 'INIT',
       retries: 0,
     }
+
+    this.userQueue = [];
+  }
+
+  getUserQueue() {
+    return this.userQueue;
+  }
+
+  setUserQueue(queue) {
+    this.userQueue.push(queue);
   }
 
   setCurrent(current) {

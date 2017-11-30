@@ -42,25 +42,38 @@ const handleReceiveMessage = async (event) => {
   }
 
   if (message.nlp) {
+    const user = await dataHelper.getUser(senderId);
+    const userState = user.getState();
+    
+    if(userState['status'] === 'answering') {
+      console.log(' ==== twice');
+      user.setUserQueue(event);
+    }
     if (!isEmpty(message.nlp.entities)) {
       handleNlpMessage(senderId ,message.nlp.entities)
     } else {
-      const user = await dataHelper.getUser(senderId);
-      const userState = user.getState();
       switch(userState['name']) {
         case "INIT":
           sendApi.sendDontUnderstandMessage(senderId);
         break;
         case "TAROT":
-          if(userState['status'] === 'processing') {
+          if(userState['status'] === 'start') {
+            user.setState('status', 'answering');
             await sendApi.sendAnswerTarotResultMessage(senderId, message.text);
             // await done();
-            await console.log('happy senario');
-            // await user.setState("status", "done");
+            // await console.log('happy senario, ', userQueue);
+            const [event ,...queue] = user.getUserQueue();
+            if(event) {
+              user.setState("status", "start");
+              if(queue) user.setUserQueue(queue);
+              handleReceiveMessage(event);
+            }
+            
           }
-          else {
+          else if(userState['status'] === 'answering'){
+            console.log('hahahahahaha');            
+          } else {
             sendApi.sendTarotFailureMessage(senderId, user)
-
           }
         break;
         case "PSY_TEST":
@@ -113,7 +126,7 @@ const handleNlpMessage = async (senderId, nlp) => {
       const tarotDate = `${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}`;
       const tarotNumber = dataHelper.selectTarot(tarotDate);
 
-      user.setState("status", "processing");
+      user.setState("status", "start");
       sendApi.sendTarotResultMessage(senderId, user, tarotNumber, dataHelper.getTarotData(tarotNumber));
     } else {
       sendApi.sendTarotFailureMessage(senderId, user)
