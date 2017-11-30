@@ -16,25 +16,6 @@ import join from 'lodash/join';
 const dataHelper = (() => {
   let tarotData= null;
 
-  const initializeUser = async (senderId, initialize) => {
-    let [user] = UserStore.getUserByPSID(senderId);
-
-    if (isEmpty(user)) {
-      const userInfo = await sendApi.sendGetUserProfile(senderId);
-      const { first_name, last_name, profile_pic } = userInfo;
-      [user] = UserStore.createNewUser(senderId, first_name, last_name, profile_pic);
-    }
-    
-    // 심리테스트를 호출할때 마다 변경위해서 
-    if(initialize || !user.getPsyTestId()){
-      const createPsyTestId = String(Math.floor(Math.random() * psyTestStore.getLength() + 1));
-      user.setPsyTestId(createPsyTestId);
-      user.setState("TESTING");
-    }
-
-    return user;
-  }
-
   const getQuestion = (psyTestId) => {
     const [psyTest] = psyTestStore.getByPsyTestId(psyTestId);
     const question = psyTest.questionList;
@@ -52,7 +33,19 @@ const dataHelper = (() => {
 
         psyTestStore.insert(new PsyTest(item.id, item.title, item.description, questionStore));
       });
+      
+      tarotData = {
+        tarotName,
+        tarotDescription
+      }
     },
+
+    getTarotData: (tarotNumber) => {
+      const tarotName = tarotData.tarotName[tarotNumber];
+      const tarotDescription = tarotData.tarotDescription[tarotNumber];
+      return { tarotName, tarotDescription }
+    },
+
     // user initialize
     getUser: async (senderId) => {
       let [user] = UserStore.getUserByPSID(senderId);
@@ -62,7 +55,6 @@ const dataHelper = (() => {
         const { first_name, last_name, profile_pic } = userInfo;
         [user] = UserStore.createNewUser(senderId, first_name, last_name, profile_pic);
       }
-      
       return user;
     },
     setPsyTest: (user, initialize) => {
@@ -70,15 +62,11 @@ const dataHelper = (() => {
       if(initialize || !user.getPsyTestId()){
         const createPsyTestId = String(Math.floor(Math.random() * psyTestStore.getLength() + 1));
         user.setPsyTestId(createPsyTestId);
-        user.setState("PsyTest");
+        user.setState("name", "PSY_TEST");
 
         const startId = '1';
         user.setCurrent(startId);
       }
-    },
-
-    setTarotTest: (user) => {
-      user.setState("TarotTest");
     },
     
     // tarot 선택 알고리즘
@@ -96,7 +84,7 @@ const dataHelper = (() => {
       } else {
         result = parseInt(result / 10) + (result % 10);
       }
-      return result - 1;
+      return result;
     },
 
     sayYesOrNo: (user, yesOrNo) => {
@@ -127,23 +115,5 @@ const dataHelper = (() => {
     },
   }
 })();
-
-////  타로 개인카드 알고리즘
-
-// const test = (text) => {
-//   let result = _.reduce(
-//     _.join(
-//       _.split("1999.02.12",".")
-//       // _.split(text, ".")
-//     , "")
-//   , (sum, n) => { return parseInt(sum) + parseInt(n) });
-  
-//   if(result < 23) {
-//     if(result === 22) result = 0;
-//   } else {
-//     result = parseInt(result/10) + (result % 10);
-//   }
-//   return result;
-// }
 
 export default dataHelper;

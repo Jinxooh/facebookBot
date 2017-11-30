@@ -2,6 +2,7 @@ import messages from './messages';
 import api from './api';
 
 const SERVER_URL = process.env.BOT_DEV_ENV == 'dev' ? process.env.TEST_SERVER_URL : process.env.SERVER_URL;
+const JADOO_URL = process.env.JADOO_URL;
 /**
  * Adds the server url to the Messenger App's whitelist.
  *
@@ -14,7 +15,7 @@ const setDomainWhitelisting = () => {
   api.callThreadAPI(
     {
       setting_type: 'domain_whitelisting',
-      whitelisted_domains: [SERVER_URL],
+      whitelisted_domains: [SERVER_URL, JADOO_URL],
       domain_action_type: 'add',
     },
   );

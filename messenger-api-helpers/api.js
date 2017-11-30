@@ -77,12 +77,8 @@ const callPsidAPI = async (psid, retries = RETRIES) => {
     if (json && json.error && json.error.message) {
       throw new Error(json.error.message);
     }
-    // const { first_name, last_name, profile_pic } = json;
-    // [user] = UserStore.getUserByPSID(psid);
-    // const user = new UserInfo(psid, first_name, last_name, profile_pic);
-    // UserStore.insert(user);
+
     return json;
-    // return user;
   });
 }
 

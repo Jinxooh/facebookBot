@@ -45,7 +45,7 @@ const asyncForEach = async (array, callback) => {
 }
 
 // Send one or more messages using the Send API.
-const sendMessage = (recipientId, messagePayloads) => {
+const sendMessage = async (recipientId, messagePayloads) => {
   const arr = castArray(messagePayloads);
   
   // 대화 하는것 처럼 지연을 주기위해서
@@ -57,7 +57,7 @@ const sendMessage = (recipientId, messagePayloads) => {
     api.callAsyncMessagesAPI(300, typingOff(recipientId))
     console.log('Done')
   }
-  start();
+  await start();
 };
 
 
@@ -132,16 +132,41 @@ const sendSayStartTarotMessage = (recipientId, user) => {
   );
 }
 
-const sendTarotResultMessage = (recipientId, user, tarotNumber) => {
+const sendTarotResultMessage = (recipientId, user, tarotNumber, tarotData) => {
+  user.setState("retries", 0);
   sendMessage(
     recipientId,
     concat(
       messages.tarotProcessMessage(user),
       messages.sendTarotImageMessage(tarotNumber),
-      messages.tarotResultMessage(user)
+      messages.tarotResultMessage(user, tarotData)
     )
   )
 }
+
+const sendAnswerTarotResultMessage = async (recipientId, message) => {
+  await sendMessage(
+    recipientId,
+    messages.answerTarotResultMessage(message),
+  )
+  await sendMessage(
+    recipientId,
+    messages.sendImageMessage('/media/jadoo.png'),
+  )
+  await done();
+}
+
+const done = () => {
+  console.log('all DONE!!')
+}
+const sendTarotFailureMessage = (recipientId, user) => {
+    const userFailureRetries = user.getState()['retires'];
+    user.setState("retries", userFailureRetries + 1);
+    sendMessage(
+      recipientId,
+      userFailureRetries > 1 ? messages.tarotAnswerFailure3times(user) : messages.tarotAnswerFailure(user)
+    )
+  }
 
 const sendSayStartTestMessage = (recipientId, {psyTestDescription, questionDescription}) => {
   sendMessage(
@@ -213,6 +238,8 @@ export default {
 
   sendSayStartTarotMessage,
   sendTarotResultMessage,
+  sendAnswerTarotResultMessage,
+  sendTarotFailureMessage,
 
   sendSayStartTestMessage,
   sendSayStopTestMessage,

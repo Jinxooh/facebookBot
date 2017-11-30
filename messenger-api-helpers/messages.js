@@ -1,12 +1,15 @@
-const SERVER_URL = process.env.BOT_DEV_ENV == 'dev' ? process.env.TEST_SERVER_URL : process.env.SERVER_URL;
+import concat from 'lodash/concat';
+import reduce from 'lodash/reduce';
 
-const urlButton = {
+const SERVER_URL = process.env.BOT_DEV_ENV == 'dev' ? process.env.TEST_SERVER_URL : process.env.SERVER_URL;
+const JADOO_URL = process.env.JADOO_URL;
+
+const linkButton = {
+  title: '자두가 좋아요!',
   type: 'web_url',
-  url: `${SERVER_URL}/`,
-  title: 'go to url',
-  webview_height_ratio: 'compact',
-  messenger_extensions: true,
+  url: `${JADOO_URL}`,
 };
+
 
 const postbackButton = {
   type: 'postback',
@@ -41,7 +44,7 @@ const persistentMenu = {
   setting_type: 'call_to_actions',
   thread_state: 'existing_thread',
   call_to_actions: [
-    urlButton,
+    linkButton,
     postbackButton
   ],
 };
@@ -120,22 +123,66 @@ const tarotProcessMessage = (user) => {
   ]
 };
 
-const tarotResultMessage = (user, tarotNumber) => {
-  return [
-    {
-      text: `당신의 운명의 카드는 ${tarotNumber}`,
-    },
-    {
-      text: `어떠신가요?`,
-    },
-    {
-      text: `${user.first_name}님의 운명의카드에 대한 해설이?`,
-    },
-    {
-      text: `맘에드시나요??`,
-    },
-  ]
+const tarotResultMessage = (user, tarotData) => {
+  const tarotDescription = reduce(tarotData.tarotDescription, (result, item, index) => {
+    result[index] = {text: item};
+    return result;
+  }, []);
+  
+  return concat(
+    { text: `당신의 운명의 카드는 '${tarotData.tarotName}'` },
+    tarotDescription,
+    { text: `어떠신가요?` },
+    { text: `${user.first_name}님의 운명의카드에 대한 해설이?` },
+    { text: `맘에드시나요??` },
+  )
 };
+
+const answerTarotResultMessage = (message) => {
+  return [
+    { text: `평가해 주셔서 감사합니다. ^^` },
+    { text: `앞으로 더 열심히 공부해서 좋은 서비스로 보답할게요!` },
+    {
+      attachment: {
+        type: 'template',
+        payload: {
+          template_type: 'button',
+          text: `자두에서 매주 별자리 운세서비스를 확인 하고 싶다면 좋아요를 눌러주세요!`,
+          buttons: [
+            linkButton,
+          ],
+        },
+      }
+    },
+    { text: `제가 열심히 공부하고 노력해서 좋은정보 많이 공유해드릴게요!` }
+  ]
+}
+
+const tarotAnswerFailure = (user) => {
+  return [
+   {text: "다시한번 생년월일을 입력해주세요!"}, 
+   {text: `폴레폴레 천천히 다시한번 ${user.first_name}님의 운명의 카드를 위해 기다릴게요!`}
+  ]
+}
+
+const tarotAnswerFailure3times = () => {
+  return [
+   {text: "잘 이해하지 못했어요ㅜㅜ"}, 
+   {text: "한번만 더 힘을내 입력해주세요! 운명의 카드를 찾기위해 기다리고 있어요!",},
+   {text: "예시) 1991년05월19일 로 적어주세요."}
+  ]
+}
+const sendImageMessage = (url) => {
+  return {
+    attachment: {
+      type: "image", 
+      payload: {
+        url: `${SERVER_URL}/${url}`, 
+        is_reusable: true
+      }
+    }
+  }
+}
 
 const welcomeReplies = {
   text: "어떤 테스트 해볼래요? ",
@@ -180,7 +227,7 @@ const testResultMessage = {
 
 const postbackYesButton = {
   type: 'postback',
-  title: 'Yes',
+  title: '네',
   payload: JSON.stringify({
     type: 'SAY_YES_POSTBACK',
   })
@@ -188,7 +235,7 @@ const postbackYesButton = {
 
 const postbackNoButton = {
   type: 'postback',
-  title: 'No',
+  title: '아니요',
   payload: JSON.stringify({
     type: 'SAY_NO_POSTBACK',
   })
@@ -316,10 +363,10 @@ const sendDontUnderstandMessage = [
     text: '무슨말인지 모르겠어'
   },
   {
-    text: '?!?'
+    text: '뭐라고?!?'
   },
   {
-    text: `... ?? ...`
+    text: `... 윙?? ...`
   },
 ]
 
@@ -357,6 +404,10 @@ export default {
   sayStartTarotMessage,
   tarotProcessMessage,
   tarotResultMessage,
+  answerTarotResultMessage,
+
+  tarotAnswerFailure,
+  tarotAnswerFailure3times,
 
   sayStartTestMessage,
   sayStopTestMessage,
@@ -379,4 +430,5 @@ export default {
   sendDontUnderstandMessage,
   
   sendTestText,
+  sendImageMessage,
 };
