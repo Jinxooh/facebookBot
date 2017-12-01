@@ -88,6 +88,7 @@ const handleNlpMessage = async (senderId, message) => {
       if(nlp['datetime'][0].grain === 'day') { // 년/월/일까지 입력했을 경우 day
         console.log('datetime, ', datetime);
         const date = new Date(datetime);
+        console.log('just date ,', date);
         console.log('utc ,', date.toUTCString())
         console.log('gmt ,', date.toGMTString())
         const tarotDate = `${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}`;
