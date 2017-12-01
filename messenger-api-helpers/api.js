@@ -10,7 +10,7 @@ import UserInfo from '../models/userInfo';
 import UserStore from '../stores/user-store';
 
 const SERVER_URL = process.env.BOT_DEV_ENV == 'dev' ? process.env.TEST_SERVER_URL : process.env.SERVER_URL;
-const PAGE_ACCESS_TOKEN = process.env.PAGE_ACCESS_TOKEN;
+const PAGE_ACCESS_TOKEN = process.env.BOT_DEV_ENV == 'dev' ? process.env.TEST_PAGE_ACCESS_TOKEN : process.env.PAGE_ACCESS_TOKEN;
 const RETRIES = 5;
 
 const callAPI = (endPoint, messageDataArray, retries = RETRIES) => {
