@@ -51,6 +51,12 @@ const welcomeMessage = (user) => {
     {
       text: `저는 당신의 감정을 연구하는 감정케어 상담봇 자두에요.`,
     },
+    {
+      text: `나랑 재밌는 테스트 한번 해볼래요??`,
+    },
+    {
+      text: `지금 준비되어 있는 테스트는 두가지 입니다.`,
+    },
   ]
 };
 
@@ -161,7 +167,7 @@ const sendImageMessage = (url) => {
 }
 
 const welcomeReplies = {
-  text: "나랑 재밌는 테스트 한번 해볼래요??",
+  text: "채팅창 하단에 있는 두가지 버튼 중에 하나를 눌러주세요",
   quick_replies: [
      {
       content_type: 'text',
