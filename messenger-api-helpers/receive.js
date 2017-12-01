@@ -83,20 +83,16 @@ const handleNlpMessage = async (senderId, message) => {
   const nlp = message.nlp.entities;
 
   if (!isEmpty(nlp)) {
-    const datetime = firstEntityValue(nlp, "datetime");
+    const datetime = stateName === 'TAROT' && firstEntityValue(nlp, "datetime");
     if(datetime) {
       if(nlp['datetime'][0].grain === 'day') { // 년/월/일까지 입력했을 경우 day
-        console.log('datetime, ', datetime);
         const date = new Date(datetime);
-        console.log('just date ,', date);
         const KSTdate = new Date(date.toUTCString());
-        console.log('UTCdate1', KSTdate)
         KSTdate.setTime(KSTdate.getTime() + (9 * 3600 * 1000));
-        console.log('UTCdate2 ,', KSTdate);
         
-        const tarotDate = `${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}`;
+        const tarotDate = `${KSTdate.getFullYear()}${KSTdate.getMonth() + 1}${KSTdate.getDate()}`;
         const tarotNumber = dataHelper.selectTarot(tarotDate);
-        return;
+
         user.setState('status', 'start');
         sendApi.sendTarotResultMessage(senderId, user, tarotNumber, dataHelper.getTarotData(tarotNumber));
       } else {

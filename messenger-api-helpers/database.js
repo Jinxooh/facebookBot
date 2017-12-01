@@ -73,7 +73,6 @@ const dataHelper = (() => {
     
     // tarot 선택 알고리즘
     selectTarot: (text) => {
-      console.log('text, ', text);
       let result = reduce(
         // _.join(
         //   // _.split("1999.02.12",".")
