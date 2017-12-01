@@ -83,15 +83,16 @@ const handleNlpMessage = async (senderId, message) => {
   const nlp = message.nlp.entities;
 
   if (!isEmpty(nlp)) {
-    const datetime = stateName === 'TAROT' && firstEntityValue(nlp, "datetime");
+    const datetime = firstEntityValue(nlp, "datetime");
     if(datetime) {
       if(nlp['datetime'][0].grain === 'day') { // 년/월/일까지 입력했을 경우 day
         
         const date = new Date(datetime);
-        console.log(date)
+        console.log('utc ,', date.toUTCString())
+        console.log('gmt ,', date.toGMTString())
         const tarotDate = `${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}`;
         const tarotNumber = dataHelper.selectTarot(tarotDate);
-  
+        return;
         user.setState('status', 'start');
         sendApi.sendTarotResultMessage(senderId, user, tarotNumber, dataHelper.getTarotData(tarotNumber));
       } else {
