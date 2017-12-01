@@ -54,10 +54,11 @@ const sendMessage = async (recipientId, messagePayloads) => {
       await api.callAsyncMessagesAPI(1000, typingOn(recipientId));
       await api.callAsyncMessagesAPI(1000, messageToJSON(recipientId, item))
     })
-    api.callAsyncMessagesAPI(300, typingOff(recipientId))
-    console.log('Done')
+    api.callAsyncMessagesAPI(300, typingOff(recipientId));
   }
   await start();
+  console.log('all done');
+
 };
 
 
@@ -156,11 +157,11 @@ const sendAnswerTarotResultMessage = async (recipientId, message) => {
 }
 
 const sendTarotFailureMessage = (recipientId, user) => {
-    const userFailureRetries = user.getState()['retires'];
-    user.setState("retries", userFailureRetries + 1);
+    const { retries } = user.getState();
+    user.setState("retries", retries + 1);
     sendMessage(
       recipientId,
-      userFailureRetries > 1 ? messages.tarotAnswerFailure3times(user) : messages.tarotAnswerFailure(user)
+      retries > 1 ? messages.tarotAnswerFailure3times(user) : messages.tarotAnswerFailure(user)
     )
   }
 

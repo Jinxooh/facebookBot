@@ -19,7 +19,7 @@ class UserInfo {
     // stateName : TAROT, PSY_TEST, DONE, INIT... 
     this.state = {
       status: 'init',
-      name: 'INIT',
+      stateName: 'INIT',
       retries: 0,
     }
 
@@ -32,6 +32,10 @@ class UserInfo {
 
   setUserQueue(queue) {
     this.userQueue.push(queue);
+  }
+
+  changeUserQueue(queue) {
+    this.userQueue = queue;
   }
 
   setCurrent(current) {

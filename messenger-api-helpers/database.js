@@ -62,7 +62,7 @@ const dataHelper = (() => {
       if(initialize || !user.getPsyTestId()){
         const createPsyTestId = String(Math.floor(Math.random() * psyTestStore.getLength() + 1));
         user.setPsyTestId(createPsyTestId);
-        user.setState("name", "PSY_TEST");
+        user.setState("stateName", "PSY_TEST");
 
         const startId = '1';
         user.setCurrent(startId);
