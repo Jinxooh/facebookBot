@@ -57,10 +57,10 @@ const welcomeMessage = (user) => {
 const sayStartTarotMessage = (user) => {
   return [
     {
-      text: `${user.first_name}님의 성향을 알아보는 개인 타로카드를 뽑아보시겠어요??`,
+      text: `${user.first_name}님의 성향을 알아보는 나의 운명의 카드를 뽑아보시겠어요??`,
     },
     {
-      text: `개인 타로카드는 본인의 생년월일을 토대로 선택 됩니다. `,
+      text: `운명의 카드는 본인의 생년월일을 토대로 선택 됩니다. `,
     },
     {
       text: `생년월일을 말씀해 주시겠어요?`,

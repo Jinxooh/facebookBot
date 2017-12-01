@@ -104,7 +104,12 @@ const sendResultMessage = (recipientId, { questionDescription }) => {
 
   sendMessage(
     recipientId,
-    concat(text, messages.answerThanksMessage(), messages.sendImageMessage('/media/jadoo.png'), messages.requestRestartMessage)
+    concat(
+      text, 
+      messages.answerThanksMessage(), 
+      messages.sendImageMessage('/media/jadoo.png'), 
+      messages.requestRestartMessage
+    )
   );
 };
 
