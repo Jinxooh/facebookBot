@@ -17,7 +17,9 @@ const dataHelper = (() => {
   let tarotData= null;
 
   const getQuestion = (psyTestId) => {
-    const [psyTest] = psyTestStore.getByPsyTestId(psyTestId);
+    const id = psyTestId === null ? "1": psyTestId
+    const [psyTest] = psyTestStore.getByPsyTestId(id);
+    
     const question = psyTest.questionList;
 
     return { psyTest, question };
@@ -89,8 +91,10 @@ const dataHelper = (() => {
 
     sayYesOrNo: (user, yesOrNo) => {
       const { question } = getQuestion(user.getPsyTestId());
+      
+      // test
+      const current = user.getCurrent() === null ? "1" : user.getCurrent();
 
-      const current = user.getCurrent();
       user.setNext(question.getYesOrNoNext(current, yesOrNo));
       if(user.getNext()) {
         user.setCurrent(user.getNext());

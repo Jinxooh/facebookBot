@@ -58,13 +58,11 @@ const sendMessage = async (recipientId, messagePayloads) => {
   }
   await start();
   console.log('all done');
-
 };
 
 
 // Send a read receipt to indicate the message has been read
 const sendReadReceipt = (recipientId) => {
-  console.log('sendReadReceipt');
   const messageData = {
     recipient: {
       id: recipientId,
@@ -83,15 +81,6 @@ const sendWelcomeMessage = (recipientId, userInfo) => {
       messages.welcomeMessage(userInfo),
       messages.welcomeReplies,
     ));
-};
-
-const sendChooseItemsMessage = (recipientId) => {
-  sendMessage(
-    recipientId,
-    [
-      messages.itemOptionsText,
-      messages.itemOptionsCarosel(recipientId),
-    ]);
 };
 
 const sendTwoButtonMessage = (recipientId, { questionDescription }) => {
@@ -115,14 +104,22 @@ const sendResultMessage = (recipientId, { questionDescription }) => {
 
   sendMessage(
     recipientId,
-    concat(text, messages.testResultMessage)
+    concat(text, messages.requestRestartMessage)
   );
 };
 
-const sendSuggestRestartMessage = (recipientId) => {
-  sendMessage(
+const sendSuggestRestartMessage = async (recipientId) => {
+
+  await sendMessage(
     recipientId,
-    messages.testResultMessage
+    messages.answerThanksMessage(),
+  )
+  await sendMessage(
+    recipientId,
+    [
+      messages.sendImageMessage('/media/jadoo.png'),
+      messages.requestRestartMessage,
+    ]
   )
 }
 
@@ -148,11 +145,18 @@ const sendTarotResultMessage = (recipientId, user, tarotNumber, tarotData) => {
 const sendAnswerTarotResultMessage = async (recipientId, message) => {
   await sendMessage(
     recipientId,
-    messages.answerTarotResultMessage(message),
+    messages.thanksMessage,
   )
   await sendMessage(
     recipientId,
-    messages.sendImageMessage('/media/jadoo.png'),
+    messages.answerThanksMessage(),
+  )
+  await sendMessage(
+    recipientId,
+    [
+      messages.sendImageMessage('/media/jadoo.png'),
+      messages.requestRestartMessage,
+    ]
   )
 }
 
@@ -172,13 +176,6 @@ const sendSayStartTestMessage = (recipientId, {psyTestDescription, questionDescr
       messages.sayStartTestMessage(psyTestDescription),
       messages.twoButtonMessage(questionDescription)
     ]
-  );
-}
-
-const sendSayStopTestMessage = (recipientId) => {
-  sendMessage(
-    recipientId,
-    messages.sayStopTestMessage
   );
 }
 
@@ -203,24 +200,11 @@ const sendNiceMeetMessage = (recipientId) => {
   );
 }
 
-const sendCallMeMessage = (recipientId) => {
-  sendMessage(
-    recipientId,
-    messages.sendCallMeMessage[Math.floor(Math.random() * messages.sendCallMeMessage.length)]
-  );
-}
 
 const sendDontUnderstandMessage = (recipientId) => {
   sendMessage(
     recipientId,
     messages.sendDontUnderstandMessage[Math.floor(Math.random() * messages.sendDontUnderstandMessage.length)]
-  );
-}
-
-const sendTestText = (recipientId) => {
-  sendMessage(
-    recipientId,
-    concat(messages.sendTestText)
   );
 }
 
@@ -239,11 +223,9 @@ export default {
   sendTarotFailureMessage,
 
   sendSayStartTestMessage,
-  sendSayStopTestMessage,
 
   sendTwoButtonMessage,
   sendResultMessage,
-  sendChooseItemsMessage,
   sendSuggestRestartMessage,
 
   sendGetUserProfile,
@@ -251,9 +233,5 @@ export default {
   // nlp
   sendSayHiMessage,
   sendNiceMeetMessage,
-  sendCallMeMessage,
-
   sendDontUnderstandMessage,
-  
-  sendTestText,
 };

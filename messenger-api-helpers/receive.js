@@ -97,25 +97,11 @@ const handleNlpMessage = async (senderId, message) => {
         sendApi.sendTarotFailureMessage(senderId, user)
       }
     }
-  
-    const intent = firstEntityValue(nlp, "intent");
-    if(intent) {
-      // const stateName = user.getState('stateName')
-      switch(intent) {
-        case "start_test":
-          sendApi.sendWelcomeMessage(senderId, user);
-        break;
-        // case "positive":
-        //   console.log('positive');
-        //   if(stateName === 'PSY_TEST')
-        //     selectAnswer(senderId, 'yes');
-        // break;
-        // case "negative":
-        //   console.log('negative');
-        //   if(stateName === 'PSY_TEST')
-        //     selectAnswer(senderId, 'no');
-        // break;
-      }
+
+    const self = firstEntityValue(nlp, "self");
+    const play = firstEntityValue(nlp, "play");
+    if(self && play) {
+      sendApi.sendWelcomeMessage(senderId, user);
     }
   
     const greeting = firstEntityValue(nlp, "greeting");
@@ -130,14 +116,6 @@ const handleNlpMessage = async (senderId, message) => {
       }
     }
   
-    const myself = firstEntityValue(nlp, "myself");
-    if(myself) {
-      switch(myself) {
-        case "call_me":
-        sendApi.sendCallMeMessage(senderId);
-        break;
-      }
-    }
   } else {
     switch(stateName) {
       case "INIT":
@@ -164,7 +142,6 @@ const handleNlpMessage = async (senderId, message) => {
         }
       break;
       case "PSY_TEST":
-        console.log('psyTEst');
         sendApi.sendDontUnderstandMessage(senderId);
       break;
       default:
@@ -191,9 +168,6 @@ const handleQuickRepliesMessage = async (senderId, quick_reply) => {
       dataHelper.setPsyTest(user, true);
       sendApi.sendSayStartTestMessage(senderId, dataHelper.getDescription(user));
     break;
-    case 'SAY_STOP_TEST':
-      sendApi.sendSayStopTestMessage(senderId);
-    break;
     default:
       console.log('default, ', type);
     break;
@@ -203,10 +177,6 @@ const handleQuickRepliesMessage = async (senderId, quick_reply) => {
 const handleTestReceive = async (message, senderId) => {
   console.log('message, ', message);
   dataHelper.getTarotData();
-  if(message.text === '111') {
-    sendApi.sendTestText(senderId);
-    return true;
-  }
   if(message.text === '222') {
     sendApi.sendAnswerTarotResultMessage(senderId, "lol");       
     return true;

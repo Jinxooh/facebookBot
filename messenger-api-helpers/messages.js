@@ -10,45 +10,6 @@ const linkButton = {
   url: `${JADOO_URL}`,
 };
 
-
-const postbackButton = {
-  type: 'postback',
-  title: 'postback',
-  payload: JSON.stringify({
-    type: 'SOMETHING',
-  })
-};
-
-const viewDetailsButton = (id) => {
-  return {
-    title: 'View Details',
-    type: 'web_url',
-    url: `${SERVER_URL}/details/${id}`,
-    webview_height_ratio: 'compact',
-    messenger_extensions: true,
-  };
-};
-
-const chooseButton = {
-  title: 'chooseButton',
-  type: 'web_url',
-  url: `${SERVER_URL}/choose/`,
-  webview_height_ratio: 'tall',
-  messenger_extensions: true,
-};
-
-/**
- * The persistent menu for users to use.
- */
-const persistentMenu = {
-  setting_type: 'call_to_actions',
-  thread_state: 'existing_thread',
-  call_to_actions: [
-    linkButton,
-    postbackButton
-  ],
-};
-
 /**
  * The Get Started button.
  */
@@ -64,11 +25,21 @@ const getStarted = {
   ],
 };
 
+/**
+ * The persistent menu for users to use.
+ */
+const persistentMenu = {
+  setting_type: 'call_to_actions',
+  thread_state: 'existing_thread',
+  call_to_actions: [
+  ],
+};
+
 // setting greeting default
 const greetingMessage = {
   setting_type: 'greeting',
   greeting: {
-    "text": "안녕하세요! 👋{{user_first_name}}님👋"
+    "text": `안녕하세요! 👋{{user_first_name}}님👋 저는 당신의 감정을 연구하는 감정케어 상담봇 자두 입니다. 입력란에 '자두야 놀자' 입력하시면 시작됩니다. 즐거운 시간 되세요!`
   }
 };
 
@@ -78,7 +49,7 @@ const welcomeMessage = (user) => {
       text: `안녕하세요?`,
     },
     {
-      text: `저는 당신의 감정을 연구하는 감정케어 타로봇 자두에요.`,
+      text: `저는 당신의 감정을 연구하는 감정케어 상담봇 자두에요.`,
     },
   ]
 };
@@ -95,7 +66,7 @@ const sayStartTarotMessage = (user) => {
       text: `생년월일을 말씀해 주시겠어요?`,
     },
     {
-      text: `예시) 1991년05월19일 로 적어주세요. `,
+      text: `예시) 1991년05월19일 또는 1991/05/19 로 적어주세요.`,
     },
   ]
 };
@@ -130,7 +101,8 @@ const tarotResultMessage = (user, tarotData) => {
   }, []);
   
   return concat(
-    { text: `당신의 운명의 카드는 '${tarotData.tarotName}'` },
+    { text: `당신의 운명의 카드는 '${tarotData.tarotName}' 입니다.` },
+    { text: `${user.first_name} 님은` },
     tarotDescription,
     { text: `어떠신가요?` },
     { text: `${user.first_name}님의 운명의카드에 대한 해설이?` },
@@ -138,9 +110,12 @@ const tarotResultMessage = (user, tarotData) => {
   )
 };
 
-const answerTarotResultMessage = (message) => {
+const thanksMessage = {
+  text: `평가해 주셔서 감사합니다. ^^`
+}
+
+const answerThanksMessage = () => {
   return [
-    { text: `평가해 주셔서 감사합니다. ^^` },
     { text: `앞으로 더 열심히 공부해서 좋은 서비스로 보답할게요!` },
     {
       attachment: {
@@ -169,9 +144,10 @@ const tarotAnswerFailure3times = () => {
   return [
    {text: "잘 이해하지 못했어요ㅜㅜ"}, 
    {text: "한번만 더 힘을내 입력해주세요! 운명의 카드를 찾기위해 기다리고 있어요!",},
-   {text: "예시) 1991년05월19일 로 적어주세요."}
+   {text: "예시) 1991년05월19일 또는 1991/05/19 로 적어주세요."}
   ]
 }
+
 const sendImageMessage = (url) => {
   return {
     attachment: {
@@ -185,29 +161,22 @@ const sendImageMessage = (url) => {
 }
 
 const welcomeReplies = {
-  text: "어떤 테스트 해볼래요? ",
+  text: "나랑 재밌는 테스트 한번 해볼래요??",
   quick_replies: [
      {
       content_type: 'text',
-      title: '성향테스트',
+      title: '1. 나의 운명의 카드 찾기',
       payload: JSON.stringify({
         type: 'SAY_TAROT_TEST',
       })
     },
     {
       content_type: 'text',
-      title: '심리테스트',
+      title: '2. 나의 허세지수 알아보기',
       payload: JSON.stringify({
         type: 'SAY_START_TEST',
       })
     },
-    {
-      content_type: 'text',
-      title: '안할래...',
-      payload: JSON.stringify({
-        type: 'SAY_STOP_TEST',
-      })
-    }
   ]
 }
 
@@ -217,12 +186,8 @@ const sayStartTestMessage = (description) => {
   }
 }
 
-const sayStopTestMessage = {
-  text: '알겠어요. 언제든지 심리테스트를 하고 싶다면, ‘시작’을 써주세요.^^'
-}
-
-const testResultMessage = {
-  text: '언제든지 다시 심리테스트를 하고 싶다면, ‘시작’을 써주세요.^^'
+const requestRestartMessage = {
+  text: `다시 '자두야 놀자'라고 부르면 다른 테스트를 시작할 수 있어요.`
 }
 
 const postbackYesButton = {
@@ -257,59 +222,6 @@ const twoButtonMessage = (description) => {
   }
 };
 
-const itemOptionsText = {
-  text: 'Here are item options for you:',
-}
-
-const itemList = () => {
-  return [
-    {
-      title: 'name1',
-      image_url: `${SERVER_URL}/media/test/10.jpg`,
-      subtitle: '1 description!!',
-      buttons: [
-        viewDetailsButton('1_id'),
-        chooseButton
-      ],
-    },
-    {
-      title: 'name2',
-      image_url: `${SERVER_URL}/media/test/20.jpg`,
-      subtitle: '2 description!!',
-      buttons: [
-        viewDetailsButton('2_ids'),
-        chooseButton
-      ],
-    },
-    {
-      title: 'name3',
-      image_url: `${SERVER_URL}/media/test/30.jpg`,
-      subtitle: '3 description!!',
-      buttons: [
-        viewDetailsButton('3_ids'),
-        chooseButton
-      ],
-    }
-  ]
-}
-
-const itemOptionsCarosel = (recipientId) => {
-  // const user = UserStore.get(recipientId) || UserStore.insert({id: recipientId});
-  // const giftOptions = user.getRecommendedGifts();
-
-  // const carouselItems = giftOptions.map(giftToCarouselItem);
-
-  return {
-    attachment: {
-      type: 'template',
-      payload: {
-        template_type: 'generic',
-        elements: itemList()
-      },
-    },
-  };
-};
-
 const sendTarotImageMessage = (tarotNumber) => {
   return {
     attachment: {
@@ -326,35 +238,11 @@ const sendSayHiMessage = [
   {
     text: '안녕?'
   },
-  {
-    text: 'ㅎㅇ!'
-  },
-  {
-    text: `what's up dude?!`
-  },
 ]
 
 const sendNiceMeetMessage = [
   {
     text: '방가방가!'
-  },
-  {
-    text: '만나서 반갑습니다.'
-  },
-  {
-    text: `헿..`
-  },
-]
-
-const sendCallMeMessage = [
-  {
-    text: '나 불렀어?!?'
-  },
-  {
-    text: '왜 불러?'
-  },
-  {
-    text: `what's happen?!`
   },
 ]
 
@@ -362,38 +250,10 @@ const sendDontUnderstandMessage = [
   {
     text: '무슨말인지 모르겠어'
   },
-  {
-    text: '뭐라고?!?'
-  },
-  {
-    text: `... 윙?? ...`
-  },
-]
-
-const sendTestText = [
-  {
-    text: '타고난 자유로운 영혼을 가진 사람이에요.'
-  },
-  {
-    text: '본성자체가 자유로운 사람이라, 무모한 도전에 두려워하지 않고, 모험을 즐기는 사람이죠.'
-  },
-  {
-    text: `단순하고 순수하기 때문에 많은 사람들이 도움을 주고,`
-  },
-  {
-    text: `당신을 좋아하기 때문에, 나름의 기준을 가지고 행복하게 살아가고 있대요.`
-  },
-  {
-    text: `사회에서는 조금 부족하거나, 조심성이 없다는 평을 들을때도 있지만,`
-  },
-  {
-    text: `무언가에 빠지면 열정적인 타입이라 미워할수 없는 타입이라고 해요.^^`
-  },
 ]
 
 export default {
   // init settings
-  persistentMenu,
   getStarted,
   greetingMessage,
 
@@ -404,31 +264,25 @@ export default {
   sayStartTarotMessage,
   tarotProcessMessage,
   tarotResultMessage,
-  answerTarotResultMessage,
+  
+  thanksMessage,
+  answerThanksMessage,
 
   tarotAnswerFailure,
   tarotAnswerFailure3times,
 
   sayStartTestMessage,
-  sayStopTestMessage,
-  testResultMessage,
+  requestRestartMessage,
 
   // 
   twoButtonMessage,
 
-  itemOptionsText,
-  itemOptionsCarosel,
-
-  // etc
-  // selectLanguageMessage,
   sendTarotImageMessage,
   
   sendSayHiMessage,
   sendNiceMeetMessage,
-  sendCallMeMessage,
   
   sendDontUnderstandMessage,
   
-  sendTestText,
   sendImageMessage,
 };
