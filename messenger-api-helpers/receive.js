@@ -89,8 +89,11 @@ const handleNlpMessage = async (senderId, message) => {
         console.log('datetime, ', datetime);
         const date = new Date(datetime);
         console.log('just date ,', date);
-        console.log('utc ,', date.toUTCString())
-        console.log('gmt ,', date.toGMTString())
+        const UTCdate = new Date(date.toUTCString());
+        console.log('UTCdate', UTCdate)
+        const KSTdate= new Date(UTCdate.getTime() + 9 & 3600 * 1000)
+        console.log('kst ,', KSTdate);
+        
         const tarotDate = `${date.getFullYear()}${date.getMonth() + 1}${date.getDate()}`;
         const tarotNumber = dataHelper.selectTarot(tarotDate);
         return;
