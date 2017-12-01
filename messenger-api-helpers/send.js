@@ -104,24 +104,17 @@ const sendResultMessage = (recipientId, { questionDescription }) => {
 
   sendMessage(
     recipientId,
-    concat(text, messages.requestRestartMessage)
+    concat(text, messages.answerThanksMessage(), messages.sendImageMessage('/media/jadoo.png'), messages.requestRestartMessage)
   );
 };
 
-const sendSuggestRestartMessage = async (recipientId) => {
-
-  await sendMessage(
-    recipientId,
-    messages.answerThanksMessage(),
-  )
-  await sendMessage(
-    recipientId,
-    [
-      messages.sendImageMessage('/media/jadoo.png'),
+const sendSuggestRestartMessage = (recipientId) => {
+  
+    sendMessage(
+      recipientId,
       messages.requestRestartMessage,
-    ]
-  )
-}
+    )
+  }
 
 const sendSayStartTarotMessage = (recipientId, user) => {
   sendMessage(
