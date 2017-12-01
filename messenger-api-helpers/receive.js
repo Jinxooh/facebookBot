@@ -86,7 +86,7 @@ const handleNlpMessage = async (senderId, message) => {
     const datetime = firstEntityValue(nlp, "datetime");
     if(datetime) {
       if(nlp['datetime'][0].grain === 'day') { // 년/월/일까지 입력했을 경우 day
-        
+        console.log('datetime, ', datetime);
         const date = new Date(datetime);
         console.log('utc ,', date.toUTCString())
         console.log('gmt ,', date.toGMTString())
