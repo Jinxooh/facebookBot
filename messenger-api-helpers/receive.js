@@ -3,8 +3,16 @@ import sendApi from './send';
 import dataHelper from './database';
 import isEmpty from 'lodash/isEmpty';
 
-const USER_STATE = ''
-const USER_STATUS = ''
+import {
+  USER_STATE,
+  USER_STATUS,
+  USER_RETRIES,
+  USER_STATE_TAROT,
+  USER_STATE_PSY,
+  USER_STATUS_START,
+  USER_STATUS_PROCESS,
+  USER_STATUS_DONE,
+} from './database'
 
 const handleReceivePostback = async (event) => {
   const {type, data} = JSON.parse(event.postback.payload);
@@ -14,7 +22,7 @@ const handleReceivePostback = async (event) => {
   switch (type) {
   case 'GET_STARTED':
     const user = await dataHelper.getUser(senderId);
-    sendApi.sendWelcomeMessage(senderId, user);
+    await sendApi.sendWelcomeMessage(senderId, user);
     break;
   case 'SAY_NO_POSTBACK':
     yesOrNo = "no";
@@ -36,8 +44,6 @@ const handleReceiveMessage = async (event) => {
     handleTestReceive(message, senderId)
   }
 
-  sendApi.sendReadReceipt(senderId);
-
   if (message.quick_reply) {
     const { quick_reply } = message;
     handleQuickRepliesMessage(senderId, quick_reply);
@@ -45,10 +51,9 @@ const handleReceiveMessage = async (event) => {
   }
 
   if (message.nlp) {
-    handleNlpMessage(senderId ,message)
-  } else {
-    console.log('no nlp')
+    handleNlpMessage(senderId ,message, event)
   }
+  sendApi.sendReadReceipt(senderId);
 };
 
 const selectAnswer = async (senderId, yesOrNo) => {
@@ -77,13 +82,20 @@ const firstEntityValue = (entities, entity) => {
   return typeof val === 'object' ? val.value : val;
 };
 
-const handleNlpMessage = async (senderId, message) => {
+const handleNlpMessage = async (senderId, message, event) => {
   const user = await dataHelper.getUser(senderId);
-  const { stateName, status } = user.getState();
+  let { stateName, status } = user.getState();
+  
+  if(status === USER_STATUS_PROCESS) {
+    console.log('save');
+    user.setUserQueue(event);  
+    return;
+  }
+
   const nlp = message.nlp.entities;
 
   if (!isEmpty(nlp)) {
-    const datetime = stateName === 'TAROT' && firstEntityValue(nlp, "datetime");
+    const datetime = stateName === USER_STATE_TAROT && firstEntityValue(nlp, "datetime");
     if(datetime) {
       if(nlp['datetime'][0].grain === 'day') { // 년/월/일까지 입력했을 경우 day
         const date = new Date(datetime);
@@ -93,8 +105,10 @@ const handleNlpMessage = async (senderId, message) => {
         const tarotDate = `${KSTdate.getFullYear()}${KSTdate.getMonth() + 1}${KSTdate.getDate()}`;
         const tarotNumber = dataHelper.selectTarot(tarotDate);
 
-        user.setState('status', 'start');
-        sendApi.sendTarotResultMessage(senderId, user, tarotNumber, dataHelper.getTarotData(tarotNumber));
+        user.setState(USER_STATUS, USER_STATUS_PROCESS);
+        user.setState(USER_RETRIES, 0);
+        await sendApi.sendTarotResultMessage(senderId, user, tarotNumber, dataHelper.getTarotData(tarotNumber));
+        user.setState(USER_STATUS, 'answering');
       } else {
         sendApi.sendTarotFailureMessage(senderId, user)
       }
@@ -103,7 +117,8 @@ const handleNlpMessage = async (senderId, message) => {
     const self = firstEntityValue(nlp, "self");
     const play = firstEntityValue(nlp, "play");
     if(self && play) {
-      sendApi.sendWelcomeMessage(senderId, user);
+      user.setState(USER_STATUS, USER_STATUS_PROCESS);
+      await sendApi.sendWelcomeMessage(senderId, user);
     }
   
     const greeting = firstEntityValue(nlp, "greeting");
@@ -123,27 +138,13 @@ const handleNlpMessage = async (senderId, message) => {
       case "INIT":
         sendApi.sendDontUnderstandMessage(senderId);
       break;
-      case "TAROT":
-        if(status === 'start') {
-          user.setState('status', 'answering');
+      case USER_STATE_TAROT:
+        if(status === 'answering')
           await sendApi.sendAnswerTarotResultMessage(senderId, message.text);
-
-          const [event ,...queue] = user.getUserQueue();
-          if(event) {
-            user.setState('status', 'start');
-            if(queue) user.changeUserQueue(queue);
-            handleReceiveMessage(event);
-            return;
-          }
-          user.setState('status', 'done');
-        }
-        else if(status === 'answering'){
-          user.setUserQueue(event);       
-        } else {
+        else 
           sendApi.sendTarotFailureMessage(senderId, user)
-        }
       break;
-      case "PSY_TEST":
+      case USER_STATE_PSY:
         sendApi.sendDontUnderstandMessage(senderId);
       break;
       default:
@@ -151,6 +152,15 @@ const handleNlpMessage = async (senderId, message) => {
       break;
     }
   }
+
+  const [eventObject ,...queue] = user.getUserQueue();
+  if(eventObject) {
+    if(queue) user.changeUserQueue(queue);
+    user.setState(USER_STATUS, status !== 'answering' ? 'start' : 'answering');
+    handleReceiveMessage(eventObject);
+    return;
+  }
+  if(status !== 'answering') user.setState(USER_STATUS, USER_STATUS_DONE);
 }
 
 const handleQuickRepliesMessage = async (senderId, quick_reply) => {
@@ -161,7 +171,7 @@ const handleQuickRepliesMessage = async (senderId, quick_reply) => {
     case 'SAY_TAROT_TEST':
       // store initializeCode
       user = await dataHelper.getUser(senderId);
-      user.setState('stateName', 'TAROT');
+      user.setState(USER_STATE, USER_STATE_TAROT);
       sendApi.sendSayStartTarotMessage(senderId, user);
     break;
     case 'SAY_START_TEST':
@@ -177,8 +187,14 @@ const handleQuickRepliesMessage = async (senderId, quick_reply) => {
 }
 
 const handleTestReceive = async (message, senderId) => {
-  console.log('message, ', message);
+  console.log('senderId, ', senderId);
   dataHelper.getTarotData();
+  if(message.text === '111') {
+    sendApi.sendShareButton(senderId);       
+    return true;
+  }
+
+
   if(message.text === '222') {
     sendApi.sendAnswerTarotResultMessage(senderId, "lol");       
     return true;

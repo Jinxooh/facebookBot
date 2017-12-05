@@ -1,11 +1,13 @@
-import React from 'react';
+import React, { Component } from 'react';
 
-const App = ({ userId }) => {
-  return (
-    <div>
-      App js! {userId}
-    </div>
-  );
-};
+class App extends Component {
+  render() {
+    return (
+      <div>
+       sss
+      </div>
+    );
+  }
+}
 
 export default App;

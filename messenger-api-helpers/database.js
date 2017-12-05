@@ -13,6 +13,15 @@ import reduce from 'lodash/reduce';
 import split from 'lodash/split';
 import join from 'lodash/join';
 
+export const USER_STATE = 'stateName'
+export const USER_STATUS = 'status'
+export const USER_RETRIES = 'retries'
+export const USER_STATE_TAROT = 'USER_STATE_TAROT'
+export const USER_STATE_PSY = 'USER_STATE_PSY'
+export const USER_STATUS_START = 'USER_STATUS_START'
+export const USER_STATUS_PROCESS = 'USER_STATUS_PROCESS'
+export const USER_STATUS_DONE = 'USER_STATUS_DONE'
+
 const dataHelper = (() => {
   let tarotData= null;
 
@@ -64,7 +73,7 @@ const dataHelper = (() => {
       if(initialize || !user.getPsyTestId()){
         const createPsyTestId = String(Math.floor(Math.random() * psyTestStore.getLength() + 1));
         user.setPsyTestId(createPsyTestId);
-        user.setState("stateName", "PSY_TEST");
+        user.setState(USER_STATE, USER_STATE_PSY);
 
         const startId = '1';
         user.setCurrent(startId);

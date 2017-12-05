@@ -8,6 +8,10 @@ import reduce from 'lodash/reduce';
 import api from './api';
 import messages from './messages';
 
+import {
+  USER_RETRIES,
+} from './database'
+
 // Turns typing indicator on.
 const typingOn = (recipientId) => {
   return {
@@ -57,7 +61,6 @@ const sendMessage = async (recipientId, messagePayloads) => {
     api.callAsyncMessagesAPI(300, typingOff(recipientId));
   }
   await start();
-  console.log('all done');
 };
 
 
@@ -74,8 +77,8 @@ const sendReadReceipt = (recipientId) => {
 };
 
 // Send a different Welcome message based on if the user is logged in.
-const sendWelcomeMessage = (recipientId, userInfo) => {
-  sendMessage(
+const sendWelcomeMessage = async (recipientId, userInfo) => {
+  await sendMessage(
     recipientId,
     concat(
       messages.welcomeMessage(userInfo),
@@ -128,9 +131,9 @@ const sendSayStartTarotMessage = (recipientId, user) => {
   );
 }
 
-const sendTarotResultMessage = (recipientId, user, tarotNumber, tarotData) => {
-  user.setState("retries", 0);
-  sendMessage(
+const sendTarotResultMessage = async (recipientId, user, tarotNumber, tarotData) => {
+  user.setState(USER_RETRIES, 0);
+  await sendMessage(
     recipientId,
     concat(
       messages.tarotProcessMessage(user),
@@ -160,7 +163,7 @@ const sendAnswerTarotResultMessage = async (recipientId, message) => {
 
 const sendTarotFailureMessage = (recipientId, user) => {
     const { retries } = user.getState();
-    user.setState("retries", retries + 1);
+    user.setState(USER_RETRIES, retries + 1);
     sendMessage(
       recipientId,
       retries > 1 ? messages.tarotAnswerFailure3times(user) : messages.tarotAnswerFailure(user)
@@ -206,6 +209,13 @@ const sendDontUnderstandMessage = (recipientId) => {
   );
 }
 
+const sendShareButton = (recipientId) => {
+  sendMessage(
+    recipientId,
+    messages.sendShareButton(recipientId)
+  );
+}
+
 
 export default {
   // basic
@@ -232,4 +242,6 @@ export default {
   sendSayHiMessage,
   sendNiceMeetMessage,
   sendDontUnderstandMessage,
+
+  sendShareButton,
 };

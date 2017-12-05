@@ -3,7 +3,10 @@ import api from './api';
 
 const SERVER_URL = process.env.BOT_DEV_ENV == 'dev' ? process.env.TEST_SERVER_URL : process.env.SERVER_URL;
 const JADOO_URL = process.env.JADOO_URL;
-/**
+const FACEBOOK_URL_1 = 'https://www.facebook.com/';
+const FACEBOOK_URL_2 = 'https://developers.facebook.com/';
+
+/*
  * Adds the server url to the Messenger App's whitelist.
  *
  * This is required to use Messenger Extensions which
@@ -15,7 +18,7 @@ const setDomainWhitelisting = () => {
   api.callThreadAPI(
     {
       setting_type: 'domain_whitelisting',
-      whitelisted_domains: [SERVER_URL, JADOO_URL],
+      whitelisted_domains: [SERVER_URL, JADOO_URL, FACEBOOK_URL_1, FACEBOOK_URL_2],
       domain_action_type: 'add',
     },
   );
