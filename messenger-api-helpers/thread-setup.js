@@ -4,7 +4,7 @@ import api from './api';
 const SERVER_URL = process.env.BOT_DEV_ENV == 'dev' ? process.env.TEST_SERVER_URL : process.env.SERVER_URL;
 const JADOO_URL = process.env.JADOO_URL;
 const FACEBOOK_URL_1 = 'https://www.facebook.com/';
-const FACEBOOK_URL_2 = 'https://developers.facebook.com/';
+const FACEBOOK_URL_2 = 'https://www.messenger.com/';
 
 /*
  * Adds the server url to the Messenger App's whitelist.

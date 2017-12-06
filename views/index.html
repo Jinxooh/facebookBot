@@ -1,49 +1,47 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>HELLO??</title>
+    <title>JADOO</title>
     <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
     <script src="/bundle.js"></script>
   </head>
   <body>
     <div id="content"></div>
     <script>
-        window.extAsyncInit = function() {
-          // the Messenger Extensions JS SDK is done loading
-          MessengerExtensions.getUserID(function success(uids) {
-            window.attachApp(uids.psid);
-          }, function error(err) {
-            window.attachApp();
-          });
-        };
-        window.fbAsyncInit = function() {
-          console.log('fbfb');
-          FB.init({
-            appId            : '1426741734040613',
-            autoLogAppEvents : true,
-            xfbml            : true,
-            version          : 'v2.11'
-          });
-          FB.ui({
-            method: 'share',
-            href: 'https://developers.facebook.com/docs/',
-          }, function(response){});
-        };
-       (function(doc, script, domId){
-         var js, fjs = doc.getElementsByTagName(script)[0];
-         if (doc.getElementById(domId)) { return; }
-         js = doc.createElement(script);
-         js.id = domId;
-         js.src = "//connect.facebook.com/en_US/messenger.Extensions.js";
-         fjs.parentNode.insertBefore(js, fjs);
-       }(document, 'script', 'Messenger'));
-       (function(d, s, id){
-          var js, fjs = d.getElementsByTagName(s)[0];
-          if (d.getElementById(id)) {return;}
-          js = d.createElement(s); js.id = id;
-          js.src = "https://connect.facebook.net/en_US/sdk.js";
-          fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
+      window.extAsyncInit = function() {
+        // the Messenger Extensions JS SDK is done loading
+        MessengerExtensions.getUserID(function success(uids) {
+          window.attachApp(uids.psid);
+        }, function error(err) {
+          window.attachApp();
+        });
+      };
+
+      window.fbAsyncInit = function() {
+        console.log('fbAsyncInit');
+        FB.init({
+          appId            : '552043455131217',
+          autoLogAppEvents : true,
+          xfbml            : true,
+          version          : 'v2.11'
+        });
+      };
+
+      (function(doc, script, domId){
+        var js, fjs = doc.getElementsByTagName(script)[0];
+        if (doc.getElementById(domId)) { return; }
+        js = doc.createElement(script);
+        js.id = domId;
+        js.src = "//connect.facebook.com/en_US/messenger.Extensions.js";
+        fjs.parentNode.insertBefore(js, fjs);
+      }(document, 'script', 'Messenger'));
+      (function(d, s, id){
+        var js, fjs = d.getElementsByTagName(s)[0];
+        if (d.getElementById(id)) {return;}
+        js = d.createElement(s); js.id = id;
+        js.src = "https://connect.facebook.net/en_US/sdk.js";
+        fjs.parentNode.insertBefore(js, fjs);
+      }(document, 'script', 'facebook-jssdk'));
     </script>
   </body>
 </html>

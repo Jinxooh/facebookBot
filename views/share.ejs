@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+		<title>공유하기</title>
+        <script>
+        const appId = '552043455131217';
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId,
+                autoLogAppEvents: true,
+                xfbml: true,
+                version: 'v2.11'
+            });
+            FB.AppEvents.logPageView();
+        };
+
+        window.extAsyncInit = function() {
+            document.getElementById("content").innerHTML = "Load Script";
+            CloseWindow();
+        };
+
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.com/en_US/messenger.Extensions.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'Messenger'));
+        function CloseWindow(){
+            MessengerExtensions.requestCloseBrowser(
+                function success() {
+                }, function error(err) {
+                }
+            );
+        };
+      
+        </script>
+    </head>
+	<body>
+        <div id="content">hahahah....</div>
+    </body>
+</html>

@@ -4,7 +4,7 @@ import express from 'express';
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  console.log('hihi');
+  res.render('./share', {title: 'done'});
 });
 
 router.get('/:id', (req, res) => {

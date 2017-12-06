@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ko">
+	<head>
+		<title>tvN 이벤트 공유하기</title>
+        <script>
+        window.fbAsyncInit = function() {
+            FB.init({
+                appId            : '1709288206037727',
+                autoLogAppEvents : true,
+                xfbml            : true,
+                version          : 'v2.10'
+            });
+            FB.AppEvents.logPageView();
+        };
+
+        window.extAsyncInit = function() {
+            document.getElementById("dsp").innerHTML = "Load Script";
+            GetContext();
+        };
+
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+
+        (function(d, s, id){
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) {return;}
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.com/en_US/messenger.Extensions.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'Messenger'));
+
+        function GetContext(){
+            MessengerExtensions.getContext('1709288206037727',
+                function success(thread_context){
+                    SendUserData( thread_context );
+                },
+                function error(err){
+                }
+            );
+        };
+        function SendUserData( context ){
+            location.href = "/fb/api/590610874483554/event/share?signed_request="+context.signed_request;
+        };
+        </script>
+    </head>
+	<body>
+        <div id="dsp">Loading....</div>
+    </body>
+</html>

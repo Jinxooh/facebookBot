@@ -1,89 +1,96 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>HELLO??</title>
+    <title>공유하기</title>
     <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
-    <script src="/bundle.js"></script>
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   </head>
   <body>
-    <div id="content"></div>
-    <script>
-      window.extAsyncInit = function() {
-        // the Messenger Extensions JS SDK is done loading
-        MessengerExtensions.getUserID(function success(uids) {
-          window.attachApp(uids.psid);
-        }, function error(err) {
-          window.attachApp();
-        });
-      };
-
-      window.fbAsyncInit = function() {
-        console.log('fbAsyncInit, ', FB);
-        FB.init({
-          appId            : '552043455131217',
-          autoLogAppEvents : true,
-          xfbml            : true,
-          version          : 'v2.11'
-
-        });
-        FB.AppEvents.logPageView();
-        //https://www.facebook.com/v2.11/dialog/share?app_id=552043455131217&channel_url=https%3A%2F%2Fstaticxx.facebook.com%2Fconnect%2Fxd_arbiter%2Fr%2FlY4eZXm_YWu.js%3Fversion%3D42%23cb%3Df32090d533f34c8%26domain%3Dad1a267e.ngrok.io%26origin%3Dhttps%253A%252F%252Fad1a267e.ngrok.io%252Ff3fb9722f9d76d%26relation%3Dopener&display=popup&e2e=%7B%7D&hashtag=%23jadoo&href=https%3A%2F%2Fad1a267e.ngrok.io&locale=en_US&mobile_iframe=false&next=https%3A%2F%2Fstaticxx.facebook.com%2Fconnect%2Fxd_arbiter%2Fr%2FlY4eZXm_YWu.js%3Fversion%3D42%23cb%3Dfc4b591f48e65c%26domain%3Dad1a267e.ngrok.io%26origin%3Dhttps%253A%252F%252Fad1a267e.ngrok.io%252Ff3fb9722f9d76d%26relation%3Dopener%26frame%3Df2775082c3aaef8%26result%3D%2522xxRESULTTOKENxx%2522&sdk=joey&version=v2.11
-        // FB.api('/552043455131217', function(response) {
-        //   console.log(response);
-        // });
-
-
-        // https://www.facebook.com/dialog/share?app_id=552043455131217&display=iframe&href=https%3A%2F%2Fad1a267e.ngrok.io
+<script>
+  const server_url = 'https://d3f44223.ngrok.io';
+  const share_url = 'https://www.facebook.com/v2.11/dialog/share';
+  const appId = '552043455131217';
+  const hashtag = ('#hello!!');
+  const href = 'https://naver.com';
   
+  const redirect_uri = encodeURIComponent(`${server_url}/share`);
+  if( navigator.userAgent.toUpperCase().indexOf('FB') > -1 ){
+    location.href = `${share_url}?app_id=${appId}&hashtag=%23`
+    + `${encodeURIComponent(hashtag)}&href=${encodeURIComponent(href)}`
+    + `&redirect_uri=${redirect_uri}`;
+  } else {
+    console.log('navigator.userAgent,' , navigator.userAgent);
+    window.fbAsyncInit = function() {
+      FB.init({
+          appId,
+          autoLogAppEvents: true,
+          xfbml: true,
+          version: 'v2.11',
+      });
+      FB.AppEvents.logPageView();
+    };
 
-        // sdk.js:57 "display" must be one of "popup", "dialog", "iframe", "touch", "async", "hidden", or "none"
+    (function(doc, script, domId){
+      var js, fjs = doc.getElementsByTagName(script)[0];
+      if (doc.getElementById(domId)) { return; }
+      js = doc.createElement(script);
+      js.id = domId;
+      js.src = "//connect.facebook.com/en_US/messenger.Extensions.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'Messenger'));
 
-        // FB.ui(
-        //   {
-        //     method: 'share',
-        //     display: "iframe",
-        //     mobile_iframe: true,
-        //     href: 'https://ad1a267e.ngrok.io',
-        //     hashtag: '#jadoo',
-        //   },
-        //   // callback
-        //   function(response) {
-        //     if (response && !response.error_message) {
-        //       console.log('Posting completed.');
-        //     } else {
-        //       console.log('Error while posting.');
-        //     }
-        //   }
-        // );
+    (function(d, s, id){
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) {return;}
+      js = d.createElement(s); js.id = id;
+      js.src = "https://connect.facebook.net/en_US/sdk.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
 
-        // FB.login(function(response) {
-        //   if (response.authResponse) {
-        //     console.log('Welcome!  Fetching your information.... ');
-        //     FB.api('/me', function(response) {
-        //       console.log('Good to see you, ' + response.name + '.');
-        //     });
-        //   } else {
-        //     console.log('User cancelled login or did not fully authorize.');
-        //   }
-        // });
-        console.log('done');
-      };
+  }
 
-      (function(doc, script, domId){
-        var js, fjs = doc.getElementsByTagName(script)[0];
-        if (doc.getElementById(domId)) { return; }
-        js = doc.createElement(script);
-        js.id = domId;
-        js.src = "//connect.facebook.com/en_US/messenger.Extensions.js";
-        fjs.parentNode.insertBefore(js, fjs);
-      }(document, 'script', 'Messenger'));
-      (function(d, s, id){
-        var js, fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) {return;}
-        js = d.createElement(s); js.id = id;
-        js.src = "https://connect.facebook.net/en_US/sdk.js";
-        fjs.parentNode.insertBefore(js, fjs);
-      }(document, 'script', 'facebook-jssdk'));
-    </script>
+  $(function() {
+	  $("button").click(function(){
+      console.log('clicked')
+      FB.ui(
+      {
+        method: 'share',
+        display: 'popup',
+        href,
+        hashtag,
+      },
+      // callback
+      function(response) {
+        if (response && !response.error_message) {
+          console.log('Posting completed.');
+          CloseWindow();
+        } else {
+          console.log('Error while posting.');
+        }
+      });
+    });
+
+    function GetContext(){
+        MessengerExtensions.getContext('1709288206037727',
+            function success(thread_context){
+                CloseWindow();
+            },
+            function error(err){
+            }
+        );
+    };
+
+    function CloseWindow(){
+        MessengerExtensions.requestCloseBrowser(
+            function success() {
+            }, function error(err) {
+            }
+        );
+    };
+  });
+</script>
+    <div id="content">
+      <button type="button">SHARE!</button>  
+    </div>
   </body>
 </html>

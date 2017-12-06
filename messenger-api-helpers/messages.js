@@ -269,7 +269,9 @@ const sendShareButton = (id) => {
           {
             title: 'Share Button',
             type: 'web_url',
-            url: `${SERVER_URL}/${id}`,
+            url: `${SERVER_URL}/`,
+            // url: `${SERVER_URL}/${id}`,
+            // url: `https://www.facebook.com/v2.11/dialog/share?href=https%3A%2F%2Fd3f44223.ngrok.io%2F&client_id=552043455131217&_rdr`,
             webview_height_ratio: 'tall',
             messenger_extensions: true,
           }
