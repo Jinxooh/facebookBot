@@ -1,8 +1,12 @@
+import {
+  USER_STATUS_INIT,
+} from '../messenger-api-helpers/database'
 /**
  * Question Model
  *
  * @class UserInfo
  */
+
 class UserInfo {
  
   constructor(psid, first_name, last_name, profile_pic) {
@@ -18,7 +22,7 @@ class UserInfo {
     // status : start, done... 
     // stateName : TAROT, PSY_TEST, DONE, INIT... 
     this.state = {
-      status: 'init',
+      status: USER_STATUS_INIT,
       stateName: 'INIT',
       retries: 0,
     }

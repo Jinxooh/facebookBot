@@ -93,7 +93,7 @@ const sendTwoButtonMessage = (recipientId, { questionDescription }) => {
   );
 };
 
-const sendResultMessage = (recipientId, { questionDescription }) => {
+const sendResultMessage = async (recipientId, { questionDescription }, user) => {
   let text;
   // 메세지가 배열로 올경우 나눠서 전달하기 위해 
   // 나중에 전체로 빼야할듯
@@ -105,13 +105,11 @@ const sendResultMessage = (recipientId, { questionDescription }) => {
   else 
     text = {text: questionDescription};
 
-  sendMessage(
+  await sendMessage(
     recipientId,
     concat(
       text, 
-      messages.answerThanksMessage(), 
-      messages.sendImageMessage('/media/jadoo.png'), 
-      messages.requestRestartMessage
+      messages.psyTestResultMessage(user)
     )
   );
 };
@@ -143,21 +141,14 @@ const sendTarotResultMessage = async (recipientId, user, tarotNumber, tarotData)
   )
 }
 
-const sendAnswerTarotResultMessage = async (recipientId, message) => {
+const sendResultThanksMessage = async (recipientId) => {
   await sendMessage(
     recipientId,
-    messages.thanksMessage,
-  )
-  await sendMessage(
-    recipientId,
-    messages.answerThanksMessage(),
-  )
-  await sendMessage(
-    recipientId,
-    [
+    concat(
+      messages.answerThanksMessage(),
       messages.sendImageMessage('/media/jadoo.png'),
       messages.requestRestartMessage,
-    ]
+    )
   )
 }
 
@@ -227,7 +218,7 @@ export default {
 
   sendSayStartTarotMessage,
   sendTarotResultMessage,
-  sendAnswerTarotResultMessage,
+  sendResultThanksMessage,
   sendTarotFailureMessage,
 
   sendSayStartTestMessage,

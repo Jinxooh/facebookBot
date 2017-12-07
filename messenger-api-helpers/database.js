@@ -18,7 +18,9 @@ export const USER_STATUS = 'status'
 export const USER_RETRIES = 'retries'
 export const USER_STATE_TAROT = 'USER_STATE_TAROT'
 export const USER_STATE_PSY = 'USER_STATE_PSY'
+export const USER_STATUS_INIT = 'USER_STATUS_INIT'
 export const USER_STATUS_START = 'USER_STATUS_START'
+export const USER_STATUS_ANSWERING = 'USER_STATUS_ANSWERING'
 export const USER_STATUS_PROCESS = 'USER_STATUS_PROCESS'
 export const USER_STATUS_DONE = 'USER_STATUS_DONE'
 
@@ -74,7 +76,7 @@ const dataHelper = (() => {
         const createPsyTestId = String(Math.floor(Math.random() * psyTestStore.getLength() + 1));
         user.setPsyTestId(createPsyTestId);
         user.setState(USER_STATE, USER_STATE_PSY);
-
+        user.setState(USER_STATUS, USER_STATUS_START);
         const startId = '1';
         user.setCurrent(startId);
       }

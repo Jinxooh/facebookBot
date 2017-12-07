@@ -100,6 +100,13 @@ const tarotProcessMessage = (user) => {
   ]
 };
 
+const psyTestResultMessage = (user) => {
+  return concat(
+    { text: `${user.first_name}님의 허세테스트는 어떠셨어요?` },
+    { text: `맘에드시나요??` },
+  )
+}
+
 const tarotResultMessage = (user, tarotData) => {
   const tarotDescription = reduce(tarotData.tarotDescription, (result, item, index) => {
     result[index] = {text: item};
@@ -116,12 +123,9 @@ const tarotResultMessage = (user, tarotData) => {
   )
 };
 
-const thanksMessage = {
-  text: `평가해 주셔서 감사합니다. ^^`
-}
-
 const answerThanksMessage = () => {
   return [
+    { text: `평가해 주셔서 감사합니다. ^^` },
     { text: `앞으로 더 열심히 공부해서 좋은 서비스로 보답할게요!` },
     // {
     //   attachment: {
@@ -293,8 +297,8 @@ export default {
   sayStartTarotMessage,
   tarotProcessMessage,
   tarotResultMessage,
+  psyTestResultMessage,
   
-  thanksMessage,
   answerThanksMessage,
 
   tarotAnswerFailure,
