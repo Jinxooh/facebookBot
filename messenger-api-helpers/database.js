@@ -8,6 +8,9 @@ import UserStore from '../stores/user-store';
 
 // models
 import PsyTest from '../models/psyTest';
+
+import User from '../models/user';
+
 import isEmpty from 'lodash/isEmpty';
 import reduce from 'lodash/reduce';
 import split from 'lodash/split';
@@ -70,6 +73,17 @@ const dataHelper = (() => {
       }
       return user;
     },
+    getUser2: async (senderId) => {
+      let user = await User.findOneByUsername(senderId);
+      if(!user) {
+        const userInfo = await sendApi.sendGetUserProfile(senderId);
+        const { first_name, last_name, profile_pic } = userInfo;
+        user = await User.create(senderId, first_name, last_name, profile_pic);
+      }
+      console.log(user.getState());
+      return user;
+    },
+
     setPsyTest: (user, initialize) => {
       // 심리테스트를 호출할때 마다 변경위해서 
       if(initialize || !user.getPsyTestId()){

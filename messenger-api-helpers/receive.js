@@ -88,9 +88,7 @@ const firstEntityValue = (entities, entity) => {
 const handleNlpMessage = async (senderId, message, event) => {
   const user = await dataHelper.getUser(senderId);
   let { stateName, status } = user.getState();
-  console.log('status init, ',status);
   if(status === USER_STATUS_PROCESS) {
-    console.log('save');
     user.setUserQueue(event);  
     return;
   }
@@ -167,23 +165,16 @@ const handleNlpMessage = async (senderId, message, event) => {
   }
 
   status = user.getState().status;
-  console.log('status done, ',status);
   const [eventObject ,...queue] = user.getUserQueue();
   if(eventObject) {
-    console.log('hru');
     if(queue) user.changeUserQueue(queue);
     user.setState(USER_STATUS, status !== USER_STATUS_ANSWERING ? USER_STATUS_START : USER_STATUS_ANSWERING);
     handleReceiveMessage(eventObject);
     return;
   }
-  status = user.getState().status;
-  console.log('status last1, ',status);
   if(status !== USER_STATUS_ANSWERING && status !== USER_STATUS_INIT) {
-    console.log('????');
     user.setState(USER_STATUS, USER_STATUS_DONE);
   }
-  status = user.getState().status;
-  console.log('status last2, ',status);
 }
 
 const handleQuickRepliesMessage = async (senderId, quick_reply) => {
@@ -220,7 +211,8 @@ const handleTestReceive = async (message, senderId) => {
 
 
   if(message.text === '222') {
-    sendApi.sendAnswerTarotResultMessage(senderId, "lol");       
+    dataHelper.getUser2(senderId);
+    // sendApi.sendAnswerTarotResultMessage(senderId, "lol");       
     return true;
   }
 
