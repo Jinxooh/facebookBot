@@ -258,7 +258,7 @@ const sendNiceMeetMessage = [
 
 const sendDontUnderstandMessage = [
   {
-    text: '무슨말인지 모르겠어'
+    text: '무슨말인지 모르겠어요'
   },
 ]
 
