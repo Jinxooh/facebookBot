@@ -3,7 +3,6 @@ import bodyParser from 'body-parser';
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
-import frameguard from 'frameguard';
 import dataHelper from './messenger-api-helpers/database';
 import favicon from 'serve-favicon';
 

@@ -55,6 +55,11 @@ const handleReceiveMessage = async (event) => {
   if (message.nlp) {
     handleNlpMessage(senderId ,message, event)
   }
+
+  if (message.sticker_id) {
+    handleStickerMessage(senderId, message);
+  }
+
   sendApi.sendReadReceipt(senderId);
 };
 
@@ -84,6 +89,17 @@ const firstEntityValue = (entities, entity) => {
   }
   return typeof val === 'object' ? val.value : val;
 };
+
+const handleStickerMessage = async (senderId, message) => {
+  const user = await dataHelper.getUser(senderId);
+  let { stateName, status } = user.getState();
+  if(status === USER_STATUS_ANSWERING) {
+    await sendApi.sendResultThanksMessage(senderId);
+    user.setState(USER_STATUS, USER_STATUS_INIT);
+  } else {
+    sendApi.sendDontUnderstandMessage(senderId);  
+  }
+}
 
 const handleNlpMessage = async (senderId, message, event) => {
   const user = await dataHelper.getUser(senderId);
