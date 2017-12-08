@@ -108,7 +108,7 @@ const handleNlpMessage = async (senderId, message, event) => {
   // console.log('stateName,, ', stateName);
   if(status === USER_STATUS_PROCESS) {
     console.log('save');
-    const test = await dataHelper.updateUserQueue(senderId, event);  
+    dataHelper.updateUserQueue(senderId, event);  
     return;
   }
 
@@ -227,8 +227,8 @@ const handleTestReceive = async (message, senderId) => {
   console.log('senderId, ', senderId);
   dataHelper.getTarotData();
   if(message.text === '1') {
-    const user = await dataHelper.getUser(senderId);
-    console.log('user', user);
+    await dataHelper.setUser(senderId, {userState: {status: USER_STATUS_INIT}});
+    await sendApi.sendWelcomeMessage(senderId);
     return true;
   }
 

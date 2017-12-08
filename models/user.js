@@ -90,56 +90,12 @@ User.statics.updateUserQueue = async function(psid, userQueue) {
   let user = await this.findOne({
     psid
   })
-  console.log('uuuuserrr,,, ', user);
-  await this.update(
+  console.log('save ', user);
+  this.update(
     { psid },
     { $set: { userQueue: concat(user.userQueue, userQueue) }}, 
     (err) => {}
   );
-  // user = await this.findOne({
-  //   psid
-  // })
-  // console.log('123123123123,,, ', user);
-  // this.findOne({
-  //   psid
-  // }, (err, user) => {
-  //   const arr = [];
-  //   arr.push(userQueue);
-  //   console.log('user.userQueue 1,', user.userQueue);
-  //   user.userQueue = arr;
-  //   console.log('user.userQueue 2,', user.userQueue);
-  //   return user.save((err) => {
-  //     if(err) console.error('failed to update');
-  //     console.log('success')
-  //   });
-  // })
-  // this.update({
-  //   psid
-  // }, { $push: { userQueue: [10]}}, (err, user) => {
-  //   console.log('hello', user);
-  // });
-  
-  // (err, user) => {
-  //   // console.log('save!!');
-  //   // console.log('updateUserQueue user,' , user);
-  //   // console.log('updateUserQueue userQueue,' , userQueue);
-  //   // console.log('err' , err);
-  //   if(!user || !userQueue) return;
-  //   if(userQueue) {
-  //     set(user, 'userQueue', concat(user.userQueue, userQueue))
-  //   }
-  //   console.log('user.userQueue, ', user.userQueue);
-  //   user.save((err) => {
-  //     if(err) console.error('failed to update');
-  //     console.log('userQueue updated');
-  //   }).then(
-  //     this.findOne({
-  //       psid
-  //     }, (err, user1) => {
-  //       console.log('user.userQueue?!?!?, ', user1.userQueue);
-  //     })
-  //   )
-  // })
 }
 
 export default mongoose.model('User', User)
