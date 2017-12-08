@@ -5,6 +5,7 @@ import {
 } from '../messenger-api-helpers/database'
 import concat from 'lodash/concat';
 import set from 'lodash/set';
+import isEmpty from 'lodash/isEmpty';
 
 const Schema = mongoose.Schema;
 
@@ -90,10 +91,9 @@ User.statics.updateUserQueue = async function(psid, userQueue) {
   let user = await this.findOne({
     psid
   })
-  console.log('save ', user);
   this.update(
     { psid },
-    { $set: { userQueue: concat(user.userQueue, userQueue) }}, 
+    { $set: { userQueue: isEmpty(user.userQueue) ? [userQueue] : concat(user.userQueue, userQueue) }}, 
     (err) => {}
   );
 }

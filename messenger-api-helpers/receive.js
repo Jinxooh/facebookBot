@@ -104,7 +104,7 @@ const handleStickerMessage = async (senderId, message) => {
 const handleNlpMessage = async (senderId, message, event) => {
   let user = await dataHelper.getUser(senderId);
   let { stateName, status } = user.userState;
-  // console.log('status,, ', status);
+  console.log('status,, ', status);
   // console.log('stateName,, ', stateName);
   if(status === USER_STATUS_PROCESS) {
     console.log('save');
@@ -135,7 +135,7 @@ const handleNlpMessage = async (senderId, message, event) => {
 
     const self = firstEntityValue(nlp, "self");
     const play = firstEntityValue(nlp, "play");
-    if(self && play) {
+    if(self || play) {
       await dataHelper.setUser(senderId, {userState: {status: USER_STATUS_PROCESS}});
       await sendApi.sendWelcomeMessage(senderId, user);
     }
@@ -184,18 +184,19 @@ const handleNlpMessage = async (senderId, message, event) => {
 
   user = await dataHelper.getUser(senderId);
   status = user.userState.status;
-  // console.log('done sstatus, ', status);
-  console.log('done userQueue, ', user.userQueue);
+  console.log('done sstatus, ', status);
   const [eventObject ,...userQueue] = user.userQueue;
-  console.log('done eventObject, ', eventObject);
-  console.log('done remain userQueue, ', userQueue);
+  console.log('DONE user.userQueue, ', user.userQueue, 'eventObject:', eventObject, '...userQueue, ', userQueue);
   if(eventObject) {
+    console.log('here')
     if(userQueue) dataHelper.setUser(senderId, { userQueue });
     const statusName = (status !== USER_STATUS_ANSWERING) ? USER_STATUS_START : USER_STATUS_ANSWERING
     await dataHelper.setUser(senderId, {userState: {status: statusName}});
     handleReceiveMessage(eventObject);
+    console.log('done!')
     return;
   }
+
   if(status !== USER_STATUS_ANSWERING && status !== USER_STATUS_INIT) {
     await dataHelper.setUser(senderId, {userState: {status: USER_STATUS_DONE}});
   }
@@ -224,10 +225,9 @@ const handleQuickRepliesMessage = async (senderId, quick_reply) => {
 }
 
 const handleTestReceive = async (message, senderId) => {
-  console.log('senderId, ', senderId);
+  // console.log('senderId, ', senderId);
   dataHelper.getTarotData();
   if(message.text === '1') {
-    await dataHelper.setUser(senderId, {userState: {status: USER_STATUS_INIT}});
     await sendApi.sendWelcomeMessage(senderId);
     return true;
   }
