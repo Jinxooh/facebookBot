@@ -3,7 +3,6 @@ import bodyParser from 'body-parser';
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
-import frameguard from 'frameguard';
 import dataHelper from './messenger-api-helpers/database';
 import favicon from 'serve-favicon';
 import mongoose from 'mongoose';
@@ -30,7 +29,19 @@ app.use('/', index);
 app.use('/webhook', webhooks);
 app.use('/share', share);
 
+app.use((req, res, next) => {
+    const err = new Error('Not found');
+    err.status = 404;
+    next(err);
+});
 
+app.use((err, req, res) => {
+    res.locals.message = err.message;
+    res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+    res.status(err.status || 500);
+    rees.render('error');
+})
 
 ThreadSetup.setDomainWhitelisting();
 // ThreadSetup.setGreeting();

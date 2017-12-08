@@ -9,6 +9,7 @@ import api from './api';
 import messages from './messages';
 
 import {
+  default as dataHelper,
   USER_RETRIES,
 } from './database'
 
@@ -77,11 +78,11 @@ const sendReadReceipt = (recipientId) => {
 };
 
 // Send a different Welcome message based on if the user is logged in.
-const sendWelcomeMessage = async (recipientId, userInfo) => {
+const sendWelcomeMessage = async (recipientId) => {
   await sendMessage(
     recipientId,
     concat(
-      messages.welcomeMessage(userInfo),
+      messages.welcomeMessage,
       messages.welcomeReplies,
     ));
 };
@@ -130,7 +131,7 @@ const sendSayStartTarotMessage = (recipientId, user) => {
 }
 
 const sendTarotResultMessage = async (recipientId, user, tarotNumber, tarotData) => {
-  user.setState(USER_RETRIES, 0);
+  await dataHelper.setUser(recipientId, {userState: {retries: 0}}); // retries init
   await sendMessage(
     recipientId,
     concat(
@@ -152,9 +153,9 @@ const sendResultThanksMessage = async (recipientId) => {
   )
 }
 
-const sendTarotFailureMessage = (recipientId, user) => {
-    const { retries } = user.getState();
-    user.setState(USER_RETRIES, retries + 1);
+const sendTarotFailureMessage = async (recipientId, user) => {
+    const { retries } = user.userState;
+    await dataHelper.setUser(recipientId, {userState: {retries: retries + 1}});
     sendMessage(
       recipientId,
       retries > 1 ? messages.tarotAnswerFailure3times(user) : messages.tarotAnswerFailure(user)

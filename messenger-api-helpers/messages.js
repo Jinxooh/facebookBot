@@ -43,22 +43,20 @@ const greetingMessage = {
   }
 };
 
-const welcomeMessage = (user) => {
-  return [
-    {
-      text: `안녕하세요?`,
-    },
-    {
-      text: `저는 당신의 감정을 연구하는 감정케어 상담봇 자두에요.`,
-    },
-    {
-      text: `나랑 재밌는 테스트 한번 해볼래요??`,
-    },
-    {
-      text: `지금 준비되어 있는 테스트는 두가지 입니다.`,
-    },
-  ]
-};
+const welcomeMessage = [
+  {
+    text: `안녕하세요?`,
+  },
+  {
+    text: `저는 당신의 감정을 연구하는 감정케어 상담봇 자두에요.`,
+  },
+  {
+    text: `나랑 재밌는 테스트 한번 해볼래요??`,
+  },
+  {
+    text: `지금 준비되어 있는 테스트는 두가지 입니다.`,
+  },
+]
 
 const sayStartTarotMessage = (user) => {
   return [

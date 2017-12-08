@@ -4,9 +4,7 @@ import dataHelper from './database';
 import isEmpty from 'lodash/isEmpty';
 
 import {
-  USER_STATE,
-  USER_STATUS,
-  USER_RETRIES,
+  USER_STATE_INIT,
   USER_STATE_TAROT,
   USER_STATE_PSY,
   USER_STATUS_INIT,
@@ -23,8 +21,7 @@ const handleReceivePostback = async (event) => {
 
   switch (type) {
   case 'GET_STARTED':
-    const user = await dataHelper.getUser(senderId);
-    await sendApi.sendWelcomeMessage(senderId, user);
+    sendApi.sendWelcomeMessage(senderId);
     break;
   case 'SAY_NO_POSTBACK':
     yesOrNo = "no";
@@ -55,15 +52,19 @@ const handleReceiveMessage = async (event) => {
   if (message.nlp) {
     handleNlpMessage(senderId ,message, event)
   }
+
+  if (message.sticker_id) {
+    console.log('sticker!!')
+    handleStickerMessage(senderId, message);
+  }
   sendApi.sendReadReceipt(senderId);
 };
 
 const selectAnswer = async (senderId, yesOrNo) => {
-  const user = await dataHelper.getUser(senderId);
-  if(dataHelper.sayYesOrNo(user, yesOrNo)) {
+  if(dataHelper.sayYesOrNo(senderId, yesOrNo)) {
     if(dataHelper.checkLast(user)) {
       await sendApi.sendResultMessage(senderId, dataHelper.getDescription(user), user);
-      user.setState(USER_STATUS, USER_STATUS_ANSWERING);
+      dataHelper.setUser(senderId, {userState: {status: USER_STATUS_ANSWERING}});
     }
     else {
       sendApi.sendTwoButtonMessage(senderId, dataHelper.getDescription(user));
@@ -85,11 +86,28 @@ const firstEntityValue = (entities, entity) => {
   return typeof val === 'object' ? val.value : val;
 };
 
-const handleNlpMessage = async (senderId, message, event) => {
+const handleStickerMessage = async (senderId, message) => {
   const user = await dataHelper.getUser(senderId);
-  let { stateName, status } = user.getState();
+  const { stateName, status } = user.userState;
+  console.log('Sticker stateName, ',stateName)
+  console.log('Sticker status, ',status)
+  switch(stateName) {
+    case USER_STATE_INIT:
+    break;
+    case USER_STATE_TAROT:
+    break;
+    case USER_STATE_PSY:
+    break;
+  }
+}
+
+const handleNlpMessage = async (senderId, message, event) => {
+  let user = await dataHelper.getUser(senderId);
+  let { stateName, status } = user.userState;
+  // console.log('status,, ', status);
+  // console.log('stateName,, ', stateName);
   if(status === USER_STATUS_PROCESS) {
-    user.setUserQueue(event);  
+    dataHelper.updateUserQueue(senderId, event);  
     return;
   }
 
@@ -106,10 +124,9 @@ const handleNlpMessage = async (senderId, message, event) => {
         const tarotDate = `${KSTdate.getFullYear()}${KSTdate.getMonth() + 1}${KSTdate.getDate()}`;
         const tarotNumber = dataHelper.selectTarot(tarotDate);
 
-        user.setState(USER_STATUS, USER_STATUS_PROCESS);
-        user.setState(USER_RETRIES, 0);
+        await dataHelper.setUser(senderId, {userState: {status: USER_STATUS_PROCESS, retries: 0}});
         await sendApi.sendTarotResultMessage(senderId, user, tarotNumber, dataHelper.getTarotData(tarotNumber));
-        user.setState(USER_STATUS, USER_STATUS_ANSWERING);
+        await dataHelper.setUser(senderId, {userState: {status: USER_STATUS_ANSWERING}});
       } else {
         sendApi.sendTarotFailureMessage(senderId, user)
       }
@@ -118,7 +135,7 @@ const handleNlpMessage = async (senderId, message, event) => {
     const self = firstEntityValue(nlp, "self");
     const play = firstEntityValue(nlp, "play");
     if(self && play) {
-      user.setState(USER_STATUS, USER_STATUS_PROCESS);
+      await dataHelper.setUser(senderId, {userState: {status: USER_STATUS_PROCESS}});
       await sendApi.sendWelcomeMessage(senderId, user);
     }
   
@@ -136,13 +153,13 @@ const handleNlpMessage = async (senderId, message, event) => {
   
   } else {
     switch(stateName) {
-      case "INIT":
+      case USER_STATE_INIT:
         sendApi.sendDontUnderstandMessage(senderId);
       break;
       case USER_STATE_TAROT:
         if(status === USER_STATUS_ANSWERING) {
           await sendApi.sendResultThanksMessage(senderId);
-          user.setState(USER_STATUS, USER_STATUS_INIT);
+          await dataHelper.setUser(senderId, {userState: {status: USER_STATUS_INIT}});
         } else if (status === USER_STATUS_INIT) {
           sendApi.sendDontUnderstandMessage(senderId);  
         }
@@ -153,7 +170,7 @@ const handleNlpMessage = async (senderId, message, event) => {
       case USER_STATE_PSY:
         if(status === USER_STATUS_ANSWERING) {
           await sendApi.sendResultThanksMessage(senderId);
-          user.setState(USER_STATUS, USER_STATUS_INIT);
+          await dataHelper.setUser(senderId, {userState: {status: USER_STATUS_INIT}});
         }
         else 
           sendApi.sendDontUnderstandMessage(senderId);
@@ -164,16 +181,20 @@ const handleNlpMessage = async (senderId, message, event) => {
     }
   }
 
-  status = user.getState().status;
-  const [eventObject ,...queue] = user.getUserQueue();
+  user = await dataHelper.getUser(senderId);
+  status = user.userState.status;
+  console.log('done sstatus, ', status);
+  const [eventObject ,...userQueue] = user.userQueue;
+  console.log('done userQueue, ', user);
   if(eventObject) {
-    if(queue) user.changeUserQueue(queue);
-    user.setState(USER_STATUS, status !== USER_STATUS_ANSWERING ? USER_STATUS_START : USER_STATUS_ANSWERING);
+    if(userQueue) dataHelper.setUser(senderId, { userQueue });
+    const statusName = (status !== USER_STATUS_ANSWERING) ? USER_STATUS_START : USER_STATUS_ANSWERING
+    await dataHelper.setUser(senderId, {userState: {status: statusName}});
     handleReceiveMessage(eventObject);
     return;
   }
   if(status !== USER_STATUS_ANSWERING && status !== USER_STATUS_INIT) {
-    user.setState(USER_STATUS, USER_STATUS_DONE);
+    await dataHelper.setUser(senderId, {userState: {status: USER_STATUS_DONE}});
   }
 }
 
@@ -184,15 +205,13 @@ const handleQuickRepliesMessage = async (senderId, quick_reply) => {
   switch(type) {
     case 'SAY_TAROT_TEST':
       // store initializeCode
+      await dataHelper.setUser(senderId, { userState: { stateName: USER_STATE_TAROT, status: USER_STATUS_START }});
       user = await dataHelper.getUser(senderId);
-      user.setState(USER_STATE, USER_STATE_TAROT);
-      user.setState(USER_STATUS, USER_STATUS_START);
       sendApi.sendSayStartTarotMessage(senderId, user);
     break;
     case 'SAY_START_TEST':
       // store initializeCode
-      user = await dataHelper.getUser(senderId);
-      dataHelper.setPsyTest(user, true);
+      dataHelper.setPsyTest(senderId, true);
       sendApi.sendSayStartTestMessage(senderId, dataHelper.getDescription(user));
     break;
     default:
@@ -204,21 +223,26 @@ const handleQuickRepliesMessage = async (senderId, quick_reply) => {
 const handleTestReceive = async (message, senderId) => {
   console.log('senderId, ', senderId);
   dataHelper.getTarotData();
-  if(message.text === '111') {
-    sendApi.sendShareButton(senderId);       
+  if(message.text === '1') {
+    const user = await dataHelper.getUser(senderId);
+    console.log('user', user);
     return true;
   }
 
 
-  if(message.text === '222') {
-    dataHelper.getUser2(senderId);
+  if(message.text === '2') {
+    const user = await dataHelper.getUser(senderId);
+    console.log('user', user.next);
+    const updateData = { next: String(Math.floor(Math.random() * 5 + 1))};
+    console.log('updateData next', updateData.next);
+    const updateUser = await dataHelper.setUser(senderId, updateData);
+    console.log('updated user', updateUser.next);
     // sendApi.sendAnswerTarotResultMessage(senderId, "lol");       
     return true;
   }
 
-  if(message.text === '333') {
-    const user = await dataHelper.getUser(senderId);
-    sendApi.sendWelcomeMessage(senderId, user);
+  if(message.text === '3') {
+    dataHelper.updateAllUserStateInitialize();
     return true;
   }
 
