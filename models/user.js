@@ -87,19 +87,32 @@ User.statics.updateAllUser = function({userQueue, userState }) {
 }
 
 User.statics.updateUserQueue = async function(psid, userQueue) {
-  return await this.findOne({
+  let user = await this.findOne({
     psid
-  }, (err, user) => {
-    const arr = [];
-    arr.push(userQueue);
-    console.log('user.userQueue 1,', user.userQueue);
-    user.userQueue = arr;
-    console.log('user.userQueue 2,', user.userQueue);
-    await user.save((err) => {
-      if(err) console.error('failed to update');
-      console.log('success')
-    });
-  }).exec()
+  })
+  console.log('uuuuserrr,,, ', user);
+  await this.update(
+    { psid },
+    { $set: { userQueue: concat(user.userQueue, userQueue) }}, 
+    (err) => {}
+  );
+  // user = await this.findOne({
+  //   psid
+  // })
+  // console.log('123123123123,,, ', user);
+  // this.findOne({
+  //   psid
+  // }, (err, user) => {
+  //   const arr = [];
+  //   arr.push(userQueue);
+  //   console.log('user.userQueue 1,', user.userQueue);
+  //   user.userQueue = arr;
+  //   console.log('user.userQueue 2,', user.userQueue);
+  //   return user.save((err) => {
+  //     if(err) console.error('failed to update');
+  //     console.log('success')
+  //   });
+  // })
   // this.update({
   //   psid
   // }, { $push: { userQueue: [10]}}, (err, user) => {

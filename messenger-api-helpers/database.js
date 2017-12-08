@@ -78,8 +78,8 @@ const dataHelper = (() => {
       return await User.updateUser(senderId, updateData)
     },
 
-    updateUserQueue: (senderId, userQueue) => {
-      User.updateUserQueue(senderId, userQueue)
+    updateUserQueue: async (senderId, userQueue) => {
+      return await User.updateUserQueue(senderId, userQueue)
     },
 
     updateAllUserStateInitialize: () => {

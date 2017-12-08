@@ -107,7 +107,8 @@ const handleNlpMessage = async (senderId, message, event) => {
   // console.log('status,, ', status);
   // console.log('stateName,, ', stateName);
   if(status === USER_STATUS_PROCESS) {
-    dataHelper.updateUserQueue(senderId, event);  
+    console.log('save');
+    const test = await dataHelper.updateUserQueue(senderId, event);  
     return;
   }
 
@@ -183,9 +184,11 @@ const handleNlpMessage = async (senderId, message, event) => {
 
   user = await dataHelper.getUser(senderId);
   status = user.userState.status;
-  console.log('done sstatus, ', status);
+  // console.log('done sstatus, ', status);
+  console.log('done userQueue, ', user.userQueue);
   const [eventObject ,...userQueue] = user.userQueue;
-  console.log('done userQueue, ', user);
+  console.log('done eventObject, ', eventObject);
+  console.log('done remain userQueue, ', userQueue);
   if(eventObject) {
     if(userQueue) dataHelper.setUser(senderId, { userQueue });
     const statusName = (status !== USER_STATUS_ANSWERING) ? USER_STATUS_START : USER_STATUS_ANSWERING
