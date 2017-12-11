@@ -65,6 +65,7 @@ const handleReceiveMessage = async (event) => {
 
 const selectAnswer = async (senderId, yesOrNo) => {
   const user = await dataHelper.getUser(senderId);
+  const { status } = user.getState();
   if(dataHelper.sayYesOrNo(user, yesOrNo)) {
     if(dataHelper.checkLast(user)) {
       await sendApi.sendResultMessage(senderId, dataHelper.getDescription(user), user);
@@ -75,9 +76,19 @@ const selectAnswer = async (senderId, yesOrNo) => {
     }
   } else {
     // click postback when test is done
-    sendApi.sendSuggestRestartMessage(senderId);
+    if(status === USER_STATUS_ANSWERING) {
+      reviewResult(senderId, user, yesOrNo);
+    }
+    else 
+      sendApi.sendSuggestRestartMessage(senderId);
   }
 } 
+
+const reviewResult = async (senderId, user, reviewMessage) => {
+  dataHelper.saveReview(senderId, user, reviewMessage);
+  await sendApi.sendResultThanksMessage(senderId);
+  user.setState(USER_STATUS, USER_STATUS_INIT);
+}
 
 const firstEntityValue = (entities, entity) => {
   const val = entities && entities[entity] &&
@@ -94,8 +105,8 @@ const handleStickerMessage = async (senderId, message) => {
   const user = await dataHelper.getUser(senderId);
   let { stateName, status } = user.getState();
   if(status === USER_STATUS_ANSWERING) {
-    await sendApi.sendResultThanksMessage(senderId);
-    user.setState(USER_STATUS, USER_STATUS_INIT);
+    // 369239263222822 -> 따봉
+    reviewResult(senderId, user, message.sticker_id);
   } else {
     sendApi.sendDontUnderstandMessage(senderId);  
   }
@@ -158,8 +169,8 @@ const handleNlpMessage = async (senderId, message, event) => {
       break;
       case USER_STATE_TAROT:
         if(status === USER_STATUS_ANSWERING) {
-          await sendApi.sendResultThanksMessage(senderId);
-          user.setState(USER_STATUS, USER_STATUS_INIT);
+          // review
+          reviewResult(senderId, user, message.text);
         } else if (status === USER_STATUS_INIT) {
           sendApi.sendDontUnderstandMessage(senderId);  
         }
@@ -169,8 +180,8 @@ const handleNlpMessage = async (senderId, message, event) => {
       break;
       case USER_STATE_PSY:
         if(status === USER_STATUS_ANSWERING) {
-          await sendApi.sendResultThanksMessage(senderId);
-          user.setState(USER_STATUS, USER_STATUS_INIT);
+          // review
+          reviewResult(senderId, user, message.text);
         }
         else 
           sendApi.sendDontUnderstandMessage(senderId);

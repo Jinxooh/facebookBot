@@ -48,15 +48,15 @@ const welcomeMessage = (user) => {
     {
       text: `안녕하세요?`,
     },
-    {
-      text: `저는 당신의 감정을 연구하는 감정케어 상담봇 자두에요.`,
-    },
-    {
-      text: `나랑 재밌는 테스트 한번 해볼래요??`,
-    },
-    {
-      text: `지금 준비되어 있는 테스트는 두가지 입니다.`,
-    },
+    // {
+    //   text: `저는 당신의 감정을 연구하는 감정케어 상담봇 자두에요.`,
+    // },
+    // {
+    //   text: `나랑 재밌는 테스트 한번 해볼래요??`,
+    // },
+    // {
+    //   text: `지금 준비되어 있는 테스트는 두가지 입니다.`,
+    // },
   ]
 };
 
@@ -65,15 +65,15 @@ const sayStartTarotMessage = (user) => {
     {
       text: `${user.first_name}님의 성향을 알아보는 나의 운명의 카드를 뽑아보시겠어요??`,
     },
-    {
-      text: `운명의 카드는 본인의 생년월일을 토대로 선택 됩니다. `,
-    },
-    {
-      text: `생년월일을 말씀해 주시겠어요?`,
-    },
-    {
-      text: `예시) 1991년05월19일 또는 1991/05/19 로 적어주세요.`,
-    },
+    // {
+    //   text: `운명의 카드는 본인의 생년월일을 토대로 선택 됩니다. `,
+    // },
+    // {
+    //   text: `생년월일을 말씀해 주시겠어요?`,
+    // },
+    // {
+    //   text: `예시) 1991년05월19일 또는 1991/05/19 로 적어주세요.`,
+    // },
   ]
 };
 
@@ -82,21 +82,21 @@ const tarotProcessMessage = (user) => {
     {
       text: `${user.first_name}님의 운명의 카드는 무엇인지 찾고 있어요.`,
     },
-    {
-      text: `잠시만 기다려 줄래요?`,
-    },
-    {
-      text: `하쿠나마타타 폴레폴레❤️`,
-    },
-    {
-      text: `좋은 기운을 넣어줄 주문을 외우고 있어요!`,
-    },
-    {
-      text: `이제 결과가 다 나왔어요!`,
-    },
-    {
-      text: `당신의 운명의 카드는 바로 이 카드에요.`,
-    },
+    // {
+    //   text: `잠시만 기다려 줄래요?`,
+    // },
+    // {
+    //   text: `하쿠나마타타 폴레폴레❤️`,
+    // },
+    // {
+    //   text: `좋은 기운을 넣어줄 주문을 외우고 있어요!`,
+    // },
+    // {
+    //   text: `이제 결과가 다 나왔어요!`,
+    // },
+    // {
+    //   text: `당신의 운명의 카드는 바로 이 카드에요.`,
+    // },
   ]
 };
 
@@ -115,10 +115,10 @@ const tarotResultMessage = (user, tarotData) => {
   
   return concat(
     { text: `당신의 운명의 카드는 '${tarotData.tarotName}' 입니다.` },
-    { text: `${user.first_name} 님은` },
-    tarotDescription,
-    { text: `어떠신가요?` },
-    { text: `${user.first_name}님의 운명의카드에 대한 해설이?` },
+    // { text: `${user.first_name} 님은` },
+    // tarotDescription,
+    // { text: `어떠신가요?` },
+    // { text: `${user.first_name}님의 운명의카드에 대한 해설이?` },
     { text: `맘에드시나요??` },
   )
 };
@@ -126,20 +126,20 @@ const tarotResultMessage = (user, tarotData) => {
 const answerThanksMessage = () => {
   return [
     { text: `평가해 주셔서 감사합니다. ^^` },
-    { text: `앞으로 더 열심히 공부해서 좋은 서비스로 보답할게요!` },
-    {
-      attachment: {
-        type: 'template',
-        payload: {
-          template_type: 'button',
-          text: `자두에서 매주 별자리 운세서비스를 확인 하고 싶다면 좋아요를 눌러주세요!`,
-          buttons: [
-            linkButton,
-          ],
-        },
-      }
-    },
-    { text: `제가 열심히 공부하고 노력해서 좋은정보 많이 공유해드릴게요!` }
+    // { text: `앞으로 더 열심히 공부해서 좋은 서비스로 보답할게요!` },
+    // {
+    //   attachment: {
+    //     type: 'template',
+    //     payload: {
+    //       template_type: 'button',
+    //       text: `자두에서 매주 별자리 운세서비스를 확인 하고 싶다면 좋아요를 눌러주세요!`,
+    //       buttons: [
+    //         linkButton,
+    //       ],
+    //     },
+    //   }
+    // },
+    // { text: `제가 열심히 공부하고 노력해서 좋은정보 많이 공유해드릴게요!` }
   ]
 }
 

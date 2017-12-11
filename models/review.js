@@ -10,22 +10,24 @@ const Review = new Schema({
   reviews: { type: Array, default: [] }
 });
 
+Review.statics.findOneByPsid = function(psid) {
+  return this.findOne({
+    psid
+  }).exec()
+}
+
 Review.statics.create = function(psid, first_name, last_name, profile_pic) {
-  const user = new this({
+  const review = new this({
     psid, first_name, last_name, profile_pic
   })
   // return the Promise
-  const save = user.save()
+  const save = review.save()
   return save;
 }
 
-Review.static.saveReview = function(psid, review) {
-  this.update(
-    { psid },
-    { $set: {reviews: this.reviews.push(review)}},
-    (err) => {
-      if(err) console.log('err occurs')
-      console.log('review updated!');
-    }
-  );
+Review.methods.saveReview = function(review) {
+  this.reviews.push(review);
+  return this.save();
 }
+
+export default mongoose.model('Review', Review)

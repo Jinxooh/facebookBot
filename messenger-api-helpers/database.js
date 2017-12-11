@@ -8,10 +8,10 @@ import UserStore from '../stores/user-store';
 
 // models
 import PsyTest from '../models/psyTest';
+import Review from '../models/review';
+// lodash
 import isEmpty from 'lodash/isEmpty';
 import reduce from 'lodash/reduce';
-import split from 'lodash/split';
-import join from 'lodash/join';
 
 export const USER_STATE = 'stateName'
 export const USER_STATUS = 'status'
@@ -70,6 +70,26 @@ const dataHelper = (() => {
       }
       return user;
     },
+
+    saveReview: (senderId, user, reviewMessage) => {
+      const { first_name, last_name, profile_pic } = user;
+      const create = (review) => {
+        if(review) {
+          return review;
+        } else {
+          return Review.create(senderId, first_name, last_name, profile_pic);
+        }
+      }
+
+      const saveReview = (review) => {
+        review.saveReview(reviewMessage);
+      };
+
+      Review.findOneByPsid(senderId)
+      .then(create)
+      .then(saveReview);
+    },
+
     setPsyTest: (user, initialize) => {
       // 심리테스트를 호출할때 마다 변경위해서 
       if(initialize || !user.getPsyTestId()){
@@ -85,10 +105,6 @@ const dataHelper = (() => {
     // tarot 선택 알고리즘
     selectTarot: (text) => {
       let result = reduce(
-        // _.join(
-        //   // _.split("1999.02.12",".")
-        //   _.split(text, ".")
-        // , "")
         text
       , (sum, n) => { return parseInt(sum) + parseInt(n) });
       
@@ -97,7 +113,7 @@ const dataHelper = (() => {
       } else {
         result = parseInt(result / 10) + (result % 10);
       }
-      console.log('result, ', result);
+      console.log('selectTarot result, ', result);
       return result;
     },
 

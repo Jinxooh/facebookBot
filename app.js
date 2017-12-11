@@ -5,6 +5,7 @@ import path from 'path';
 import fs from 'fs';
 import dataHelper from './messenger-api-helpers/database';
 import favicon from 'serve-favicon';
+import mongoose from 'mongoose';
 
 // messenger!
 import ThreadSetup from './messenger-api-helpers/thread-setup';
@@ -41,6 +42,15 @@ try{
 ThreadSetup.setDomainWhitelisting();
 // ThreadSetup.setGreeting();
 ThreadSetup.setGetStarted();
+
+mongoose.connect(process.env.MONGODB_URL, {
+    useMongoClient: true
+})
+const db = mongoose.connection
+db.on('error', console.error)
+db.once('open', ()=>{
+    console.log('connected to mongodb server')
+})
 
 app.listen(app.get('port'), () => {
     console.log('running on port', app.get('port'));
