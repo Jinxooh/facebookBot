@@ -146,12 +146,9 @@ const handleNlpMessage = async(senderId, message, event) => {
     stateName,
     status
   } = user.state;
-  console.log('stateName', stateName)
-  console.log('status', status)
   const nlp = message.nlp.entities;
 
   if (status === USER_STATUS_PROCESS) {
-    console.log('save');
     // 자두야 놀자 커맨드 여러번 입력 안되게 수정
     if (!isEmpty(nlp)) {
       const self = firstEntityValue(nlp, "self");
