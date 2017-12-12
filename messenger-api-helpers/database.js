@@ -13,9 +13,7 @@ import Review from '../models/review';
 import isEmpty from 'lodash/isEmpty';
 import reduce from 'lodash/reduce';
 
-export const USER_STATE = 'stateName'
-export const USER_STATUS = 'status'
-export const USER_RETRIES = 'retries'
+export const GET_STARTED = 'GET_STARTED'
 export const USER_STATE_TAROT = 'USER_STATE_TAROT'
 export const USER_STATE_PSY = 'USER_STATE_PSY'
 export const USER_STATUS_INIT = 'USER_STATUS_INIT'
@@ -92,13 +90,10 @@ const dataHelper = (() => {
 
     setPsyTest: (user, initialize) => {
       // 심리테스트를 호출할때 마다 변경위해서 
-      if(initialize || !user.getPsyTestId()){
-        const createPsyTestId = String(Math.floor(Math.random() * psyTestStore.getLength() + 1));
-        user.setPsyTestId(createPsyTestId);
-        user.setState(USER_STATE, USER_STATE_PSY);
-        user.setState(USER_STATUS, USER_STATUS_START);
-        const startId = '1';
-        user.setCurrent(startId);
+      if(initialize || !user.psyTestId){
+        const psyTestId = String(Math.floor(Math.random() * psyTestStore.getLength() + 1));
+        const current = '1'; // start id
+        user.setValue({psyTestId, current, state: {stateName: USER_STATE_PSY, status: USER_STATUS_START}});
       }
     },
     
@@ -118,14 +113,15 @@ const dataHelper = (() => {
     },
 
     sayYesOrNo: (user, yesOrNo) => {
-      const { question } = getQuestion(user.getPsyTestId());
+      const { question } = getQuestion(user.psyTestId);
       
       // test
-      const current = user.getCurrent() === null ? "1" : user.getCurrent();
+      let current = user.current === null ? "1" : user.current;
 
-      user.setNext(question.getYesOrNoNext(current, yesOrNo));
-      if(user.getNext()) {
-        user.setCurrent(user.getNext());
+      user.setValue({next: question.getYesOrNoNext(current, yesOrNo)});
+      if(user.next) {
+        current = user.next
+        user.setValue({current});
         return true;
       } else {
         return false
@@ -133,16 +129,15 @@ const dataHelper = (() => {
     },
 
     checkLast: (user) => {
-      const current = user.getCurrent();
-      if(/^\d+$/.test(current)) return false; // 숫자면 false
+      if(/^\d+$/.test(user.current)) return false; // 숫자면 false
       return true;
     },
     
     getDescription: (user) => {
-      const { psyTest, question } = getQuestion(user.getPsyTestId());
+      const { psyTest, question } = getQuestion(user.psyTestId);
       return { 
         psyTestDescription: psyTest.description, 
-        questionDescription: question.getDescription(user.getCurrent())
+        questionDescription: question.getDescription(user.current)
       };
     },
   }

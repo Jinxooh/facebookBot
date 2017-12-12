@@ -1,4 +1,5 @@
 import {
+  GET_STARTED,
   USER_STATUS_INIT,
 } from '../messenger-api-helpers/database'
 /**
@@ -23,55 +24,29 @@ class UserInfo {
     // stateName : TAROT, PSY_TEST, DONE, INIT... 
     this.state = {
       status: USER_STATUS_INIT,
-      stateName: 'INIT',
+      stateName: GET_STARTED,
       retries: 0,
     }
 
     this.userQueue = [];
   }
 
-  getUserQueue() {
-    return this.userQueue;
-  }
-
-  setUserQueue(queue) {
+  pushUserQueue(queue) {
     this.userQueue.push(queue);
   }
-
-  changeUserQueue(queue) {
-    this.userQueue = queue;
-  }
-
-  setCurrent(current) {
-    this.current = current;
-  }
-
-  getCurrent() {
-    return this.current;
-  }
-
-  getNext(next) {
-    return this.next;
-  }
-
-  setNext(next) {
-    this.next = next;
-  }
-
-  setPsyTestId(psyTestId) {
-    this.psyTestId = psyTestId;
-  }
-
-  getPsyTestId() {
-    return this.psyTestId;
-  }
-
-  setState(stateName, state) {
-    this.state[stateName] = state;
-  }
-
-  getState() {
-    return this.state;
+  
+  setValue({ current, next, psyTestId, userQueue, state }) {
+    if(current) this.current = current;
+    if(next) this.next = next;
+    if(psyTestId) this.psyTestId = psyTestId;
+    
+    if(userQueue) this.userQueue = userQueue;
+    if(state) {
+      const { status, stateName, retries} = state;
+      if(status) this.state.status = status;
+      if(stateName) this.state.stateName = stateName;
+      if(retries) this.state.retries = retries;
+    }
   }
 }
 

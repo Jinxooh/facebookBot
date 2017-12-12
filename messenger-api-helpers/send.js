@@ -8,10 +8,6 @@ import reduce from 'lodash/reduce';
 import api from './api';
 import messages from './messages';
 
-import {
-  USER_RETRIES,
-} from './database'
-
 // Turns typing indicator on.
 const typingOn = (recipientId) => {
   return {
@@ -130,7 +126,7 @@ const sendSayStartTarotMessage = (recipientId, user) => {
 }
 
 const sendTarotResultMessage = async (recipientId, user, tarotNumber, tarotData) => {
-  user.setState(USER_RETRIES, 0);
+  user.setValue({ state: { retries: 0 }});
   await sendMessage(
     recipientId,
     concat(
@@ -153,8 +149,8 @@ const sendResultThanksMessage = async (recipientId) => {
 }
 
 const sendTarotFailureMessage = (recipientId, user) => {
-    const { retries } = user.getState();
-    user.setState(USER_RETRIES, retries + 1);
+    const { retries } = user.state;
+    user.setValue({ state: { retries: retries + 1 }});
     sendMessage(
       recipientId,
       retries > 1 ? messages.tarotAnswerFailure3times(user) : messages.tarotAnswerFailure(user)
@@ -193,10 +189,13 @@ const sendNiceMeetMessage = (recipientId) => {
 }
 
 
-const sendDontUnderstandMessage = (recipientId) => {
-  sendMessage(
+const sendDontUnderstandMessage = async (recipientId) => {
+  await sendMessage(
     recipientId,
-    messages.sendDontUnderstandMessage[Math.floor(Math.random() * messages.sendDontUnderstandMessage.length)]
+    [
+      messages.sendDontUnderstandMessage[Math.floor(Math.random() * messages.sendDontUnderstandMessage.length)],
+      messages.requestRestartMessage
+    ]
   );
 }
 
