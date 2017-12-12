@@ -108,7 +108,7 @@ const dataHelper = (() => {
       } else {
         result = parseInt(result / 10) + (result % 10);
       }
-      console.log('selectTarot result, ', result);
+      // console.log('selectTarot result, ', result);
       return result;
     },
 
