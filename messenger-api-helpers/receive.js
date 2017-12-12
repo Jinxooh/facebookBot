@@ -80,6 +80,7 @@ const handleReceiveMessage = async(event) => {
 const selectAnswer = async(senderId, yesOrNo) => {
   const user = await dataHelper.getUser(senderId);
   const {
+    stateName,
     status
   } = user.state;
   if (dataHelper.sayYesOrNo(user, yesOrNo)) {
@@ -96,7 +97,7 @@ const selectAnswer = async(senderId, yesOrNo) => {
   } else {
     // click postback when test is done
     if (status === USER_STATUS_ANSWERING)
-      reviewResult(senderId, user, yesOrNo);
+      reviewResult(senderId, user, `${stateName}:${yesOrNo}`);
     else
       sendApi.sendSuggestRestartMessage(senderId);
   }
@@ -131,7 +132,7 @@ const handleStickerMessage = async (senderId, message) => {
   } = user.state;
   if (status === USER_STATUS_ANSWERING) {
     // 369239263222822 -> 따봉
-    reviewResult(senderId, user, message.sticker_id);
+    reviewResult(senderId, user, `${stateName}:${message.sticker_id}`);
   } else {
     user.setValue({ state: { status: USER_STATUS_PROCESS }});
     await sendApi.sendDontUnderstandMessage(senderId);
@@ -246,7 +247,7 @@ const handleNlpMessage = async(senderId, message, event) => {
       case USER_STATE_TAROT:
         if (status === USER_STATUS_ANSWERING) {
           // review
-          reviewResult(senderId, user, message.text);
+          reviewResult(senderId, user, `${stateName}:${message.text}`);
         } else if (status === USER_STATUS_INIT) {
           await sendApi.sendDontUnderstandMessage(senderId);
         } else {
@@ -256,7 +257,7 @@ const handleNlpMessage = async(senderId, message, event) => {
       case USER_STATE_PSY:
         if (status === USER_STATUS_ANSWERING) {
           // review
-          reviewResult(senderId, user, message.text);
+          reviewResult(senderId, user, `${stateName}:${message.text}`);
         } else
           await sendApi.sendDontUnderstandMessage(senderId);
         break;

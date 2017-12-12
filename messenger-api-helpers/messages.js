@@ -126,7 +126,6 @@ const tarotResultMessage = (user, tarotData) => {
 const answerThanksMessage = () => {
   return [
     { text: `평가해 주셔서 감사합니다. ^^` },
-    { text: `` },
     {
       attachment: {
         type: 'template',
