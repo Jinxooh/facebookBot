@@ -8,6 +8,8 @@ import reduce from 'lodash/reduce';
 import api from './api';
 import messages from './messages';
 
+const CHATTING_SPEED = process.env.BOT_DEV_ENV == 'dev' ? 10 : 1000;
+
 // Turns typing indicator on.
 const typingOn = (recipientId) => {
   return {
@@ -51,8 +53,8 @@ const sendMessage = async (recipientId, messagePayloads) => {
   // 대화 하는것 처럼 지연을 주기위해서
   const start = async () => {
     await asyncForEach(arr, async (item) => {
-      await api.callAsyncMessagesAPI(1000, typingOn(recipientId));
-      await api.callAsyncMessagesAPI(1000, messageToJSON(recipientId, item))
+      await api.callAsyncMessagesAPI(CHATTING_SPEED, typingOn(recipientId));
+      await api.callAsyncMessagesAPI(CHATTING_SPEED, messageToJSON(recipientId, item))
     })
     api.callAsyncMessagesAPI(300, typingOff(recipientId));
   }
