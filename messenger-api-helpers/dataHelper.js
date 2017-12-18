@@ -61,8 +61,8 @@ const dataHelper = (() => {
       return { tarotName, tarotDescription }
     },
 
-    getStarData: (starNumber) => {
-      return starTest[starNumber];
+    getStarData: () => {
+      return starTest;
     },
 
     // user initialize
@@ -107,7 +107,6 @@ const dataHelper = (() => {
         const psyTestId = String(Math.floor(Math.random() * psyTestStore.getLength() + 1));
         const current = '1'; // start id
         user.setValue({psyTestId, current, state: {stateName: USER_STATE_PSY, status: USER_STATUS_START}});
-        console.log('user123 ', user.current)
       }
     },
     

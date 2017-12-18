@@ -5,7 +5,7 @@ import concat from 'lodash/concat';
 import api from './api';
 import messages from './messages';
 
-const CHATTING_SPEED = process.env.BOT_DEV_ENV == 'dev' ? 10 : 1000;
+const CHATTING_SPEED = process.env.BOT_DEV_ENV === 'dev' ? 500 : 1000;
 
 // Turns typing indicator on.
 const typingOn = (recipientId) => {
@@ -92,7 +92,7 @@ const sendStartMessage = async (recipientId) => {
 const sendTwoButtonMessage = (recipientId, { questionDescription }) => {
   sendMessage(
     recipientId,
-    messages.twoButtonMessage(questionDescription)
+    messages.psyTestReplies(questionDescription)
   );
 };
 
@@ -117,33 +117,27 @@ const sendStartStarTestMessage = (recipientId, user) => {
   )
 }
 
-const sendStarResultMessage = async (recipientId, user, starTestData) => {
-  let current = user.current;
-  if (current === null) current = 0;
-
-  const [description] = starTestData[current + 1];
+const sendStarResultMessage = async (recipientId, starTestData, current = 0, last) => {
+  const result = starTestData[current];
+  const index = current + 2;
   await sendMessage(
     recipientId,
     concat(
-      messages.starResultMessage(starTestData[current]),
-      messages.twoButtonMessage(description, true)
+      messages.starResultMessage(result),
+      !last && messages.starTestReplies(starTestData[current + 1], { starTestData, index }),
     )
   )
 }
 
-const sendLastResultMessage = async (recipientId, user, starTestData) => {
-  let current = user.current;
-  if (current === null) current = 0;
-
-  const [description] = starTestData[current + 1];
+const sendLastResultMessage = async (recipientId, starData) => {
   await sendMessage(
     recipientId,
     concat(
-      messages.starResultMessage(starTestData[current]),
-      messages.twoButtonMessage(description, true)
-    )
-  )
-}
+      messages.starResultMessage(starData),
+      messages.sendShareButton(recipientId),
+    ),
+  );
+};
 
 const sendStartTarotMessage = (recipientId, user) => {
   sendMessage(
@@ -184,12 +178,12 @@ const sendTarotFailureMessage = (recipientId, user) => {
     )
   }
 
-const sendSayStartTestMessage = (recipientId, {psyTestDescription, questionDescription}) => {
+const sendStartPsyTestMessage = (recipientId, {psyTestDescription, questionDescription}, user) => {
   sendMessage(
     recipientId,
     [
       messages.sayStartTestMessage(psyTestDescription),
-      messages.twoButtonMessage(questionDescription)
+      messages.psyTestReplies(questionDescription, user),
     ]
   );
 }
@@ -244,13 +238,14 @@ export default {
 
   sendStartStarTestMessage,
   sendStarResultMessage,
+  sendLastResultMessage,
 
   sendStartTarotMessage,
   sendTarotResultMessage,
   sendResultThanksMessage,
   sendTarotFailureMessage,
 
-  sendSayStartTestMessage,
+  sendStartPsyTestMessage,
 
   sendTwoButtonMessage,
   sendResultMessage,

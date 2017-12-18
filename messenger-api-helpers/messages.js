@@ -2,13 +2,14 @@ import concat from 'lodash/concat';
 import reduce from 'lodash/reduce';
 import isArray from 'lodash/isArray';
 
-import dataHelper, {
+import dataHelper from './dataHelper';
+import {
   USER_STATE_STAR,
   USER_STATE_TAROT,
   USER_STATE_PSY
 } from './dataHelper';
 
-const SERVER_URL = process.env.BOT_DEV_ENV == 'dev' ? process.env.TEST_SERVER_URL : process.env.SERVER_URL;
+const SERVER_URL = process.env.BOT_DEV_ENV === 'dev' ? process.env.TEST_SERVER_URL : process.env.SERVER_URL;
 const JADOO_URL = process.env.JADOO_URL;
 
 const linkButton = {
@@ -78,17 +79,64 @@ const startReplies = {
       content_type: 'text',
       title: '2. 나의 운명의 카드 찾기',
       payload: JSON.stringify({
-        type: USER_STATE_TAROT,
+        type: 'USER_STATE_TAROT',
       })
     },
     // {
     //   content_type: 'text',
     //   title: '3. 나의 허세지수 알아보기',
     //   payload: JSON.stringify({
-    //     type: USER_STATE_PSY,
+    //     type: 'USER_STATE_PSY',
     //   })
     // },
   ]
+}
+
+const psyTestReplies = (description) => {
+  return {
+    text: description,
+    quick_replies: [{
+        content_type: 'text',
+        title: '네',
+        payload: JSON.stringify({
+          type: 'PSY_ANSWER',
+          data: 'yes',
+        })
+      },
+      {
+        content_type: 'text',
+        title: '아니요',
+        payload: JSON.stringify({
+          type: 'PSY_ANSWER',
+          data: 'no',
+        })
+      },
+    ]
+  }
+}
+
+const starTestReplies = (text, data) => {
+  const [description] = text;
+  return {
+    text: description,
+    quick_replies: [{
+        content_type: 'text',
+        title: '네',
+        payload: JSON.stringify({
+          type: 'STAR_ANSWER_YES',
+          data,
+        })
+      },
+      {
+        content_type: 'text',
+        title: '아니요',
+        payload: JSON.stringify({
+          type: 'STAR_ANSWER_NO',
+          data: 'no',
+        })
+      },
+    ]
+  }
 }
 
 const startStarTestMessage = (user) => {
@@ -269,21 +317,7 @@ const postbackNoButton = {
   })
 };
 
-const postbackStarYesButton = {
-  type: 'postback',
-  title: '네',
-  payload: JSON.stringify({
-    type: 'STAR_YES_POSTBACK',
-  })
-};
 
-const postbackStarNoButton = {
-  type: 'postback',
-  title: '아니요',
-  payload: JSON.stringify({
-    type: 'STAR_NO_POSTBACK',
-  })
-};
 
 const twoButtonMessage = (description, type) => {
   return {
@@ -334,9 +368,9 @@ const sendShareButton = (id) => {
       type: 'template',
       payload: {
         template_type: 'button',
-        text: `hihihi`,
+        text: ` 공유하길 원하시면 아래 ‘공유하기’ 버튼을 눌러주세요.`,
         buttons: [{
-          title: 'Share Button',
+          title: '공유하기',
           type: 'web_url',
           url: `${SERVER_URL}/`,
           // url: `${SERVER_URL}/${id}`,
@@ -362,12 +396,16 @@ export default {
   // contellation
   startStarTestMessage,
   starResultMessage,
+  starTestReplies,
 
   // tarot
   startTarotMessage,
   tarotProcessMessage,
   tarotResultMessage,
   psyTestResultMessage,
+
+  // psy
+  psyTestReplies,
 
   answerThanksMessage,
 

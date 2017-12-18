@@ -12,32 +12,19 @@ import dataHelper, {
   USER_STATUS_PROCESS, // 진행중인 상태
   USER_STATUS_ANSWERING, // 사용자 입력을 받는 상태 
   USER_STATUS_DONE, // 진행이 끝난 상태
-} from './dataHelper'
+} from './dataHelper';
 
-const handleReceivePostback = async(event) => {
+const handleReceivePostback = async (event) => {
   const {
     type,
     data
   } = JSON.parse(event.postback.payload);
   const senderId = event.sender.id;
   let yesOrNo = null;
-
   switch (type) {
     case GET_STARTED:
       dataHelper.getUser(senderId); // DB에 유저 추가
       sendApi.sendWelcomeMessage(senderId);
-      break;
-    case 'STAR_NO_POSTBACK':
-      sendApi.sendWelcomeMessage(senderId);
-      break;
-    case 'STAR_YES_POSTBACK':
-      console.log('yeo')
-      break;
-    case 'SAY_NO_POSTBACK':
-      yesOrNo = "no";
-    case 'SAY_YES_POSTBACK':
-      yesOrNo = yesOrNo || "yes";
-      selectAnswer(senderId, yesOrNo);
       break;
     default:
       console.error(`Unknown Postback called: ${type}`);
@@ -175,14 +162,22 @@ const handleNlpMessage = async(senderId, message, event) => {
           user.setValue({
             state: {
               status: USER_STATUS_START,
+              stateName: USER_STATE_STAR
+            }
+          });
+          dataHelper.setStarTest(user);
+          sendApi.sendStartStarTestMessage(senderId, user);
+        break;
+        case 'second':
+          user.setValue({
+            state: {
+              status: USER_STATUS_START,
               stateName: USER_STATE_TAROT
             }
           });
           sendApi.sendStartTarotMessage(senderId, user);
-          break;
-        case 'second':
-          dataHelper.setPsyTest(user, true);
-          sendApi.sendSayStartTestMessage(senderId, dataHelper.getDescription(user));
+          // dataHelper.setPsyTest(user, true);
+          // sendApi.sendSayStartTestMessage(senderId, dataHelper.getDescription(user));
           break;
         default:
           console.log('unknown select test :', select);
@@ -213,7 +208,8 @@ const handleNlpMessage = async(senderId, message, event) => {
         }
         if (stateName === USER_STATE_STAR) {
           const starTestNumber = dataHelper.selectStarTest(KSTdate.getMonth(), KSTdate.getDate());
-          await sendApi.sendStarResultMessage(senderId, user, dataHelper.getStarData(starTestNumber));
+          const starData = dataHelper.getStarData();
+          await sendApi.sendStarResultMessage(senderId, starData[starTestNumber]);
         }
 
         user.setValue({
@@ -309,8 +305,8 @@ const handleNlpMessage = async(senderId, message, event) => {
   }
 }
 
-const handleQuickRepliesMessage = async(senderId, quick_reply) => {
-  const { type } = JSON.parse(quick_reply.payload);
+const handleQuickRepliesMessage = async (senderId, quick_reply) => {
+  const { type, data } = JSON.parse(quick_reply.payload);
   const user = await dataHelper.getUser(senderId);
   user.setValue({
     state: {
@@ -319,6 +315,24 @@ const handleQuickRepliesMessage = async(senderId, quick_reply) => {
     }
   });
   switch (type) {
+    case 'PSY_ANSWER':
+      selectAnswer(senderId, data)
+      break;
+    case 'STAR_ANSWER_NO':
+      const starData = dataHelper.getStarData();
+      await sendApi.sendLastResultMessage(senderId, starData[starData.length - 1]);
+      break;
+    case 'STAR_ANSWER_YES':
+      const { starTestData, index } = data;
+      const last = index === starTestData.length - 1;
+      if (last) {
+        const starData = dataHelper.getStarData();
+        await sendApi.sendStarResultMessage(senderId, starTestData, index, last);
+        await sendApi.sendLastResultMessage(senderId, starData[starData.length - 1]);
+      } else {
+        await sendApi.sendStarResultMessage(senderId, starTestData, index);
+      }
+      break;
     case USER_STATE_STAR:
       dataHelper.setStarTest(user);
       sendApi.sendStartStarTestMessage(senderId, user);
@@ -328,7 +342,7 @@ const handleQuickRepliesMessage = async(senderId, quick_reply) => {
       break;
     case USER_STATE_PSY:
       dataHelper.setPsyTest(user, true);
-      sendApi.sendSayStartTestMessage(senderId, dataHelper.getDescription(user));
+      sendApi.sendStartPsyTestMessage(senderId, dataHelper.getDescription(user));
       break;
     default:
       console.log('default, ', type);
@@ -354,8 +368,8 @@ const handleTestReceive = async(message, senderId) => {
   }
 
   if (message.text === '33') {
-    const user = await dataHelper.getUser(senderId);
-    sendApi.sendStartMessage(senderId, user);
+    const starData = dataHelper.getStarData();
+    await sendApi.sendLastResultMessage(senderId, starData[starData.length - 1]);
     return true;
   }
 
