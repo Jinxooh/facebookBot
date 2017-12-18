@@ -1,18 +1,18 @@
 // modules
 import sendApi from './send';
-import dataHelper from './database';
 import isEmpty from 'lodash/isEmpty';
 
-import {
+import dataHelper, {
   GET_STARTED,
   USER_STATE_TAROT,
   USER_STATE_PSY,
-  USER_STATUS_INIT,
-  USER_STATUS_START,
-  USER_STATUS_PROCESS,
-  USER_STATUS_ANSWERING,
-  USER_STATUS_DONE,
-} from './database'
+  USER_STATE_STAR,
+  USER_STATUS_INIT, // 초기값 
+  USER_STATUS_START, // 진행중인 상태
+  USER_STATUS_PROCESS, // 진행중인 상태
+  USER_STATUS_ANSWERING, // 사용자 입력을 받는 상태 
+  USER_STATUS_DONE, // 진행이 끝난 상태
+} from './dataHelper'
 
 const handleReceivePostback = async(event) => {
   const {
@@ -24,19 +24,14 @@ const handleReceivePostback = async(event) => {
 
   switch (type) {
     case GET_STARTED:
-      const user = await dataHelper.getUser(senderId);
-      user.setValue({
-        state: {
-          stateName: type,
-          status: USER_STATUS_PROCESS
-        }
-      });
-      await sendApi.sendWelcomeMessage(senderId, user);
-      user.setValue({
-        state: {
-          status: USER_STATUS_DONE
-        }
-      });
+      dataHelper.getUser(senderId); // DB에 유저 추가
+      sendApi.sendWelcomeMessage(senderId);
+      break;
+    case 'STAR_NO_POSTBACK':
+      sendApi.sendWelcomeMessage(senderId);
+      break;
+    case 'STAR_YES_POSTBACK':
+      console.log('yeo')
       break;
     case 'SAY_NO_POSTBACK':
       yesOrNo = "no";
@@ -170,8 +165,9 @@ const handleNlpMessage = async(senderId, message, event) => {
           stateName: GET_STARTED
         }
       });
-      await sendApi.sendWelcomeMessage(senderId, user);
+      await sendApi.sendStartMessage(senderId);
     }
+
     const select = stateName === GET_STARTED && firstEntityValue(nlp, "select_test");
     if (select) {
       switch (select) {
@@ -182,7 +178,7 @@ const handleNlpMessage = async(senderId, message, event) => {
               stateName: USER_STATE_TAROT
             }
           });
-          sendApi.sendSayStartTarotMessage(senderId, user);
+          sendApi.sendStartTarotMessage(senderId, user);
           break;
         case 'second':
           dataHelper.setPsyTest(user, true);
@@ -194,15 +190,15 @@ const handleNlpMessage = async(senderId, message, event) => {
       }
     }
 
-    const datetime = stateName === USER_STATE_TAROT && firstEntityValue(nlp, "datetime");
+    const checkState = (stateName === USER_STATE_TAROT || stateName === USER_STATE_STAR);
+    const datetime = checkState && firstEntityValue(nlp, "datetime");
     if (datetime) {
       if (nlp['datetime'][0].grain === 'day') { // 년/월/일까지 입력했을 경우 day
+
+        // should go helper
         const date = new Date(datetime);
         const KSTdate = new Date(date.toUTCString());
         KSTdate.setTime(KSTdate.getTime() + (9 * 3600 * 1000)); // gmt + 9h = kst
-
-        const tarotDate = `${KSTdate.getFullYear()}${KSTdate.getMonth() + 1}${KSTdate.getDate()}`;
-        const tarotNumber = dataHelper.selectTarot(tarotDate);
 
         user.setValue({
           state: {
@@ -210,7 +206,16 @@ const handleNlpMessage = async(senderId, message, event) => {
             retries: 0
           }
         });
-        await sendApi.sendTarotResultMessage(senderId, user, tarotNumber, dataHelper.getTarotData(tarotNumber));
+        if (stateName === USER_STATE_TAROT) {
+          const tarotDate = `${KSTdate.getFullYear()}${KSTdate.getMonth() + 1}${KSTdate.getDate()}`;
+          const tarotNumber = dataHelper.selectTarot(tarotDate);
+          await sendApi.sendTarotResultMessage(senderId, user, tarotNumber, dataHelper.getTarotData(tarotNumber));
+        }
+        if (stateName === USER_STATE_STAR) {
+          const starTestNumber = dataHelper.selectStarTest(KSTdate.getMonth(), KSTdate.getDate());
+          await sendApi.sendStarResultMessage(senderId, user, dataHelper.getStarData(starTestNumber));
+        }
+
         user.setValue({
           state: {
             status: USER_STATUS_ANSWERING
@@ -254,6 +259,16 @@ const handleNlpMessage = async(senderId, message, event) => {
           sendApi.sendTarotFailureMessage(senderId, user)
         }
         break;
+      case USER_STATE_STAR:
+        if (status === USER_STATUS_ANSWERING) {
+          console.log('SHIT!!');
+        } else if (status === USER_STATUS_INIT) {
+          console.log('dont understand')
+        } else {
+          console.log('birthday re-enter')
+          // sendApi.sendTarotFailureMessage(senderId, user)
+        }
+        break;
       case USER_STATE_PSY:
         if (status === USER_STATUS_ANSWERING) {
           // review
@@ -269,10 +284,10 @@ const handleNlpMessage = async(senderId, message, event) => {
 
   status = user.state.status;
   const [eventObject, ...userQueue] = user.userQueue;
-  if (eventObject) {
+  if (eventObject) { // 큐가 남아 있다면 나머지는 큐에 저장하고 다시 메세지 전달
     if (userQueue) user.setValue({
       userQueue
-    });
+    }); 
     user.setValue({
       state: status !== USER_STATUS_ANSWERING ? {
         status: USER_STATUS_START
@@ -283,6 +298,8 @@ const handleNlpMessage = async(senderId, message, event) => {
     handleReceiveMessage(eventObject);
     return;
   }
+
+  // 끝날때
   if (status !== USER_STATUS_ANSWERING && status !== USER_STATUS_INIT) {
     user.setValue({
       state: {
@@ -294,23 +311,22 @@ const handleNlpMessage = async(senderId, message, event) => {
 
 const handleQuickRepliesMessage = async(senderId, quick_reply) => {
   const { type } = JSON.parse(quick_reply.payload);
-  let user = null;
-
+  const user = await dataHelper.getUser(senderId);
+  user.setValue({
+    state: {
+      status: USER_STATUS_START,
+      stateName: type
+    }
+  });
   switch (type) {
-    case 'SAY_TAROT_TEST':
-      // store initializeCode
-      user = await dataHelper.getUser(senderId);
-      user.setValue({
-        state: {
-          status: USER_STATUS_START,
-          stateName: USER_STATE_TAROT
-        }
-      });
-      sendApi.sendSayStartTarotMessage(senderId, user);
+    case USER_STATE_STAR:
+      dataHelper.setStarTest(user);
+      sendApi.sendStartStarTestMessage(senderId, user);
       break;
-    case 'SAY_START_TEST':
-      // store initializeCode
-      user = await dataHelper.getUser(senderId);
+    case USER_STATE_TAROT:
+      sendApi.sendStartTarotMessage(senderId, user);
+      break;
+    case USER_STATE_PSY:
       dataHelper.setPsyTest(user, true);
       sendApi.sendSayStartTestMessage(senderId, dataHelper.getDescription(user));
       break;
@@ -323,20 +339,23 @@ const handleQuickRepliesMessage = async(senderId, quick_reply) => {
 const handleTestReceive = async(message, senderId) => {
   // console.log('senderId, ', senderId);
   dataHelper.getTarotData();
-  if (message.text === '111') {
-    sendApi.sendShareButton(senderId);
+  if (message.text === '11') {
+    // console.log(dataHelper.selectStarTest(11, 25));
+    // console.log(dataHelper.getStarData(0));
+    const user = await dataHelper.getUser(senderId);
+    await sendApi.sendStarResultMessage(senderId, user, dataHelper.getStarData(0));
     return true;
   }
 
 
-  if (message.text === '222') {
+  if (message.text === '22') {
     sendApi.sendAnswerTarotResultMessage(senderId, "lol");
     return true;
   }
 
-  if (message.text === '333') {
+  if (message.text === '33') {
     const user = await dataHelper.getUser(senderId);
-    sendApi.sendWelcomeMessage(senderId, user);
+    sendApi.sendStartMessage(senderId, user);
     return true;
   }
 

@@ -14,7 +14,7 @@
   const href = 'https://naver.com';
   
   const redirect_uri = encodeURIComponent(`${server_url}/share`);
-  if( navigator.userAgent.toUpperCase().indexOf('FB') > -1 ){
+  if ( navigator.userAgent.toUpperCase().indexOf('FB') > -1 ){
     location.href = `${share_url}?app_id=${appId}&hashtag=%23`
     + `${encodeURIComponent(hashtag)}&href=${encodeURIComponent(href)}`
     + `&redirect_uri=${redirect_uri}`;

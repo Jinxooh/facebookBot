@@ -1,9 +1,6 @@
 // ===== LODASH ================================================================
 import castArray from 'lodash/castArray';
-import isEmpty from 'lodash/isEmpty';
-import isArray from 'lodash/isArray';
 import concat from 'lodash/concat';
-import reduce from 'lodash/reduce';
 // ===== MESSENGER =============================================================
 import api from './api';
 import messages from './messages';
@@ -74,13 +71,21 @@ const sendReadReceipt = (recipientId) => {
   api.callMessagesAPI(messageData);
 };
 
+const sendWelcomeMessage = async (recipientId) => {
+  await sendMessage(
+    recipientId,
+    messages.welcomeMessage,
+  );
+};
+
+
 // Send a different Welcome message based on if the user is logged in.
-const sendWelcomeMessage = async (recipientId, userInfo) => {
+const sendStartMessage = async (recipientId) => {
   await sendMessage(
     recipientId,
     concat(
-      messages.welcomeMessage(userInfo),
-      messages.welcomeReplies,
+      messages.startMessage,
+      messages.startReplies,
     ));
 };
 
@@ -92,38 +97,58 @@ const sendTwoButtonMessage = (recipientId, { questionDescription }) => {
 };
 
 const sendResultMessage = async (recipientId, { questionDescription }, user) => {
-  let text;
-  // 메세지가 배열로 올경우 나눠서 전달하기 위해 
-  // 나중에 전체로 빼야할듯
-  if(isArray(questionDescription))
-    text = reduce(questionDescription, (result, item, index) => {
-      result[index] = {text: item};
-      return result;
-    }, []);
-  else 
-    text = {text: questionDescription};
-
   await sendMessage(
     recipientId,
-    concat(
-      text, 
-      messages.psyTestResultMessage(user)
-    )
+    messages.psyTestResultMessage(user, questionDescription)
   );
 };
 
-const sendSuggestRestartMessage = (recipientId) => {
-  
-    sendMessage(
-      recipientId,
-      messages.requestRestartMessage,
-    )
-  }
-
-const sendSayStartTarotMessage = (recipientId, user) => {
+const sendSuggestRestartMessage = (recipientId) => { 
   sendMessage(
     recipientId,
-    concat(messages.sayStartTarotMessage(user))
+    messages.requestRestartMessage,
+  )
+}
+
+const sendStartStarTestMessage = (recipientId, user) => {
+  sendMessage(
+    recipientId,
+    messages.startStarTestMessage(user)
+  )
+}
+
+const sendStarResultMessage = async (recipientId, user, starTestData) => {
+  let current = user.current;
+  if (current === null) current = 0;
+
+  const [description] = starTestData[current + 1];
+  await sendMessage(
+    recipientId,
+    concat(
+      messages.starResultMessage(starTestData[current]),
+      messages.twoButtonMessage(description, true)
+    )
+  )
+}
+
+const sendLastResultMessage = async (recipientId, user, starTestData) => {
+  let current = user.current;
+  if (current === null) current = 0;
+
+  const [description] = starTestData[current + 1];
+  await sendMessage(
+    recipientId,
+    concat(
+      messages.starResultMessage(starTestData[current]),
+      messages.twoButtonMessage(description, true)
+    )
+  )
+}
+
+const sendStartTarotMessage = (recipientId, user) => {
+  sendMessage(
+    recipientId,
+    messages.startTarotMessage(user)
   );
 }
 
@@ -214,10 +239,13 @@ export default {
   sendMessage,
   sendReadReceipt,
 
-  // functiioanl
   sendWelcomeMessage,
+  sendStartMessage,
 
-  sendSayStartTarotMessage,
+  sendStartStarTestMessage,
+  sendStarResultMessage,
+
+  sendStartTarotMessage,
   sendTarotResultMessage,
   sendResultThanksMessage,
   sendTarotFailureMessage,

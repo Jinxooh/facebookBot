@@ -1,7 +1,7 @@
 import {
   GET_STARTED,
   USER_STATUS_INIT,
-} from '../messenger-api-helpers/database'
+} from '../messenger-api-helpers/dataHelper'
 /**
  * Question Model
  *
@@ -36,16 +36,16 @@ class UserInfo {
   }
   
   setValue({ current, next, psyTestId, userQueue, state }) {
-    if(current) this.current = current;
-    if(next) this.next = next;
-    if(psyTestId) this.psyTestId = psyTestId;
+    if (current) this.current = current;
+    if (next) this.next = next;
+    if (psyTestId) this.psyTestId = psyTestId;
     
-    if(userQueue) this.userQueue = userQueue;
-    if(state) {
+    if (userQueue) this.userQueue = userQueue;
+    if (state) {
       const { status, stateName, retries} = state;
-      if(status) this.state.status = status;
-      if(stateName) this.state.stateName = stateName;
-      if(retries) this.state.retries = retries;
+      if (status) this.state.status = status;
+      if (stateName) this.state.stateName = stateName;
+      if (retries) this.state.retries = retries;
     }
   }
 }
