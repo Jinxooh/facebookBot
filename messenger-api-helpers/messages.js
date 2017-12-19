@@ -290,8 +290,6 @@ const sendImageMessage = (url) => {
   }
 }
 
-
-
 const sayStartTestMessage = (description) => {
   return {
     text: `${description}`
@@ -316,27 +314,6 @@ const postbackNoButton = {
   payload: JSON.stringify({
     type: 'SAY_NO_POSTBACK',
   })
-};
-
-
-
-const twoButtonMessage = (description, type) => {
-  return {
-    attachment: {
-      type: 'template',
-      payload: {
-        template_type: 'button',
-        text: `${description}`,
-        buttons: type ? [
-          postbackStarYesButton,
-          postbackStarNoButton
-        ] : [
-          postbackYesButton,
-          postbackNoButton
-        ],
-      },
-    }
-  }
 };
 
 const sendTarotImageMessage = (tarotNumber) => {
@@ -413,9 +390,6 @@ export default {
 
   sayStartTestMessage,
   requestRestartMessage,
-
-  // 
-  twoButtonMessage,
 
   sendTarotImageMessage,
 

@@ -5,7 +5,6 @@ const SERVER_URL = process.env.BOT_DEV_ENV == 'dev' ? process.env.TEST_SERVER_UR
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  console.log('//////////,' , req.params);
   // share button setting value
   const data = {
     server_url: SERVER_URL,

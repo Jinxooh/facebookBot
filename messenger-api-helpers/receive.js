@@ -35,7 +35,7 @@ const handleReceivePostback = async (event) => {
 const handleReceiveMessage = async(event) => {
   const message = event.message;
   const senderId = event.sender.id;
-
+  
   if (process.env.BOT_DEV_ENV === 'dev') {
     handleTestReceive(message, senderId)
   }
@@ -178,8 +178,6 @@ const handleNlpMessage = async(senderId, message, event) => {
             }
           });
           sendApi.sendStartTarotMessage(senderId, user);
-          // dataHelper.setPsyTest(user, true);
-          // sendApi.sendSayStartTestMessage(senderId, dataHelper.getDescription(user));
           break;
         default:
           console.log('unknown select test :', select);
@@ -238,7 +236,6 @@ const handleNlpMessage = async(senderId, message, event) => {
     }
 
   } else {
-    console.log('heh');
     switch (stateName) {
       case GET_STARTED:
         await sendApi.sendDontUnderstandMessage(senderId);
@@ -255,12 +252,11 @@ const handleNlpMessage = async(senderId, message, event) => {
         break;
       case USER_STATE_STAR:
         if (status === USER_STATUS_ANSWERING) {
-          console.log('SHIT!!');
+          // console.log('SHIT!!'); 
         } else if (status === USER_STATUS_INIT) {
-          console.log('dont understand')
+          await sendApi.sendDontUnderstandMessage(senderId);
         } else {
-          console.log('birthday re-enter')
-          // sendApi.sendTarotFailureMessage(senderId, user)
+          sendApi.sendTarotFailureMessage(senderId, user)
         }
         break;
       case USER_STATE_PSY:
@@ -365,7 +361,7 @@ const handleTestReceive = async(message, senderId) => {
     // console.log(dataHelper.selectStarTest(11, 25));
     // console.log(dataHelper.getStarData(0));
     const user = await dataHelper.getUser(senderId);
-    await sendApi.sendStarResultMessage(senderId, user, dataHelper.getStarData(0));
+    await sendApi.sendStarResultMessage(senderId, dataHelper.getStarData()[0]);
     return true;
   }
 
