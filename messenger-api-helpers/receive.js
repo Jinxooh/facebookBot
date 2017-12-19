@@ -1,26 +1,24 @@
 // modules
-import sendApi from './send';
 import isEmpty from 'lodash/isEmpty';
+import sendApi from './send';
 
 import dataHelper, {
   GET_STARTED,
   USER_STATE_TAROT,
   USER_STATE_PSY,
   USER_STATE_STAR,
-  USER_STATUS_INIT, // 초기값 
+  USER_STATUS_INIT, // 초기값
   USER_STATUS_START, // 진행중인 상태
   USER_STATUS_PROCESS, // 진행중인 상태
-  USER_STATUS_ANSWERING, // 사용자 입력을 받는 상태 
+  USER_STATUS_ANSWERING, // 사용자 입력을 받는 상태
   USER_STATUS_DONE, // 진행이 끝난 상태
 } from './dataHelper';
 
 const handleReceivePostback = async (event) => {
   const {
     type,
-    data
   } = JSON.parse(event.postback.payload);
   const senderId = event.sender.id;
-  let yesOrNo = null;
   switch (type) {
     case GET_STARTED:
       dataHelper.getUser(senderId); // DB에 유저 추가
@@ -30,40 +28,23 @@ const handleReceivePostback = async (event) => {
       console.error(`Unknown Postback called: ${type}`);
       break;
   }
-}
-
-const handleReceiveMessage = async(event) => {
-  const message = event.message;
-  const senderId = event.sender.id;
-  
-  if (process.env.BOT_DEV_ENV === 'dev') {
-    handleTestReceive(message, senderId)
-  }
-
-  if (message.quick_reply) {
-    const {
-      quick_reply
-    } = message;
-    handleQuickRepliesMessage(senderId, quick_reply);
-    return;
-  }
-
-  if (message.nlp) {
-    handleNlpMessage(senderId, message, event)
-  }
-
-  if (message.sticker_id) {
-    handleStickerMessage(senderId, message);
-  }
-
-  sendApi.sendReadReceipt(senderId);
 };
 
-const selectAnswer = async(senderId, next) => {
+const reviewResult = async (senderId, user, reviewMessage) => {
+  dataHelper.saveReview(senderId, user, reviewMessage);
+  await sendApi.sendResultThanksMessage(senderId);
+  user.setValue({
+    state: {
+      status: USER_STATUS_INIT,
+    },
+  });
+};
+
+const selectAnswer = async (senderId, next) => {
   const user = await dataHelper.getUser(senderId);
   const {
     stateName,
-    status
+    status,
   } = user.state;
   user.setValue({ next });
   if (next) {
@@ -73,29 +54,20 @@ const selectAnswer = async(senderId, next) => {
       await sendApi.sendResultMessage(senderId, result, user);
       user.setValue({
         state: {
-          status: USER_STATUS_ANSWERING
-        }
+          status: USER_STATUS_ANSWERING,
+        },
       });
     } else {
       sendApi.sendTwoButtonMessage(senderId, dataHelper.getDescription(user), user);
     }
   } else {
-    if (status === USER_STATUS_ANSWERING)
-    reviewResult(senderId, user, `${stateName}:${yesOrNo}`);
-    else
+    if (status === USER_STATUS_ANSWERING) {
+      reviewResult(senderId, user, `${stateName}:${next}`);
+    } else {
       sendApi.sendSuggestRestartMessage(senderId);
-  }
-}
-
-const reviewResult = async(senderId, user, reviewMessage) => {
-  dataHelper.saveReview(senderId, user, reviewMessage);
-  await sendApi.sendResultThanksMessage(senderId);
-  user.setValue({
-    state: {
-      status: USER_STATUS_INIT
     }
-  });
-}
+  }
+};
 
 const firstEntityValue = (entities, entity) => {
   const val = entities && entities[entity] &&
@@ -110,34 +82,34 @@ const firstEntityValue = (entities, entity) => {
 
 const handleStickerMessage = async (senderId, message) => {
   const user = await dataHelper.getUser(senderId);
-  let {
+  const {
     stateName,
-    status
+    status,
   } = user.state;
   if (status === USER_STATUS_ANSWERING) {
     // 369239263222822 -> 따봉
     reviewResult(senderId, user, `${stateName}:${message.sticker_id}`);
   } else {
-    user.setValue({ state: { status: USER_STATUS_PROCESS }});
+    user.setValue({ state: { status: USER_STATUS_PROCESS } });
     await sendApi.sendDontUnderstandMessage(senderId);
   }
-  user.setValue({ state: { status: USER_STATUS_DONE }});
-}
+  user.setValue({ state: { status: USER_STATUS_DONE } });
+};
 
 // 자연어 입력 핸들
-const handleNlpMessage = async(senderId, message, event) => {
+const handleNlpMessage = async (senderId, message, event) => {
   const user = await dataHelper.getUser(senderId);
   let {
     stateName,
-    status
+    status,
   } = user.state;
   const nlp = message.nlp.entities;
 
   if (status === USER_STATUS_PROCESS) {
     // 자두야 놀자 커맨드 여러번 입력 안되게 수정
     if (!isEmpty(nlp)) {
-      const self = firstEntityValue(nlp, "self");
-      const play = firstEntityValue(nlp, "play");
+      const self = firstEntityValue(nlp, 'self');
+      const play = firstEntityValue(nlp, 'play');
       if (self && play) return;
     }
     user.pushUserQueue(event);
@@ -145,37 +117,37 @@ const handleNlpMessage = async(senderId, message, event) => {
   }
 
   if (!isEmpty(nlp)) {
-    const self = firstEntityValue(nlp, "self");
-    const play = firstEntityValue(nlp, "play");
+    const self = firstEntityValue(nlp, 'self');
+    const play = firstEntityValue(nlp, 'play');
     if (self && play) {
       user.setValue({
         state: {
           status: USER_STATUS_PROCESS,
-          stateName: GET_STARTED
-        }
+          stateName: GET_STARTED,
+        },
       });
       await sendApi.sendStartMessage(senderId);
     }
 
-    const select = stateName === GET_STARTED && firstEntityValue(nlp, "select_test");
+    const select = stateName === GET_STARTED && firstEntityValue(nlp, 'select_test');
     if (select) {
       switch (select) {
         case 'first':
           user.setValue({
             state: {
               status: USER_STATUS_START,
-              stateName: USER_STATE_STAR
-            }
+              stateName: USER_STATE_STAR,
+            },
           });
           dataHelper.setStarTest(user);
           sendApi.sendStartStarTestMessage(senderId, user);
-        break;
+          break;
         case 'second':
           user.setValue({
             state: {
               status: USER_STATUS_START,
-              stateName: USER_STATE_TAROT
-            }
+              stateName: USER_STATE_TAROT,
+            },
           });
           sendApi.sendStartTarotMessage(senderId, user);
           break;
@@ -186,10 +158,9 @@ const handleNlpMessage = async(senderId, message, event) => {
     }
 
     const checkState = (stateName === USER_STATE_TAROT || stateName === USER_STATE_STAR);
-    const datetime = checkState && firstEntityValue(nlp, "datetime");
+    const datetime = checkState && firstEntityValue(nlp, 'datetime');
     if (datetime) {
-      if (nlp['datetime'][0].grain === 'day') { // 년/월/일까지 입력했을 경우 day
-
+      if (nlp.datetime[0].grain === 'day') { // 년/월/일까지 입력했을 경우 day
         // should go helper
         const date = new Date(datetime);
         const KSTdate = new Date(date.toUTCString());
@@ -198,8 +169,8 @@ const handleNlpMessage = async(senderId, message, event) => {
         user.setValue({
           state: {
             status: USER_STATUS_PROCESS,
-            retries: 0
-          }
+            retries: 0,
+          },
         });
         if (stateName === USER_STATE_TAROT) {
           const tarotDate = `${KSTdate.getFullYear()}${KSTdate.getMonth() + 1}${KSTdate.getDate()}`;
@@ -214,27 +185,28 @@ const handleNlpMessage = async(senderId, message, event) => {
 
         user.setValue({
           state: {
-            status: USER_STATUS_ANSWERING
-          }
+            status: USER_STATUS_ANSWERING,
+          },
         });
       } else {
-        sendApi.sendTarotFailureMessage(senderId, user)
+        sendApi.sendTarotFailureMessage(senderId, user);
       }
     }
 
 
-    const greeting = firstEntityValue(nlp, "greeting");
+    const greeting = firstEntityValue(nlp, 'greeting');
     if (greeting) {
       switch (greeting) {
-        case "say_hi":
+        case 'say_hi':
           sendApi.sendSayHiMessage(senderId);
           break;
-        case "nice_meet":
+        case 'nice_meet':
           sendApi.sendNiceMeetMessage(senderId);
+          break;
+        default:
           break;
       }
     }
-
   } else {
     switch (stateName) {
       case GET_STARTED:
@@ -247,33 +219,35 @@ const handleNlpMessage = async(senderId, message, event) => {
         } else if (status === USER_STATUS_INIT) {
           await sendApi.sendDontUnderstandMessage(senderId);
         } else {
-          sendApi.sendTarotFailureMessage(senderId, user)
+          sendApi.sendTarotFailureMessage(senderId, user);
         }
         break;
       case USER_STATE_STAR:
         if (status === USER_STATUS_ANSWERING) {
-          // console.log('SHIT!!'); 
+          // console.log('SHIT!!');
         } else if (status === USER_STATUS_INIT) {
           await sendApi.sendDontUnderstandMessage(senderId);
         } else {
-          sendApi.sendTarotFailureMessage(senderId, user)
+          sendApi.sendTarotFailureMessage(senderId, user);
         }
         break;
       case USER_STATE_PSY:
-        console.log(status)
+        console.log(status);
         if (status === USER_STATUS_ANSWERING) {
           // review
           reviewResult(senderId, user, `${stateName}:${message.text}`);
-        } else
+        } else {
           await sendApi.sendDontUnderstandMessage(senderId);
+        }
         break;
       case 'PSY_ANSWER':
-        console.log(status)
+        console.log(status);
         if (status === USER_STATUS_ANSWERING) {
           // review
           reviewResult(senderId, user, `${stateName}:${message.text}`);
-        } else
+        } else {
           await sendApi.sendDontUnderstandMessage(senderId);
+        }
         break;
       default:
         console.log('default, ', stateName);
@@ -285,15 +259,17 @@ const handleNlpMessage = async(senderId, message, event) => {
   status = user.state.status;
   const [eventObject, ...userQueue] = user.userQueue;
   if (eventObject) { // 큐가 남아 있다면 나머지는 큐에 저장하고 다시 메세지 전달
-    if (userQueue) user.setValue({
-      userQueue
-    }); 
+    if (userQueue) {
+      user.setValue({
+        userQueue,
+      });
+    }
     user.setValue({
       state: status !== USER_STATUS_ANSWERING ? {
-        status: USER_STATUS_START
+        status: USER_STATUS_START,
       } : {
-        status
-      }
+        status,
+      },
     });
     handleReceiveMessage(eventObject);
     return;
@@ -303,34 +279,33 @@ const handleNlpMessage = async(senderId, message, event) => {
   if (status !== USER_STATUS_ANSWERING && status !== USER_STATUS_INIT) {
     user.setValue({
       state: {
-        status: USER_STATUS_DONE
-      }
+        status: USER_STATUS_DONE,
+      },
     });
   }
-}
+};
 
 const handleQuickRepliesMessage = async (senderId, quick_reply) => {
   const { type, data } = JSON.parse(quick_reply.payload);
+  const { starTestData, index } = data;
+  const starData = dataHelper.getStarData();
   const user = await dataHelper.getUser(senderId);
+  const last = starTestData && index === starTestData.length - 1;
   user.setValue({
     state: {
       status: USER_STATUS_START,
-      stateName: type
-    }
+      stateName: type,
+    },
   });
   switch (type) {
     case 'PSY_ANSWER':
       selectAnswer(senderId, data);
       break;
     case 'STAR_ANSWER_NO':
-      const starData = dataHelper.getStarData();
       await sendApi.sendLastResultMessage(senderId, starData[starData.length - 1]);
       break;
     case 'STAR_ANSWER_YES':
-      const { starTestData, index } = data;
-      const last = index === starTestData.length - 1;
       if (last) {
-        const starData = dataHelper.getStarData();
         await sendApi.sendStarResultMessage(senderId, starTestData, index, last);
         await sendApi.sendLastResultMessage(senderId, starData[starData.length - 1]);
       } else {
@@ -352,22 +327,22 @@ const handleQuickRepliesMessage = async (senderId, quick_reply) => {
       console.log('default, ', type);
       break;
   }
-}
+};
 
-const handleTestReceive = async(message, senderId) => {
+const handleTestReceive = async (message, senderId) => {
   // console.log('senderId, ', senderId);
   dataHelper.getTarotData();
   if (message.text === '11') {
     // console.log(dataHelper.selectStarTest(11, 25));
     // console.log(dataHelper.getStarData(0));
-    const user = await dataHelper.getUser(senderId);
     await sendApi.sendStarResultMessage(senderId, dataHelper.getStarData()[0]);
     return true;
   }
 
 
   if (message.text === '22') {
-    dataHelper.setPsyTest();
+    const userInfo = await sendApi.sendGetUserProfile(senderId);
+    console.log('userINFO ', userInfo);
     return true;
   }
 
@@ -378,9 +353,36 @@ const handleTestReceive = async(message, senderId) => {
   }
 
   return false;
-}
+};
+
+const handleReceiveMessage = async (event) => {
+  const { message } = event;
+  const senderId = event.sender.id;
+
+  if (process.env.BOT_DEV_ENV === 'dev') {
+    handleTestReceive(message, senderId);
+  }
+
+  if (message.quick_reply) {
+    const {
+      quick_reply,
+    } = message;
+    handleQuickRepliesMessage(senderId, quick_reply);
+    return;
+  }
+
+  if (message.nlp) {
+    handleNlpMessage(senderId, message, event);
+  }
+
+  if (message.sticker_id) {
+    handleStickerMessage(senderId, message);
+  }
+
+  sendApi.sendReadReceipt(senderId);
+};
 
 export default {
   handleReceivePostback,
   handleReceiveMessage,
-}
+};

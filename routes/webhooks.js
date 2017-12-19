@@ -23,25 +23,28 @@ router.post('/', (req, res) => {
   if (data.object === 'page') {
     data.entry.forEach((pageEntry) => {
       // console.log({pageEntry});
-      pageEntry.messaging && pageEntry.messaging.forEach((messagingEvent) => {
-        // console.log({messagingEvent});
-        if (messagingEvent.message && !messagingEvent.message.is_echo) {
-          receiveApi.handleReceiveMessage(messagingEvent);
-        } else if (messagingEvent.postback) {
-          receiveApi.handleReceivePostback(messagingEvent);
-        } else if (messagingEvent.referral) {
-          // receiveApi.handleReceiveReferral(messagingEvent);
-          //  console.log(
-          //   'Webhook received referral messagingEvent: ',
-          //   messagingEvent
-          // );
-        } else {
-          // console.log(
-          //   'Webhook received unknown messagingEvent: ',
-          //   messagingEvent
-          // );
-        }
-      });
+      const { messaging } = pageEntry;
+      if (messaging) {
+        pageEntry.messaging.forEach((messagingEvent) => {
+          // console.log({messagingEvent});
+          if (messagingEvent.message && !messagingEvent.message.is_echo) {
+            receiveApi.handleReceiveMessage(messagingEvent);
+          } else if (messagingEvent.postback) {
+            receiveApi.handleReceivePostback(messagingEvent);
+          } else if (messagingEvent.referral) {
+            // receiveApi.handleReceiveReferral(messagingEvent);
+            //  console.log(
+            //   'Webhook received referral messagingEvent: ',
+            //   messagingEvent
+            // );
+          } else {
+            // console.log(
+            //   'Webhook received unknown messagingEvent: ',
+            //   messagingEvent
+            // );
+          }
+        });
+      }
     });
   }
 });

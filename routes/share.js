@@ -5,7 +5,7 @@ const router = express.Router();
 
 router.get('/', (req, res) => {
   console.log('share share')
-  res.render('./share', {title: 'what is done is done', description: 'shape of you!?'});
+  res.render('./share', { title: 'what is done is done', description: 'shape of you!?' });
 });
 
 router.get('/:id', (req, res) => {

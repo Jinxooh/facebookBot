@@ -39,22 +39,22 @@ const messageToJSON = (recipientId, messagePayload) => {
 
 const asyncForEach = async (array, callback) => {
   for (let index = 0; index < array.length; index++) {
-    await callback(array[index], index, array)
+    await callback(array[index], index, array);
   }
-}
+};
 
 // Send one or more messages using the Send API.
 const sendMessage = async (recipientId, messagePayloads) => {
   const arr = castArray(messagePayloads);
-  
+
   // 대화 하는것 처럼 지연을 주기위해서
   const start = async () => {
     await asyncForEach(arr, async (item) => {
       await api.callAsyncMessagesAPI(CHATTING_SPEED, typingOn(recipientId));
-      await api.callAsyncMessagesAPI(CHATTING_SPEED, messageToJSON(recipientId, item))
-    })
+      await api.callAsyncMessagesAPI(CHATTING_SPEED, messageToJSON(recipientId, item));
+    });
     api.callAsyncMessagesAPI(300, typingOff(recipientId));
-  }
+  };
   await start();
 };
 
@@ -86,49 +86,50 @@ const sendStartMessage = async (recipientId) => {
     concat(
       messages.startMessage,
       messages.startReplies,
-    ));
+    ),
+  );
 };
 
 const sendTwoButtonMessage = (recipientId, { questionDescription }, user) => {
   sendMessage(
     recipientId,
-    messages.psyTestReplies(questionDescription, user)
+    messages.psyTestReplies(questionDescription, user),
   );
 };
 
 const sendResultMessage = async (recipientId, result, user) => {
   await sendMessage(
     recipientId,
-    messages.psyTestResultMessage(user, result)
+    messages.psyTestResultMessage(user, result),
   );
 };
 
-const sendSuggestRestartMessage = (recipientId) => { 
+const sendSuggestRestartMessage = (recipientId) => {
   sendMessage(
     recipientId,
     messages.requestRestartMessage,
-  )
-}
+  );
+};
 
 const sendStartStarTestMessage = (recipientId, user) => {
   sendMessage(
     recipientId,
-    messages.startStarTestMessage(user)
-  )
-}
+    messages.startStarTestMessage(user),
+  );
+};
 
 const sendStarResultMessage = async (recipientId, starTestData, current = 0, last) => {
   const result = starTestData[current];
   const index = current + 2;
-  
+
   await sendMessage(
     recipientId,
     concat(
       messages.starResultMessage(result),
       !last && messages.starTestReplies(starTestData[current + 1], { starTestData, index }),
-    )
-  )
-}
+    ),
+  );
+};
 
 const sendLastResultMessage = async (recipientId, starData) => {
   await sendMessage(
@@ -143,21 +144,21 @@ const sendLastResultMessage = async (recipientId, starData) => {
 const sendStartTarotMessage = (recipientId, user) => {
   sendMessage(
     recipientId,
-    messages.startTarotMessage(user)
+    messages.startTarotMessage(user),
   );
-}
+};
 
 const sendTarotResultMessage = async (recipientId, user, tarotNumber, tarotData) => {
-  user.setValue({ state: { retries: 0 }});
+  user.setValue({ state: { retries: 0 } });
   await sendMessage(
     recipientId,
     concat(
       messages.tarotProcessMessage(user),
       messages.sendTarotImageMessage(tarotNumber),
-      messages.tarotResultMessage(user, tarotData)
-    )
-  )
-}
+      messages.tarotResultMessage(user, tarotData),
+    ),
+  );
+};
 
 const sendResultThanksMessage = async (recipientId) => {
   await sendMessage(
@@ -166,49 +167,49 @@ const sendResultThanksMessage = async (recipientId) => {
       messages.answerThanksMessage(),
       messages.sendImageMessage('/media/jadoo.png'),
       messages.requestRestartMessage,
-    )
-  )
-}
+    ),
+  );
+};
 
 const sendTarotFailureMessage = (recipientId, user) => {
-    const { retries } = user.state;
-    user.setValue({ state: { retries: retries + 1 }});
-    sendMessage(
-      recipientId,
-      retries > 1 ? messages.tarotAnswerFailure3times(user) : messages.tarotAnswerFailure(user)
-    )
-  }
+  const { retries } = user.state;
+  user.setValue({ state: { retries: retries + 1 } });
+  sendMessage(
+    recipientId,
+    retries > 1 ? messages.tarotAnswerFailure3times(user) : messages.tarotAnswerFailure(user),
+  );
+};
 
-const sendStartPsyTestMessage = (recipientId, {psyTestDescription, questionDescription}, user) => {
+const sendStartPsyTestMessage = (recipientId, { psyTestDescription, questionDescription }, user) => {
   sendMessage(
     recipientId,
     [
       messages.sayStartTestMessage(psyTestDescription),
       messages.psyTestReplies(questionDescription, user),
-    ]
+    ],
   );
-}
+};
 
-// get User Profile from facebook Reference 
+// get User Profile from facebook Reference
 // https://developers.facebook.com/docs/messenger-platform/identity/user-profile
-const sendGetUserProfile = async (recipientId) => {
-  return await api.callPsidAPI(recipientId);
-}
+const sendGetUserProfile = (recipientId) => {
+  return api.callPsidAPI(recipientId);
+};
 
 const sendSayHiMessage = (recipientId) => {
   // 랜덤한 인사말을 위해서
   sendMessage(
     recipientId,
-    messages.sendSayHiMessage[Math.floor(Math.random() * messages.sendSayHiMessage.length)]
+    messages.sendSayHiMessage[Math.floor(Math.random() * messages.sendSayHiMessage.length)],
   );
-}
+};
 
 const sendNiceMeetMessage = (recipientId) => {
   sendMessage(
     recipientId,
-    messages.sendNiceMeetMessage[Math.floor(Math.random() * messages.sendNiceMeetMessage.length)]
+    messages.sendNiceMeetMessage[Math.floor(Math.random() * messages.sendNiceMeetMessage.length)],
   );
-}
+};
 
 
 const sendDontUnderstandMessage = async (recipientId) => {
@@ -216,17 +217,17 @@ const sendDontUnderstandMessage = async (recipientId) => {
     recipientId,
     [
       messages.sendDontUnderstandMessage[Math.floor(Math.random() * messages.sendDontUnderstandMessage.length)],
-      messages.requestRestartMessage
-    ]
+      messages.requestRestartMessage,
+    ],
   );
-}
+};
 
 const sendShareButton = (recipientId) => {
   sendMessage(
     recipientId,
-    messages.sendShareButton(recipientId)
+    messages.sendShareButton(recipientId),
   );
-}
+};
 
 
 export default {

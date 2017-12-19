@@ -1,5 +1,6 @@
 import mongoose from 'mongoose';
-const Schema = mongoose.Schema;
+
+const { Schema } = mongoose;
 
 const Review = new Schema({
   psid: String,
@@ -7,27 +8,27 @@ const Review = new Schema({
   last_name: String,
   profile_pic: String,
 
-  reviews: { type: Array, default: [] }
+  reviews: { type: Array, default: [] },
 });
 
-Review.statics.findOneByPsid = function(psid) {
+Review.statics.findOneByPsid = (psid) => {
   return this.findOne({
-    psid
-  }).exec()
-}
+    psid,
+  }).exec();
+};
 
-Review.statics.create = function(psid, first_name, last_name, profile_pic) {
+Review.statics.create = (psid, first_name, last_name, profile_pic) => {
   const review = new this({
     psid, first_name, last_name, profile_pic
-  })
+  });
   // return the Promise
-  const save = review.save()
+  const save = review.save();
   return save;
-}
+};
 
-Review.methods.saveReview = function(review) {
+Review.methods.saveReview = (review) => {
   this.reviews.push(review);
   return this.save();
-}
+};
 
-export default mongoose.model('Review', Review)
+export default mongoose.model('Review', Review);

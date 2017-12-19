@@ -3,9 +3,9 @@ import bodyParser from 'body-parser';
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
-import dataHelper from './messenger-api-helpers/dataHelper';
 import favicon from 'serve-favicon';
 import mongoose from 'mongoose';
+import dataHelper from './messenger-api-helpers/dataHelper';
 
 // messenger!
 import ThreadSetup from './messenger-api-helpers/thread-setup';
@@ -30,13 +30,13 @@ app.use('/', index);
 app.use('/webhook', webhooks);
 app.use('/share', share);
 
-try{
-    const psyTestData = fs.readFileSync(path.join(__dirname, 'public/data.json'));
-    const json = JSON.parse(psyTestData);
+try {
+  const psyTestData = fs.readFileSync(path.join(__dirname, 'public/data.json'));
+  const json = JSON.parse(psyTestData);
 
-    dataHelper.setData(json);
-} catch(e) {
-    console.log('error, ', e);
+  dataHelper.setData(json);
+} catch (e) {
+  console.log('error, ', e);
 }
 
 ThreadSetup.setDomainWhitelisting();
@@ -44,14 +44,15 @@ ThreadSetup.setDomainWhitelisting();
 ThreadSetup.setGetStarted();
 
 mongoose.connect(process.env.MONGODB_URL, {
-    useMongoClient: true
-})
-const db = mongoose.connection
-db.on('error', console.error)
-db.once('open', ()=>{
-    console.log('connected to mongodb server')
-})
+  useMongoClient: true,
+});
+
+const db = mongoose.connection;
+db.on('error', console.error);
+db.once('open', () => {
+  console.log('connected to mongodb server');
+});
 
 app.listen(app.get('port'), () => {
-    console.log('running on port', app.get('port'));
-})
+  console.log('running on port', app.get('port'));
+});

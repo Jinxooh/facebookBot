@@ -1,7 +1,7 @@
 // modules
 import express from 'express';
 
-const SERVER_URL = process.env.BOT_DEV_ENV == 'dev' ? process.env.TEST_SERVER_URL : process.env.SERVER_URL;
+const SERVER_URL = process.env.BOT_DEV_ENV === 'dev' ? process.env.TEST_SERVER_URL : process.env.SERVER_URL;
 const router = express.Router();
 
 router.get('/', (req, res) => {
@@ -19,4 +19,4 @@ router.get('/', (req, res) => {
   res.render('./index', { data: dataJSON });
 });
 
-export default router; 
+export default router;
