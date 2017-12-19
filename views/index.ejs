@@ -3,20 +3,33 @@
   <head>
     <title>공유하기</title>
     <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+    <meta property="og:url" content="https://dd3ea490.ngrok.io"/>
+    <meta property="og:title" content="THIS IS SUCCESS!!!">
+		<meta property="og:image" content="https://cdn.cloudturing.com/tvn/man_45.jpg">
+		<meta property="og:description" content="지금 타임라인에 공유하고 푸짐한 상품 받아가세요!">
     <script src="//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
   </head>
   <body>
 <script>
-  const server_url = 'https://dd3ea490.ngrok.io';
-  const share_url = 'https://www.facebook.com/v2.11/dialog/share';
-  const appId = '552043455131217';
-  const hashtag = ('#hello!!');
-  const href = 'https://naver.com';
+  <% if (data) { %>
+    const data = <%- data %>;
+  <% } else { %>
+    console.log('hihi');
+  <% } %>
+  const ls = location.search.split("=")[1];
+  console.log(ls);
+  const { server_url, share_url, appId, hashtag, href } = data;
+  console.log(server_url);
+  console.log(share_url);
+  console.log(hashtag);
+  console.log(appId);
+  console.log(href);
   
   const redirect_uri = encodeURIComponent(`${server_url}/share`);
   if ( navigator.userAgent.toUpperCase().indexOf('FB') > -1 ){
+    alert('aaaa');
     location.href = `${share_url}?app_id=${appId}&hashtag=%23`
-    + `${encodeURIComponent(hashtag)}&href=${encodeURIComponent(href)}`
+    + `${encodeURIComponent(ls)}&href=${encodeURIComponent(href)}`
     + `&redirect_uri=${redirect_uri}`;
   } else {
     console.log('navigator.userAgent,' , navigator.userAgent);
