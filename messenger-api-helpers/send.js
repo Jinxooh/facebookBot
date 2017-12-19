@@ -89,17 +89,17 @@ const sendStartMessage = async (recipientId) => {
     ));
 };
 
-const sendTwoButtonMessage = (recipientId, { questionDescription }) => {
+const sendTwoButtonMessage = (recipientId, { questionDescription }, user) => {
   sendMessage(
     recipientId,
-    messages.psyTestReplies(questionDescription)
+    messages.psyTestReplies(questionDescription, user)
   );
 };
 
-const sendResultMessage = async (recipientId, { questionDescription }, user) => {
+const sendResultMessage = async (recipientId, result, user) => {
   await sendMessage(
     recipientId,
-    messages.psyTestResultMessage(user, questionDescription)
+    messages.psyTestResultMessage(user, result)
   );
 };
 
@@ -120,6 +120,7 @@ const sendStartStarTestMessage = (recipientId, user) => {
 const sendStarResultMessage = async (recipientId, starTestData, current = 0, last) => {
   const result = starTestData[current];
   const index = current + 2;
+  
   await sendMessage(
     recipientId,
     concat(

@@ -1,13 +1,8 @@
 // modules
 import sendApi from './send';
-
 // stores
-import psyTestStore from '../stores/psyTest-store';
-import QuestionStore from '../stores/question-store';
 import UserStore from '../stores/user-store';
-
 // models
-import PsyTest from '../models/psyTest';
 import Review from '../models/review';
 // lodash
 import isEmpty from 'lodash/isEmpty';
@@ -24,28 +19,15 @@ export const USER_STATUS_ANSWERING = 'USER_STATUS_ANSWERING'; // 사용자 입�
 export const USER_STATUS_DONE = 'USER_STATUS_DONE'; // 진행이 끝난 상태
 
 const dataHelper = (() => {
+  let psyData = null;
   let tarotData= null;
   let starTest = null;
-
-  const getQuestion = (psyTestId) => {
-    const id = psyTestId === null ? "1": psyTestId
-    const [psyTest] = psyTestStore.getByPsyTestId(id);
-    
-    const question = psyTest.questionList;
-
-    return { psyTest, question };
-  }
 
   return {
     setData: (json) => {
       const { psyTest, tarotName, tarotDescription, starTestResult } = json;
-      
-      psyTest.map((item) => {
-        const question = new QuestionStore();
-        const questionStore = question.createStore(item.questionList);
 
-        psyTestStore.insert(new PsyTest(item.id, item.title, item.description, questionStore));
-      });
+      psyData = psyTest;
       
       tarotData = {
         tarotName,
@@ -104,8 +86,8 @@ const dataHelper = (() => {
     setPsyTest: (user, initialize) => {
       // 심리테스트를 호출할때 마다 변경위해서 
       if (initialize || !user.psyTestId){
-        const psyTestId = String(Math.floor(Math.random() * psyTestStore.getLength() + 1));
-        const current = '1'; // start id
+        const psyTestId = String(Math.floor(Math.random() * psyData.length));
+        const current = '0'; // start id
         user.setValue({psyTestId, current, state: {stateName: USER_STATE_PSY, status: USER_STATUS_START}});
       }
     },
@@ -137,32 +119,18 @@ const dataHelper = (() => {
       return starNumber;
     },
 
-    sayYesOrNo: (user, yesOrNo) => {
-      const { question } = getQuestion(user.psyTestId);
-      
-      // test
-      let current = user.current === null ? "1" : user.current;
-
-      user.setValue({next: question.getYesOrNoNext(current, yesOrNo)});
-      if (user.next) {
-        current = user.next
-        user.setValue({current});
-        return true;
-      } else {
-        return false
-      }
-    },
-
-    checkLast: (user) => {
-      if (/^\d+$/.test(user.current)) return false; // 숫자면 false
-      return true;
+    getQustionData: (user) => {
+      const { questionList } = psyData[user.psyTestId];
+      const question = questionList[user.current];
+      return question;
     },
     
     getDescription: (user) => {
-      const { psyTest, question } = getQuestion(user.psyTestId);
+      const { description, questionList } = psyData[user.psyTestId];
+      const question = questionList[user.current];
       return { 
-        psyTestDescription: psyTest.description, 
-        questionDescription: question.getDescription(user.current)
+        psyTestDescription: description, 
+        questionDescription: question.description,
       };
     },
     

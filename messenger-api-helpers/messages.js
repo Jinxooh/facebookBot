@@ -92,15 +92,16 @@ const startReplies = {
   ]
 }
 
-const psyTestReplies = (description) => {
+const psyTestReplies = (description, user) => {
+  const { yes, no } = dataHelper.getQustionData(user);
   return {
-    text: description,
+    text: description || 'f',
     quick_replies: [{
         content_type: 'text',
         title: '네',
         payload: JSON.stringify({
           type: 'PSY_ANSWER',
-          data: 'yes',
+          data: yes || "false",
         })
       },
       {
@@ -108,7 +109,7 @@ const psyTestReplies = (description) => {
         title: '아니요',
         payload: JSON.stringify({
           type: 'PSY_ANSWER',
-          data: 'no',
+          data: no || "false",
         })
       },
     ]

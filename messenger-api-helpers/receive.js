@@ -59,27 +59,29 @@ const handleReceiveMessage = async(event) => {
   sendApi.sendReadReceipt(senderId);
 };
 
-const selectAnswer = async(senderId, yesOrNo) => {
+const selectAnswer = async(senderId, next) => {
   const user = await dataHelper.getUser(senderId);
   const {
     stateName,
     status
   } = user.state;
-  if (dataHelper.sayYesOrNo(user, yesOrNo)) {
-    if (dataHelper.checkLast(user)) {
-      await sendApi.sendResultMessage(senderId, dataHelper.getDescription(user), user);
+  user.setValue({ next });
+  if (next) {
+    user.setValue({ current: next });
+    const { result } = dataHelper.getQustionData(user);
+    if (result) {
+      await sendApi.sendResultMessage(senderId, result, user);
       user.setValue({
         state: {
           status: USER_STATUS_ANSWERING
         }
       });
     } else {
-      sendApi.sendTwoButtonMessage(senderId, dataHelper.getDescription(user));
+      sendApi.sendTwoButtonMessage(senderId, dataHelper.getDescription(user), user);
     }
   } else {
-    // click postback when test is done
     if (status === USER_STATUS_ANSWERING)
-      reviewResult(senderId, user, `${stateName}:${yesOrNo}`);
+    reviewResult(senderId, user, `${stateName}:${yesOrNo}`);
     else
       sendApi.sendSuggestRestartMessage(senderId);
   }
@@ -236,11 +238,7 @@ const handleNlpMessage = async(senderId, message, event) => {
     }
 
   } else {
-    user.setValue({
-      state: {
-        status: USER_STATUS_PROCESS,
-      }
-    });
+    console.log('heh');
     switch (stateName) {
       case GET_STARTED:
         await sendApi.sendDontUnderstandMessage(senderId);
@@ -266,6 +264,15 @@ const handleNlpMessage = async(senderId, message, event) => {
         }
         break;
       case USER_STATE_PSY:
+        console.log(status)
+        if (status === USER_STATUS_ANSWERING) {
+          // review
+          reviewResult(senderId, user, `${stateName}:${message.text}`);
+        } else
+          await sendApi.sendDontUnderstandMessage(senderId);
+        break;
+      case 'PSY_ANSWER':
+        console.log(status)
         if (status === USER_STATUS_ANSWERING) {
           // review
           reviewResult(senderId, user, `${stateName}:${message.text}`);
@@ -273,6 +280,7 @@ const handleNlpMessage = async(senderId, message, event) => {
           await sendApi.sendDontUnderstandMessage(senderId);
         break;
       default:
+        console.log('default, ', stateName);
         await sendApi.sendDontUnderstandMessage(senderId);
         break;
     }
@@ -316,7 +324,7 @@ const handleQuickRepliesMessage = async (senderId, quick_reply) => {
   });
   switch (type) {
     case 'PSY_ANSWER':
-      selectAnswer(senderId, data)
+      selectAnswer(senderId, data);
       break;
     case 'STAR_ANSWER_NO':
       const starData = dataHelper.getStarData();
@@ -342,7 +350,7 @@ const handleQuickRepliesMessage = async (senderId, quick_reply) => {
       break;
     case USER_STATE_PSY:
       dataHelper.setPsyTest(user, true);
-      sendApi.sendStartPsyTestMessage(senderId, dataHelper.getDescription(user));
+      sendApi.sendStartPsyTestMessage(senderId, dataHelper.getDescription(user), user);
       break;
     default:
       console.log('default, ', type);
@@ -363,7 +371,7 @@ const handleTestReceive = async(message, senderId) => {
 
 
   if (message.text === '22') {
-    sendApi.sendAnswerTarotResultMessage(senderId, "lol");
+    dataHelper.setPsyTest();
     return true;
   }
 
