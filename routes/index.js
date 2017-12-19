@@ -12,7 +12,8 @@ router.get('/', (req, res) => {
     share_url: 'https://www.facebook.com/v2.11/dialog/share',
     appId: '552043455131217',
     hashtag: ('#hello!!'),
-    href: `${SERVER_URL}`,
+    // href: `${SERVER_URL}/`,
+    href: 'https://fierce-beyond-56689.herokuapp.com/share',
   };
   const dataJSON = JSON.stringify(data);
 
