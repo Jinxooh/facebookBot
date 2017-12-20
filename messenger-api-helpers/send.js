@@ -4,7 +4,7 @@ import concat from 'lodash/concat';
 // ===== MESSENGER =============================================================
 import api from './api';
 import messages from './messages';
-import dataHelper, { USER_STATE_STAR, MESSAGE_PROCESS, MESSAGE_DONE } from './dataHelper';
+import dataHelper, { MODE_REVIEW, MESSAGE_PROCESS, MESSAGE_DONE } from './dataHelper';
 
 const CHATTING_SPEED = process.env.BOT_DEV_ENV === 'dev' ? 500 : 1000;
 
@@ -133,7 +133,7 @@ const sendStarResultMessage = async (recipientId, starTestData, stateName, curre
       messages.starResultMessage(result),
       messages.starLastResultMessage,
       messages.sendShareButton(recipientId),
-      messages.reviewReplies('REVIEWING', stateName),
+      messages.reviewReplies(MODE_REVIEW, stateName),
     );
   } else {
     message = concat(
@@ -151,7 +151,7 @@ const sendStarResultMessage = async (recipientId, starTestData, stateName, curre
 const sendReviewReply = async (recipientId, stateName) => {
   await sendMessage(
     recipientId,
-    messages.reviewReplies('REVIEWING', stateName),
+    messages.reviewReplies(MODE_REVIEW, stateName),
   );
 };
 

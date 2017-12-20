@@ -173,7 +173,7 @@ const handleQuickRepliesMessage = async (senderId, quick_reply) => {
   const user = await dataHelper.getUser(senderId);
 
   switch (type) {
-    case 'REVIEWING':
+    case MODE_REVIEW:
       reviewResult(senderId, user, data);
       break;
     case 'STAR_ANSWER_NO':
