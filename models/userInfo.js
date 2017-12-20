@@ -1,6 +1,7 @@
 import {
   GET_STARTED,
-  USER_STATUS_INIT,
+  MESSAGE_DONE,
+  MODE_NORMAL,
 } from '../messenger-api-helpers/dataHelper';
 /**
  * Question Model
@@ -19,15 +20,12 @@ class UserInfo {
     this.next = null;
     this.psyTestId = null;
 
-    // status : start, done...
-    // stateName : TAROT, PSY_TEST, DONE, INIT...
-    this.state = {
-      status: USER_STATUS_INIT,
-      stateName: GET_STARTED,
-      retries: 0,
-    }
+    this.retries = 0;
+    this.stateName = GET_STARTED;
+    this.modes = MODE_NORMAL;
+    this.messageStatus = MESSAGE_DONE;
 
-    this.userQueue = [];
+    // this.userQueue = [];
   }
 
   pushUserQueue(queue) {
@@ -35,22 +33,24 @@ class UserInfo {
   }
 
   setValue({
-    current, next, psyTestId, userQueue, state,
+    current, next, psyTestId, userQueue, retries, stateName, modes, messageStatus,
   }) {
+    console.log('====================');
+
+    if (stateName) console.log('stateName', stateName);
+    if (modes) console.log('modes', modes);
+    if (messageStatus) console.log('messageStatus', messageStatus);
+
     if (current) this.current = current;
     if (next) this.next = next;
     if (psyTestId) this.psyTestId = psyTestId;
 
     if (userQueue) this.userQueue = userQueue;
-    if (state) {
-      const { status, stateName, retries } = state;
-      if (status) this.state.status = status;
-      if (stateName) this.state.stateName = stateName;
-      if (retries) this.state.retries = retries;
-      console.log('=================');
-      if (status) console.log('status', status);
-      if (stateName) console.log('stateName', stateName);
-    }
+
+    if (retries) this.retries = retries;
+    if (stateName) this.stateName = stateName;
+    if (modes) this.modes = modes;
+    if (messageStatus) this.messageStatus = messageStatus;
   }
 }
 

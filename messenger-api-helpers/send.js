@@ -4,7 +4,7 @@ import concat from 'lodash/concat';
 // ===== MESSENGER =============================================================
 import api from './api';
 import messages from './messages';
-import { USER_STATE_STAR } from './dataHelper';
+import dataHelper, { USER_STATE_STAR, MESSAGE_PROCESS, MESSAGE_DONE } from './dataHelper';
 
 const CHATTING_SPEED = process.env.BOT_DEV_ENV === 'dev' ? 500 : 1000;
 
@@ -47,7 +47,8 @@ const asyncForEach = async (array, callback) => {
 // Send one or more messages using the Send API.
 const sendMessage = async (recipientId, messagePayloads) => {
   const arr = castArray(messagePayloads);
-
+  const user = await dataHelper.getUser(recipientId);
+  user.setValue({ messageStatus: MESSAGE_PROCESS });
   // 대화 하는것 처럼 지연을 주기위해서
   const start = async () => {
     await asyncForEach(arr, async (item) => {
@@ -57,6 +58,7 @@ const sendMessage = async (recipientId, messagePayloads) => {
     api.callAsyncMessagesAPI(300, typingOff(recipientId));
   };
   await start();
+  user.setValue({ messageStatus: MESSAGE_DONE });
 };
 
 
@@ -165,7 +167,7 @@ const sendStartTarotMessage = (recipientId, user) => {
 };
 
 const sendTarotResultMessage = async (recipientId, user, tarotNumber, tarotData) => {
-  user.setValue({ state: { retries: 0 } });
+  user.setValue({ retries: 0 });
   await sendMessage(
     recipientId,
     concat(
@@ -188,8 +190,8 @@ const sendResultThanksMessage = async (recipientId) => {
 };
 
 const sendTarotFailureMessage = (recipientId, user) => {
-  const { retries } = user.state;
-  user.setValue({ state: { retries: retries + 1 } });
+  const { retries } = user;
+  user.setValue({ retries: retries + 1 });
   sendMessage(
     recipientId,
     retries > 1 ? messages.tarotAnswerFailure3times(user) : messages.tarotAnswerFailure(user),

@@ -14,9 +14,17 @@ export const USER_STATE_STAR = 'USER_STATE_STAR';
 export const USER_STATE_PSY = 'USER_STATE_PSY';
 export const USER_STATUS_INIT = 'USER_STATUS_INIT'; // 초기값
 export const USER_STATUS_START = 'USER_STATUS_START'; // 진행 시작
-export const USER_STATUS_PROCESS = 'USER_STATUS_PROCESS'; // 진행중인 상태
 export const USER_STATUS_ANSWERING = 'USER_STATUS_ANSWERING'; // 사용자 입력을 받는 상태
+
+export const USER_STATUS_PROCESS = 'USER_STATUS_PROCESS'; // 진행중인 상태
 export const USER_STATUS_DONE = 'USER_STATUS_DONE'; // 진행이 끝난 상태
+
+export const MESSAGE_PROCESS = 'MESSAGE_PROCESS'; // 진행중인 상태
+export const MESSAGE_DONE = 'MESSAGE_DONE'; // 진행중인 상태
+
+export const MODE_NORMAL = 'MODE_NORMAL';
+export const MODE_DATE = 'MODE_DATE';
+export const MODE_REVIEW = 'MODE_REVIEW';
 
 const dataHelper = (() => {
   let psyData = null;
@@ -87,7 +95,7 @@ const dataHelper = (() => {
         const psyTestId = String(Math.floor(Math.random() * psyData.length));
         const current = '0'; // start id
         user.setValue({
-          psyTestId, current, state: { stateName: USER_STATE_PSY, status: USER_STATUS_START },
+          psyTestId, current, stateName: USER_STATE_PSY, messageStatus: USER_STATUS_START,
         });
       }
     },

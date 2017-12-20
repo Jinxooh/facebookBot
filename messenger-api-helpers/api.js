@@ -9,7 +9,7 @@ const PAGE_ACCESS_TOKEN = process.env.BOT_DEV_ENV === 'dev' ? process.env.TEST_P
 const RETRIES = 5;
 
 const callAPI = (endPoint, messageDataArray, retries = RETRIES) => {
-  if (!messageDataArray.message) return;
+  // if (!messageDataArray.message) return;
   // Error if developer forgot to specify an endpoint to send our request to
   if (!endPoint) {
     console.error('callAPI requires you specify an endpoint.');
