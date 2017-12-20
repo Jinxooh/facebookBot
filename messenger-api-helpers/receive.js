@@ -176,6 +176,7 @@ const handleNlpMessage = async (senderId, message, event) => {
           const tarotDate = `${KSTdate.getFullYear()}${KSTdate.getMonth() + 1}${KSTdate.getDate()}`;
           const tarotNumber = dataHelper.selectTarot(tarotDate);
           await sendApi.sendTarotResultMessage(senderId, user, tarotNumber, dataHelper.getTarotData(tarotNumber));
+          await sendApi.sendReviewReply(senderId, stateName);
         }
         if (stateName === USER_STATE_STAR) {
           const starTestNumber = dataHelper.selectStarTest(KSTdate.getMonth(), KSTdate.getDate());
@@ -287,10 +288,8 @@ const handleNlpMessage = async (senderId, message, event) => {
 
 const handleQuickRepliesMessage = async (senderId, quick_reply) => {
   const { type, data } = JSON.parse(quick_reply.payload);
-  const { starTestData, index } = data;
-  const starData = dataHelper.getStarData();
   const user = await dataHelper.getUser(senderId);
-  const last = starTestData && index === starTestData.length - 1;
+
   user.setValue({
     state: {
       status: USER_STATUS_START,
@@ -298,19 +297,20 @@ const handleQuickRepliesMessage = async (senderId, quick_reply) => {
     },
   });
   switch (type) {
+    case 'REVIEWING':
+      console.log('reviewing');
+      reviewResult(senderId, user, data);
+      break;
     case 'PSY_ANSWER':
       selectAnswer(senderId, data);
       break;
     case 'STAR_ANSWER_NO':
-      await sendApi.sendLastResultMessage(senderId, starData[starData.length - 1]);
+      await sendApi.sendLastResultMessage(senderId);
+      sendApi.sendReviewReply(senderId, 'STAR_TEST');
       break;
     case 'STAR_ANSWER_YES':
-      if (last) {
-        await sendApi.sendStarResultMessage(senderId, starTestData, index, last);
-        await sendApi.sendLastResultMessage(senderId, starData[starData.length - 1]);
-      } else {
-        await sendApi.sendStarResultMessage(senderId, starTestData, index);
-      }
+      const { starTestData, index } = data;
+      await sendApi.sendStarResultMessage(senderId, starTestData, index);
       break;
     case USER_STATE_STAR:
       dataHelper.setStarTest(user);
@@ -332,10 +332,25 @@ const handleQuickRepliesMessage = async (senderId, quick_reply) => {
 const handleTestReceive = async (message, senderId) => {
   // console.log('senderId, ', senderId);
   dataHelper.getTarotData();
+  if (message.text === '123') {
+    // const user = await dataHelper.getUser(senderId);
+    // user.setValue({
+    //   state: {
+    //     status: USER_STATUS_PROCESS,
+    //     stateName: GET_STARTED,
+    //   },
+    // });
+    // await sendApi.sendStartMessage(senderId);
+    // user.setValue({
+    //   state: {
+    //     status: USER_STATUS_DONE,
+    //   },
+    // });
+  }
+
   if (message.text === '11') {
-    // console.log(dataHelper.selectStarTest(11, 25));
-    // console.log(dataHelper.getStarData(0));
-    await sendApi.sendStarResultMessage(senderId, dataHelper.getStarData()[0]);
+    const user = await dataHelper.getUser(senderId);
+    dataHelper.saveReview(senderId, user, "what the?");
     return true;
   }
 
@@ -347,8 +362,6 @@ const handleTestReceive = async (message, senderId) => {
   }
 
   if (message.text === '33') {
-    const starData = dataHelper.getStarData();
-    await sendApi.sendLastResultMessage(senderId, starData[starData.length - 1]);
     return true;
   }
 

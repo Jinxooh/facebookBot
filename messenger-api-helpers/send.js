@@ -4,6 +4,7 @@ import concat from 'lodash/concat';
 // ===== MESSENGER =============================================================
 import api from './api';
 import messages from './messages';
+import { USER_STATE_STAR } from './dataHelper';
 
 const CHATTING_SPEED = process.env.BOT_DEV_ENV === 'dev' ? 500 : 1000;
 
@@ -78,7 +79,6 @@ const sendWelcomeMessage = async (recipientId) => {
   );
 };
 
-
 // Send a different Welcome message based on if the user is logged in.
 const sendStartMessage = async (recipientId) => {
   await sendMessage(
@@ -118,24 +118,38 @@ const sendStartStarTestMessage = (recipientId, user) => {
   );
 };
 
-const sendStarResultMessage = async (recipientId, starTestData, current = 0, last) => {
+const sendStarResultMessage = async (recipientId, starTestData, current = 0) => {
   const result = starTestData[current];
   const index = current + 2;
+  const last = starTestData && index > starTestData.length;
+  console.log(last);
+  console.log(index);
+  console.log(starTestData.length);
 
   await sendMessage(
     recipientId,
     concat(
       messages.starResultMessage(result),
       !last && messages.starTestReplies(starTestData[current + 1], { starTestData, index }),
+      last && messages.starLastResultMessage,
+      last && messages.sendShareButton(recipientId),
+      last && messages.reviewReplies('REVIEWING', USER_STATE_STAR),
     ),
   );
 };
 
-const sendLastResultMessage = async (recipientId, starData) => {
+const sendReviewReply = async (recipientId, stateName) => {
+  await sendMessage(
+    recipientId,
+    messages.reviewReplies('REVIEWING', stateName),
+  );
+};
+
+const sendLastResultMessage = async (recipientId) => {
   await sendMessage(
     recipientId,
     concat(
-      messages.starResultMessage(starData),
+      messages.starLastResultMessage,
       messages.sendShareButton(recipientId),
     ),
   );
@@ -255,6 +269,7 @@ export default {
 
   sendGetUserProfile,
 
+  sendReviewReply,
   // nlp
   sendSayHiMessage,
   sendNiceMeetMessage,

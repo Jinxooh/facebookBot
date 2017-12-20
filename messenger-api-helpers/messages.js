@@ -154,6 +154,10 @@ const starResultMessage = (starData) => {
   return concat(dataHelper.arrayToJsonArray(starData));
 };
 
+const starLastResultMessage = [
+  { text: '제가 준비한 2018년 운세는 여기까지 입니다.' },
+];
+
 const startTarotMessage = (user) => {
   return [{
     text: `${user.first_name}님의 성향을 알아보는 나의 운명의 카드를 뽑아보시겠어요??`,
@@ -221,10 +225,38 @@ const tarotResultMessage = (user, tarotData) => {
       text: '어떠신가요?',
     }, {
       text: `${user.first_name}님의 운명의카드에 대한 해설이?`,
-    }, {
-      text: '맘에드시나요??',
     },
   );
+};
+
+const reviewReplies = (type, stateName) => {
+  return {
+    text: 'is it good?',
+    quick_replies: [{
+      content_type: 'text',
+      title: '잘맞아',
+      payload: JSON.stringify({
+        type,
+        data: `${stateName} good`,
+      }),
+    },
+    {
+      content_type: 'text',
+      title: '안맞아',
+      payload: JSON.stringify({
+        type,
+        data: `${stateName} not good`,
+      }),
+    },
+    {
+      content_type: 'text',
+      title: '모르겠어',
+      payload: JSON.stringify({
+        type,
+        data: `${stateName} I don't know well`,
+      }),
+    }],
+  };
 };
 
 const answerThanksMessage = () => {
@@ -321,7 +353,7 @@ const sendShareButton = () => {
       type: 'template',
       payload: {
         template_type: 'button',
-        text: ` 공유하길 원하시면 아래 ‘공유하기’ 버튼을 눌러주세요.`,
+        text: '공유하길 원하시면 아래 ‘공유하기’ 버튼을 눌러주세요.',
         buttons: [{
           title: '공유하기',
           type: 'web_url',
@@ -347,6 +379,7 @@ export default {
   // contellation
   startStarTestMessage,
   starResultMessage,
+  starLastResultMessage,
   starTestReplies,
 
   // tarot
@@ -358,6 +391,8 @@ export default {
   // psy
   psyTestReplies,
 
+  // review
+  reviewReplies,
   answerThanksMessage,
 
   tarotAnswerFailure,

@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const { Schema } = mongoose;
+const Schema = mongoose.Schema; // eslint-disable-line prefer-destructuring
 
 const Review = new Schema({
   psid: String,
@@ -12,6 +12,7 @@ const Review = new Schema({
 });
 
 Review.statics.findOneByPsid = (psid) => {
+  console.log('findOneByPsid, ', psid);
   return this.findOne({
     psid,
   }).exec();
@@ -19,7 +20,7 @@ Review.statics.findOneByPsid = (psid) => {
 
 Review.statics.create = (psid, first_name, last_name, profile_pic) => {
   const review = new this({
-    psid, first_name, last_name, profile_pic
+    psid, first_name, last_name, profile_pic,
   });
   // return the Promise
   const save = review.save();
