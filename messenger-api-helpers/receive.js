@@ -107,12 +107,13 @@ const handleNlpMessage = async (senderId, message, event) => {
 
   if (status === USER_STATUS_PROCESS) {
     // 자두야 놀자 커맨드 여러번 입력 안되게 수정
-    if (!isEmpty(nlp)) {
-      const self = firstEntityValue(nlp, 'self');
-      const play = firstEntityValue(nlp, 'play');
-      if (self && play) return;
-    }
-    user.pushUserQueue(event);
+    console.log('processing');
+    // if (!isEmpty(nlp)) {
+    //   const self = firstEntityValue(nlp, 'self');
+    //   const play = firstEntityValue(nlp, 'play');
+    //   if (self && play) return;
+    // }
+    // user.pushUserQueue(event);
     return;
   }
 
@@ -233,7 +234,6 @@ const handleNlpMessage = async (senderId, message, event) => {
         }
         break;
       case USER_STATE_PSY:
-        console.log(status);
         if (status === USER_STATUS_ANSWERING) {
           // review
           reviewResult(senderId, user, `${stateName}:${message.text}`);
@@ -292,8 +292,7 @@ const handleQuickRepliesMessage = async (senderId, quick_reply) => {
 
   user.setValue({
     state: {
-      status: USER_STATUS_START,
-      stateName: type,
+      status: USER_STATUS_PROCESS,
     },
   });
   switch (type) {
@@ -313,7 +312,6 @@ const handleQuickRepliesMessage = async (senderId, quick_reply) => {
       await sendApi.sendStarResultMessage(senderId, starTestData, index);
       break;
     case USER_STATE_STAR:
-      dataHelper.setStarTest(user);
       sendApi.sendStartStarTestMessage(senderId, user);
       break;
     case USER_STATE_TAROT:

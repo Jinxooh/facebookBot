@@ -47,6 +47,9 @@ class UserInfo {
       if (status) this.state.status = status;
       if (stateName) this.state.stateName = stateName;
       if (retries) this.state.retries = retries;
+      console.log('=================');
+      if (status) console.log('status', status);
+      if (stateName) console.log('stateName', stateName);
     }
   }
 }

@@ -12,7 +12,6 @@ const Review = new Schema({
 });
 
 Review.statics.findOneByPsid = function (psid) { // eslint-disable-line func-names
-  console.log('findOneByPsid, ', psid);
   return this.findOne({
     psid,
   }).exec();

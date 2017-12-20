@@ -111,6 +111,7 @@ const sendSuggestRestartMessage = (recipientId) => {
   );
 };
 
+// 별자리 테스트 시작
 const sendStartStarTestMessage = (recipientId, user) => {
   sendMessage(
     recipientId,
@@ -118,13 +119,14 @@ const sendStartStarTestMessage = (recipientId, user) => {
   );
 };
 
+// 별자리 테스트 결과
 const sendStarResultMessage = async (recipientId, starTestData, current = 0) => {
   const result = starTestData[current];
   const index = current + 2;
   const last = starTestData && index > starTestData.length;
-  console.log(last);
-  console.log(index);
-  console.log(starTestData.length);
+  // console.log(last);
+  // console.log(index);
+  // console.log(starTestData.length);
 
   await sendMessage(
     recipientId,

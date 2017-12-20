@@ -81,11 +81,6 @@ const dataHelper = (() => {
         .then(saveReview);
     },
 
-    setStarTest: (user) => {
-      const current = null; // start id
-      user.setValue({ current });
-    },
-
     setPsyTest: (user, initialize) => {
       // 심리테스트를 호출할때 마다 변경위해서
       if (initialize || !user.psyTestId) {
