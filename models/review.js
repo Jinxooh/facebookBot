@@ -11,14 +11,14 @@ const Review = new Schema({
   reviews: { type: Array, default: [] },
 });
 
-Review.statics.findOneByPsid = (psid) => {
+Review.statics.findOneByPsid = function (psid) { // eslint-disable-line func-names
   console.log('findOneByPsid, ', psid);
   return this.findOne({
     psid,
   }).exec();
 };
 
-Review.statics.create = (psid, first_name, last_name, profile_pic) => {
+Review.statics.create = function (psid, first_name, last_name, profile_pic) { // eslint-disable-line func-names
   const review = new this({
     psid, first_name, last_name, profile_pic,
   });
@@ -27,7 +27,7 @@ Review.statics.create = (psid, first_name, last_name, profile_pic) => {
   return save;
 };
 
-Review.methods.saveReview = (review) => {
+Review.methods.saveReview = function (review) { // eslint-disable-line func-names
   this.reviews.push(review);
   return this.save();
 };
