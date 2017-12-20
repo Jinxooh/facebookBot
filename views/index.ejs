@@ -25,9 +25,8 @@
   console.log(appId);
   console.log(href);
   
-  const redirect_uri = encodeURIComponent(`${server_url}/share`);
+  const redirect_uri = encodeURIComponent(`${server_url}`);
   if ( navigator.userAgent.toUpperCase().indexOf('FB') > -1 ){
-    alert('aaaa');
     location.href = `${share_url}?app_id=${appId}&hashtag=%23`
     + `${encodeURIComponent(ls)}&href=${encodeURIComponent(href)}`
     + `&redirect_uri=${redirect_uri}`;

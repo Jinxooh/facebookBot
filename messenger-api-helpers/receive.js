@@ -5,7 +5,6 @@ import sendApi from './send';
 import dataHelper, {
   GET_STARTED,
   USER_STATE_TAROT,
-  USER_STATE_PSY,
   USER_STATE_STAR,
   MESSAGE_PROCESS, // 진행중인 상태
 
@@ -36,39 +35,28 @@ const reviewResult = async (senderId, user, reviewMessage) => {
   user.setValue({ modes: MODE_NORMAL });
 };
 
-const selectAnswer = async (senderId, next) => {
-  const user = await dataHelper.getUser(senderId);
-  const { stateName, modes } = user;
+// const selectAnswer = async (senderId, next) => {
+//   const user = await dataHelper.getUser(senderId);
+//   const { stateName, modes } = user;
 
-  user.setValue({ next });
-  if (next) {
-    user.setValue({ current: next });
-    const { result } = dataHelper.getQustionData(user);
-    if (result) {
-      await sendApi.sendResultMessage(senderId, result, user);
-      user.setValue({ modes: MODE_REVIEW });
-    } else {
-      sendApi.sendTwoButtonMessage(senderId, dataHelper.getDescription(user), user);
-    }
-  } else {
-    if (modes === MODE_REVIEW) {
-      reviewResult(senderId, user, `${stateName}:${next}`);
-    } else {
-      sendApi.sendSuggestRestartMessage(senderId);
-    }
-  }
-};
-
-const firstEntityValue = (entities, entity) => {
-  const val = entities && entities[entity] &&
-    Array.isArray(entities[entity]) &&
-    entities[entity].length > 0 &&
-    entities[entity][0].value;
-  if (!val) {
-    return null;
-  }
-  return typeof val === 'object' ? val.value : val;
-};
+//   user.setValue({ next });
+//   if (next) {
+//     user.setValue({ current: next });
+//     const { result } = dataHelper.getQustionData(user);
+//     if (result) {
+//       await sendApi.sendResultMessage(senderId, result, user);
+//       user.setValue({ modes: MODE_REVIEW });
+//     } else {
+//       sendApi.sendTwoButtonMessage(senderId, dataHelper.getDescription(user), user);
+//     }
+//   } else {
+//     if (modes === MODE_REVIEW) {
+//       reviewResult(senderId, user, `${stateName}:${next}`);
+//     } else {
+//       sendApi.sendSuggestRestartMessage(senderId);
+//     }
+//   }
+// };
 
 const handleStickerMessage = async (senderId, message) => {
   const user = await dataHelper.getUser(senderId);
@@ -86,7 +74,7 @@ const handleStickerMessage = async (senderId, message) => {
 const handleNlpMessage = async (senderId, message) => {
   const user = await dataHelper.getUser(senderId);
   const { stateName, messageStatus, modes } = user;
-  
+
   const nlp = message.nlp.entities;
 
   if (messageStatus === MESSAGE_PROCESS) {
@@ -96,14 +84,14 @@ const handleNlpMessage = async (senderId, message) => {
   }
 
   if (!isEmpty(nlp)) {
-    const self = firstEntityValue(nlp, 'self');
-    const play = firstEntityValue(nlp, 'play');
+    const self = dataHelper.firstEntityValue(nlp, 'self');
+    const play = dataHelper.firstEntityValue(nlp, 'play');
     if (self && play) {
       user.setValue({ stateName: GET_STARTED });
       await sendApi.sendStartMessage(senderId);
     }
 
-    const select = stateName === GET_STARTED && firstEntityValue(nlp, 'select_test');
+    const select = stateName === GET_STARTED && dataHelper.firstEntityValue(nlp, 'select_test');
     if (select) {
       switch (select) {
         case 'first':
@@ -120,7 +108,7 @@ const handleNlpMessage = async (senderId, message) => {
       }
     }
 
-    const datetime = modes === MODE_DATE && firstEntityValue(nlp, 'datetime');
+    const datetime = modes === MODE_DATE && dataHelper.firstEntityValue(nlp, 'datetime');
     if (datetime) {
       if (nlp.datetime[0].grain === 'day') { // 년/월/일까지 입력했을 경우 day
         const date = new Date(datetime);
@@ -138,7 +126,7 @@ const handleNlpMessage = async (senderId, message) => {
         if (stateName === USER_STATE_STAR) {
           const starTestNumber = dataHelper.selectStarTest(KSTdate.getMonth(), KSTdate.getDate());
           const starData = dataHelper.getStarData();
-          await sendApi.sendStarResultMessage(senderId, starData[starTestNumber]);
+          await sendApi.sendStarResultMessage(senderId, starData[starTestNumber], stateName);
           user.setValue({ modes: MODE_NORMAL });
         }
       } else {
@@ -147,7 +135,7 @@ const handleNlpMessage = async (senderId, message) => {
     }
 
 
-    const greeting = firstEntityValue(nlp, 'greeting');
+    const greeting = dataHelper.firstEntityValue(nlp, 'greeting');
     if (greeting) {
       switch (greeting) {
         case 'say_hi':
@@ -186,7 +174,6 @@ const handleQuickRepliesMessage = async (senderId, quick_reply) => {
 
   switch (type) {
     case 'REVIEWING':
-      console.log('reviewing');
       reviewResult(senderId, user, data);
       break;
     case 'STAR_ANSWER_NO':
@@ -194,8 +181,8 @@ const handleQuickRepliesMessage = async (senderId, quick_reply) => {
       sendApi.sendReviewReply(senderId, 'STAR_TEST');
       break;
     case 'STAR_ANSWER_YES':
-      const { starTestData, index } = data;
-      await sendApi.sendStarResultMessage(senderId, starTestData, index);
+      const { starTestData, stateName, index } = data;
+      await sendApi.sendStarResultMessage(senderId, starTestData, stateName, index);
       break;
     case USER_STATE_STAR:
       user.setValue({ stateName: USER_STATE_STAR, modes: MODE_DATE });

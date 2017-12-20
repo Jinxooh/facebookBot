@@ -100,6 +100,17 @@ const dataHelper = (() => {
       }
     },
 
+    firstEntityValue: (entities, entity) => {
+      const val = entities && entities[entity] &&
+        Array.isArray(entities[entity]) &&
+        entities[entity].length > 0 &&
+        entities[entity][0].value;
+      if (!val) {
+        return null;
+      }
+      return typeof val === 'object' ? val.value : val;
+    },
+
     // tarot 선택 알고리즘
     selectTarot: (text) => {
       let result = reduce(text, (sum, n) => { return parseInt(sum, 10) + parseInt(n, 10); });

@@ -12,7 +12,7 @@ router.get('/', (req, res) => {
     appId: '552043455131217',
     hashtag: ('#hello!!'),
     // href: `${SERVER_URL}/`,
-    href: 'https://fierce-beyond-56689.herokuapp.com/share',
+    href: 'https://jadoochat1.wixsite.com/jadoochat/forum/2018-byeoljari-kadeu/gejari',
   };
   const dataJSON = JSON.stringify(data);
 

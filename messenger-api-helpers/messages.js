@@ -25,23 +25,6 @@ const getStarted = {
   }],
 };
 
-/**
- * The persistent menu for users to use.
- */
-// const persistentMenu = {
-//   setting_type: 'call_to_actions',
-//   thread_state: 'existing_thread',
-//   call_to_actions: [],
-// };
-
-// setting greeting default
-// const greetingMessage = {
-//   setting_type: 'greeting',
-//   greeting: {
-//     'text': `안녕하세요! 👋{{user_first_name}}님👋 저는 당신의 감정을 연구하는 감정케어 상담봇 자두 입니다. 입력란에 '자두야 놀자' 입력하시면 시작됩니다. 즐거운 시간 되세요!`
-//   }
-// };
-
 const welcomeMessage = {
   text: `안녕하세요? '자두야 놀자' 라고 입력해주시면 테스트가 시작됩니다.`,
 };
@@ -116,7 +99,7 @@ const starTestReplies = (text, data) => {
     text: description,
     quick_replies: [{
       content_type: 'text',
-      title: '네',
+      title: '볼래',
       payload: JSON.stringify({
         type: 'STAR_ANSWER_YES',
         data,
@@ -124,7 +107,7 @@ const starTestReplies = (text, data) => {
     },
     {
       content_type: 'text',
-      title: '아니요',
+      title: '안볼래',
       payload: JSON.stringify({
         type: 'STAR_ANSWER_NO',
         data: 'no',

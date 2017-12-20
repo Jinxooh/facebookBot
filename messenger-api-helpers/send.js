@@ -122,23 +122,29 @@ const sendStartStarTestMessage = (recipientId, user) => {
 };
 
 // 별자리 테스트 결과
-const sendStarResultMessage = async (recipientId, starTestData, current = 0) => {
+const sendStarResultMessage = async (recipientId, starTestData, stateName, current = 0) => {
   const result = starTestData[current];
   const index = current + 2;
   const last = starTestData && index > starTestData.length;
-  // console.log(last);
-  // console.log(index);
-  // console.log(starTestData.length);
+  let message = null;
+
+  if (last) {
+    message = concat(
+      messages.starResultMessage(result),
+      messages.starLastResultMessage,
+      messages.sendShareButton(recipientId),
+      messages.reviewReplies('REVIEWING', stateName),
+    );
+  } else {
+    message = concat(
+      messages.starResultMessage(result),
+      messages.starTestReplies(starTestData[current + 1], { starTestData, index, stateName }),
+    );
+  }
 
   await sendMessage(
     recipientId,
-    concat(
-      messages.starResultMessage(result),
-      !last && messages.starTestReplies(starTestData[current + 1], { starTestData, index }),
-      last && messages.starLastResultMessage,
-      last && messages.sendShareButton(recipientId),
-      last && messages.reviewReplies('REVIEWING', USER_STATE_STAR),
-    ),
+    message,
   );
 };
 
