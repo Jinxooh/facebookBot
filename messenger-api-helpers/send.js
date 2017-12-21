@@ -122,12 +122,17 @@ const sendStartStarTestMessage = (recipientId, user) => {
 };
 
 // 별자리 테스트 결과
-const sendStarResultMessage = async (recipientId, starTestNumber, stateName, current = 0) => {
+const sendStarResultMessage = async (recipientId, data, user) => {
+  const {
+    starName, starNumber, stateName, index = 0,
+  } = data;
+  const { first_name } = user;
+
   const starData = dataHelper.getStarData();
-  const starTestData = starData[starTestNumber];
-  const result = starTestData[current];
-  const index = current + 2;
-  const last = starTestData && index > starTestData.length;
+  const starTestData = starData[starNumber];
+  const result = starTestData[index];
+
+  const last = starTestData && (index + 2) > starTestData.length;
   let message = null;
 
   if (last) {
@@ -139,8 +144,10 @@ const sendStarResultMessage = async (recipientId, starTestNumber, stateName, cur
     );
   } else {
     message = concat(
-      messages.starResultMessage(result),
-      messages.starTestReplies(starTestData[current + 1], { starTestNumber, index, stateName }),
+      messages.starResultMessage(result, first_name, starName),
+      messages.starTestReplies(starTestData[index + 1], {
+        starName, starNumber, stateName, index: index + 2,
+      }),
     );
   }
 
@@ -286,6 +293,4 @@ export default {
   sendSayHiMessage,
   sendNiceMeetMessage,
   sendDontUnderstandMessage,
-
-  // sendShareButton,
 };

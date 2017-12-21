@@ -124,8 +124,10 @@ const handleNlpMessage = async (senderId, message) => {
           user.setValue({ modes: MODE_REVIEW });
         }
         if (stateName === USER_STATE_STAR) {
-          const starTestNumber = dataHelper.selectStarTest(KSTdate.getMonth(), KSTdate.getDate());
-          await sendApi.sendStarResultMessage(senderId, starTestNumber, stateName);
+          const { starName, starNumber } = dataHelper.selectStarTest(KSTdate.getMonth(), KSTdate.getDate());
+          await sendApi.sendStarResultMessage(senderId, {
+            starName, starNumber, stateName,
+          }, user);
           user.setValue({ modes: MODE_NORMAL });
         }
       } else {
@@ -180,8 +182,7 @@ const handleQuickRepliesMessage = async (senderId, quick_reply) => {
       sendApi.sendReviewReply(senderId, 'STAR_TEST');
       break;
     case 'STAR_ANSWER_YES':
-      const { starTestNumber, stateName, index } = data;
-      await sendApi.sendStarResultMessage(senderId, starTestNumber, stateName, index);
+      await sendApi.sendStarResultMessage(senderId, data, user);
       break;
     case USER_STATE_STAR:
       user.setValue({ stateName: USER_STATE_STAR, modes: MODE_DATE });

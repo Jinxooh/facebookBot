@@ -125,18 +125,18 @@ const dataHelper = (() => {
 
     // 별자리 선택 알고리즘
     selectStarTest: (month, day) => {
-      // const name = [
-      //   '염소자리', '물병자리', '물고기자리', '양자리',
-      //   '황소자리', '쌍둥이자리', '게자리', '사자자리',
-      //   '처녀자리', '천칭자리', '전갈자리', '사수자리'
-      // ];
+      const name = [
+        '염소자리', '물병자리', '물고기자리', '양자리',
+        '황소자리', '쌍둥이자리', '게자리', '사자자리',
+        '처녀자리', '천칭자리', '전갈자리', '사수자리',
+      ];
       const starArray = [19, 18, 20, 19, 20, 21, 22, 22, 23, 22, 22, 24];
 
       const monthCheck = month === 11 ? 0 : month + 1;
       const starNumber = starArray[month] >= day ? month : monthCheck;
-      // const starName = name[starNumber];
-      // return { starName, starNumber };
-      return starNumber;
+      const starName = name[starNumber];
+      return { starName, starNumber };
+      // return starNumber;
     },
 
     getQustionData: (user) => {
@@ -154,11 +154,14 @@ const dataHelper = (() => {
       };
     },
 
-    arrayToJsonArray: (array) => {
+    arrayToJsonArray: (array, username, starName) => {
       const jsonArray = reduce(array, (result, item, index) => {
         const resultArray = result;
+        let replacedItem = item;
+        if (username) replacedItem = replacedItem.replace('000(이름) ', username);
+        if (starName) replacedItem = replacedItem.replace('( 별.자.리.이.름 ) ', starName);
         resultArray[index] = {
-          text: item,
+          text: replacedItem,
         };
         return resultArray;
       }, []);

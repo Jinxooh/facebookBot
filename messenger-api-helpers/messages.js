@@ -4,7 +4,7 @@ import isArray from 'lodash/isArray';
 import dataHelper from './dataHelper';
 
 const SERVER_URL = process.env.BOT_DEV_ENV === 'dev' ? process.env.TEST_SERVER_URL : process.env.SERVER_URL;
-const JADOO_URL = process.env.JADOO_URL;
+const { JADOO_URL } = process.env;
 
 const linkButton = {
   title: '자두가 좋아요!',
@@ -133,8 +133,8 @@ const startStarTestMessage = (user) => {
   ];
 };
 
-const starResultMessage = (starData) => {
-  return concat(dataHelper.arrayToJsonArray(starData));
+const starResultMessage = (starData, username, starName) => {
+  return concat(dataHelper.arrayToJsonArray(starData, username, starName));
 };
 
 const starLastResultMessage = [
