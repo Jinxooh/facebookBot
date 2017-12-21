@@ -35,29 +35,6 @@ const reviewResult = async (senderId, user, reviewMessage) => {
   user.setValue({ modes: MODE_NORMAL });
 };
 
-// const selectAnswer = async (senderId, next) => {
-//   const user = await dataHelper.getUser(senderId);
-//   const { stateName, modes } = user;
-
-//   user.setValue({ next });
-//   if (next) {
-//     user.setValue({ current: next });
-//     const { result } = dataHelper.getQustionData(user);
-//     if (result) {
-//       await sendApi.sendResultMessage(senderId, result, user);
-//       user.setValue({ modes: MODE_REVIEW });
-//     } else {
-//       sendApi.sendTwoButtonMessage(senderId, dataHelper.getDescription(user), user);
-//     }
-//   } else {
-//     if (modes === MODE_REVIEW) {
-//       reviewResult(senderId, user, `${stateName}:${next}`);
-//     } else {
-//       sendApi.sendSuggestRestartMessage(senderId);
-//     }
-//   }
-// };
-
 const handleStickerMessage = async (senderId, message) => {
   const user = await dataHelper.getUser(senderId);
   const { stateName, modes } = user;
@@ -79,7 +56,6 @@ const handleNlpMessage = async (senderId, message) => {
 
   if (messageStatus === MESSAGE_PROCESS) {
     // 자두야 놀자 커맨드 여러번 입력 안되게 수정
-    console.log('processing');
     return;
   }
 
@@ -178,7 +154,7 @@ const handleQuickRepliesMessage = async (senderId, quick_reply) => {
       reviewResult(senderId, user, data);
       break;
     case 'STAR_ANSWER_NO':
-      await sendApi.sendLastResultMessage(senderId);
+      await sendApi.sendLastResultMessage(senderId, data);
       sendApi.sendReviewReply(senderId, 'STAR_TEST');
       break;
     case 'STAR_ANSWER_YES':
@@ -204,6 +180,29 @@ const handleQuickRepliesMessage = async (senderId, quick_reply) => {
       break;
   }
 };
+
+// const selectAnswer = async (senderId, next) => {
+//   const user = await dataHelper.getUser(senderId);
+//   const { stateName, modes } = user;
+
+//   user.setValue({ next });
+//   if (next) {
+//     user.setValue({ current: next });
+//     const { result } = dataHelper.getQustionData(user);
+//     if (result) {
+//       await sendApi.sendResultMessage(senderId, result, user);
+//       user.setValue({ modes: MODE_REVIEW });
+//     } else {
+//       sendApi.sendTwoButtonMessage(senderId, dataHelper.getDescription(user), user);
+//     }
+//   } else {
+//     if (modes === MODE_REVIEW) {
+//       reviewResult(senderId, user, `${stateName}:${next}`);
+//     } else {
+//       sendApi.sendSuggestRestartMessage(senderId);
+//     }
+//   }
+// };
 
 const handleTestReceive = async (message, senderId) => {
   if (message.text === '11') {

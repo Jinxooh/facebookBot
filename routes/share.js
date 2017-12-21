@@ -14,7 +14,7 @@ router.get('/:item', (req, res) => {
     server_url: SERVER_URL,
     share_url: 'https://www.facebook.com/v2.11/dialog/share',
     appId: '552043455131217',
-    hashtag: '#hello!!',
+    hashtag: '#자두',
     // href: `${SERVER_URL}/`,
     href: `https://jadoochat1.wixsite.com/jadoochat/forum/2018-byeoljari-kadeu/${array[item]}`,
   };

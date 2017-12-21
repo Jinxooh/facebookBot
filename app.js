@@ -31,8 +31,8 @@ app.use('/webhook', webhooks);
 app.use('/end', end);
 
 try {
-  const psyTestData = fs.readFileSync(path.join(__dirname, 'public/data.json'));
-  const json = JSON.parse(psyTestData);
+  const jsonData = fs.readFileSync(path.join(__dirname, 'public/data.json'));
+  const json = JSON.parse(jsonData);
 
   dataHelper.setData(json);
 } catch (e) {

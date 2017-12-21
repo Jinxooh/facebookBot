@@ -61,7 +61,6 @@ const sendMessage = async (recipientId, messagePayloads) => {
   user.setValue({ messageStatus: MESSAGE_DONE });
 };
 
-
 // Send a read receipt to indicate the message has been read
 const sendReadReceipt = (recipientId) => {
   const messageData = {
@@ -89,13 +88,6 @@ const sendStartMessage = async (recipientId) => {
       messages.startMessage,
       messages.startReplies,
     ),
-  );
-};
-
-const sendTwoButtonMessage = (recipientId, { questionDescription }, user) => {
-  sendMessage(
-    recipientId,
-    messages.psyTestReplies(questionDescription, user),
   );
 };
 
@@ -127,7 +119,6 @@ const sendStarResultMessage = async (recipientId, data, user) => {
     starName, starNumber, stateName, index = 0,
   } = data;
   const { first_name } = user;
-
   const starData = dataHelper.getStarData();
   const starTestData = starData[starNumber];
   const result = starTestData[index];
@@ -139,9 +130,10 @@ const sendStarResultMessage = async (recipientId, data, user) => {
     message = concat(
       messages.starResultMessage(result),
       messages.starLastResultMessage,
-      messages.sendShareButton(0),
+      messages.sendShareButton(starNumber),
       messages.reviewReplies(MODE_REVIEW, stateName),
     );
+    user.setValue({ modes: MODE_REVIEW });
   } else {
     message = concat(
       messages.starResultMessage(result, first_name, starName),
@@ -164,12 +156,13 @@ const sendReviewReply = async (recipientId, stateName) => {
   );
 };
 
-const sendLastResultMessage = async (recipientId) => {
+const sendLastResultMessage = async (recipientId, data) => {
+  const { starNumber } = data;
   await sendMessage(
     recipientId,
     concat(
       messages.starLastResultMessage,
-      messages.sendShareButton(0),
+      messages.sendShareButton(starNumber),
     ),
   );
 };
@@ -213,16 +206,6 @@ const sendTarotFailureMessage = (recipientId, user) => {
   );
 };
 
-const sendStartPsyTestMessage = (recipientId, { psyTestDescription, questionDescription }, user) => {
-  sendMessage(
-    recipientId,
-    [
-      messages.sayStartTestMessage(psyTestDescription),
-      messages.psyTestReplies(questionDescription, user),
-    ],
-  );
-};
-
 // get User Profile from facebook Reference
 // https://developers.facebook.com/docs/messenger-platform/identity/user-profile
 const sendGetUserProfile = (recipientId) => {
@@ -255,13 +238,22 @@ const sendDontUnderstandMessage = async (recipientId) => {
   );
 };
 
-// const sendShareButton = (recipientId) => {
+// const sendStartPsyTestMessage = (recipientId, { psyTestDescription, questionDescription }, user) => {
 //   sendMessage(
 //     recipientId,
-//     messages.sendShareButton(recipientId),
+//     [
+//       messages.sayStartTestMessage(psyTestDescription),
+//       messages.psyTestReplies(questionDescription, user),
+//     ],
 //   );
 // };
 
+// const sendTwoButtonMessage = (recipientId, { questionDescription }, user) => {
+//   sendMessage(
+//     recipientId,
+//     messages.psyTestReplies(questionDescription, user),
+//   );
+// };
 
 export default {
   // basic
@@ -280,9 +272,10 @@ export default {
   sendResultThanksMessage,
   sendTarotFailureMessage,
 
-  sendStartPsyTestMessage,
+  // psy
+  // sendStartPsyTestMessage,
+  // sendTwoButtonMessage,
 
-  sendTwoButtonMessage,
   sendResultMessage,
   sendSuggestRestartMessage,
 
