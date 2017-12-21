@@ -11,9 +11,9 @@ import dataHelper from './messenger-api-helpers/dataHelper';
 import ThreadSetup from './messenger-api-helpers/thread-setup';
 
 // ===== ROUTES ================================================================
-import index from './routes/index';
-import webhooks from './routes/webhooks';
 import share from './routes/share';
+import webhooks from './routes/webhooks';
+import end from './routes/end';
 
 const app = express();
 
@@ -26,9 +26,9 @@ app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(express.static(path.join(__dirname, 'public')));
 // app.use('/', express.static(path.join(__dirname, 'views/')));
 
-app.use('/', index);
-app.use('/webhook', webhooks);
 app.use('/share', share);
+app.use('/webhook', webhooks);
+app.use('/end', end);
 
 try {
   const psyTestData = fs.readFileSync(path.join(__dirname, 'public/data.json'));

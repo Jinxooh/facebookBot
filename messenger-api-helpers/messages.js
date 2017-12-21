@@ -330,7 +330,7 @@ const sendDontUnderstandMessage = [{
   text: '무슨말인지 모르겠어요.',
 }];
 
-const sendShareButton = () => {
+const sendShareButton = (data) => {
   return {
     attachment: {
       type: 'template',
@@ -340,7 +340,7 @@ const sendShareButton = () => {
         buttons: [{
           title: '공유하기',
           type: 'web_url',
-          url: `${SERVER_URL}/`,
+          url: `${SERVER_URL}/share/${data}`,
           webview_height_ratio: 'tall',
           messenger_extensions: true,
         }],

@@ -87,7 +87,7 @@ const handleNlpMessage = async (senderId, message) => {
     const self = dataHelper.firstEntityValue(nlp, 'self');
     const play = dataHelper.firstEntityValue(nlp, 'play');
     if (self && play) {
-      user.setValue({ stateName: GET_STARTED });
+      user.setValue({ stateName: GET_STARTED, modes: MODE_NORMAL });
       await sendApi.sendStartMessage(senderId);
     }
 
@@ -125,8 +125,7 @@ const handleNlpMessage = async (senderId, message) => {
         }
         if (stateName === USER_STATE_STAR) {
           const starTestNumber = dataHelper.selectStarTest(KSTdate.getMonth(), KSTdate.getDate());
-          const starData = dataHelper.getStarData();
-          await sendApi.sendStarResultMessage(senderId, starData[starTestNumber], stateName);
+          await sendApi.sendStarResultMessage(senderId, starTestNumber, stateName);
           user.setValue({ modes: MODE_NORMAL });
         }
       } else {
@@ -181,8 +180,8 @@ const handleQuickRepliesMessage = async (senderId, quick_reply) => {
       sendApi.sendReviewReply(senderId, 'STAR_TEST');
       break;
     case 'STAR_ANSWER_YES':
-      const { starTestData, stateName, index } = data;
-      await sendApi.sendStarResultMessage(senderId, starTestData, stateName, index);
+      const { starTestNumber, stateName, index } = data;
+      await sendApi.sendStarResultMessage(senderId, starTestNumber, stateName, index);
       break;
     case USER_STATE_STAR:
       user.setValue({ stateName: USER_STATE_STAR, modes: MODE_DATE });

@@ -122,7 +122,9 @@ const sendStartStarTestMessage = (recipientId, user) => {
 };
 
 // 별자리 테스트 결과
-const sendStarResultMessage = async (recipientId, starTestData, stateName, current = 0) => {
+const sendStarResultMessage = async (recipientId, starTestNumber, stateName, current = 0) => {
+  const starData = dataHelper.getStarData();
+  const starTestData = starData[starTestNumber];
   const result = starTestData[current];
   const index = current + 2;
   const last = starTestData && index > starTestData.length;
@@ -132,13 +134,13 @@ const sendStarResultMessage = async (recipientId, starTestData, stateName, curre
     message = concat(
       messages.starResultMessage(result),
       messages.starLastResultMessage,
-      messages.sendShareButton(recipientId),
+      messages.sendShareButton(0),
       messages.reviewReplies(MODE_REVIEW, stateName),
     );
   } else {
     message = concat(
       messages.starResultMessage(result),
-      messages.starTestReplies(starTestData[current + 1], { starTestData, index, stateName }),
+      messages.starTestReplies(starTestData[current + 1], { starTestNumber, index, stateName }),
     );
   }
 
@@ -160,7 +162,7 @@ const sendLastResultMessage = async (recipientId) => {
     recipientId,
     concat(
       messages.starLastResultMessage,
-      messages.sendShareButton(recipientId),
+      messages.sendShareButton(0),
     ),
   );
 };
@@ -246,12 +248,12 @@ const sendDontUnderstandMessage = async (recipientId) => {
   );
 };
 
-const sendShareButton = (recipientId) => {
-  sendMessage(
-    recipientId,
-    messages.sendShareButton(recipientId),
-  );
-};
+// const sendShareButton = (recipientId) => {
+//   sendMessage(
+//     recipientId,
+//     messages.sendShareButton(recipientId),
+//   );
+// };
 
 
 export default {
@@ -285,5 +287,5 @@ export default {
   sendNiceMeetMessage,
   sendDontUnderstandMessage,
 
-  sendShareButton,
+  // sendShareButton,
 };

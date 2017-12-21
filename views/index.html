@@ -1,52 +1,56 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>JADOO</title>
-    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
-    
-    <meta property="og:url" content="https://dd3ea490.ngrok.io"/>
-    <meta property="og:title" content="THIS IS SUCCESS!!!">
-		<meta property="og:image" content="https://cdn.cloudturing.com/tvn/man_45.jpg">
-		<meta property="og:description" content="지금 타임라인에 공유하고 푸짐한 상품 받아가세요!">
-    <script src="/bundle.js"></script>
-  </head>
-  <body>
-    <div id="content"></div>
-    <script>
-      window.extAsyncInit = function() {
-        // the Messenger Extensions JS SDK is done loading
-        MessengerExtensions.getUserID(function success(uids) {
-          window.attachApp(uids.psid);
-        }, function error(err) {
-          window.attachApp();
-        });
-      };
 
-      window.fbAsyncInit = function() {
-        console.log('fbAsyncInit');
-        FB.init({
-          appId            : '552043455131217',
-          autoLogAppEvents : true,
-          xfbml            : true,
-          version          : 'v2.11'
-        });
-      };
+<head>
+  <title>공유하기</title>
+  <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+</head>
+<style>
+  #input {
+    width: 150px;
+    height: 350px;
+  }
 
-      (function(doc, script, domId){
-        var js, fjs = doc.getElementsByTagName(script)[0];
-        if (doc.getElementById(domId)) { return; }
-        js = doc.createElement(script);
-        js.id = domId;
-        js.src = "//connect.facebook.com/en_US/messenger.Extensions.js";
-        fjs.parentNode.insertBefore(js, fjs);
-      }(document, 'script', 'Messenger'));
-      (function(d, s, id){
-        var js, fjs = d.getElementsByTagName(s)[0];
-        if (d.getElementById(id)) {return;}
-        js = d.createElement(s); js.id = id;
-        js.src = "https://connect.facebook.net/en_US/sdk.js";
-        fjs.parentNode.insertBefore(js, fjs);
-      }(document, 'script', 'facebook-jssdk'));
-    </script>
-  </body>
+  #result {
+    width: 350px;
+    height: 350px;
+  }
+
+  #btn {
+    font-size: 20px;
+    width: 100px;
+    height: 100px;
+  }
+</style>
+
+<body>
+  <textarea id="input"></textarea>
+  <button id='btn'>click me</button>
+  <textarea id="result"></textarea>
+  <script>
+    String.prototype.replaceAll = function (org, dest) {
+      return this.split(org).join(dest);
+    }
+
+    function click() {
+      var InputTextbox = document.getElementById('input');
+      var array = InputTextbox.value.split('\n');
+      var arrayJSON = JSON.stringify(array);
+      arrayJSON = "[" + arrayJSON + "]";
+
+      var zeroReplace = arrayJSON.replaceAll(',"","","",', ']],[[');
+      var firstReplace = zeroReplace.replaceAll(',"","",', '],[');
+      var secondReplace = firstReplace.replaceAll(',"",', '],[');
+      var thirdReplace = secondReplace.replaceAll(',""', '');
+
+      var fourthReplace = thirdReplace.replaceAll(" (볼래/안볼래)", '');
+      var result = "[" + fourthReplace + "]";
+      var resultTextbox = document.getElementById('result');
+      resultTextbox.value = result;
+    }
+    var button = document.getElementById('btn');
+    button.addEventListener('click', click);
+  </script>
+</body>
+
 </html>
