@@ -6,7 +6,11 @@ const router = express.Router();
 router.get('/:item', (req, res) => {
   // share button setting value
   const { item } = req.params;
-  const array = ['gejari']; // address params
+  const array = [
+    'mulbyeongjari', 'mulgogijari', 'yangjari', 'hwangsojari',
+    '쌍둥이자리', 'gejari', 'sajajari', 'cheonyeojari',
+    'cheonchingjari', 'jeongaljari', 'sasujari', 'yeomsojari',
+  ]; // address params
 
   const data = {
     server_url: SERVER_URL,
@@ -14,7 +18,7 @@ router.get('/:item', (req, res) => {
     appId: '552043455131217',
     hashtag: '#2018별자리운세',
     // href: `${SERVER_URL}/`,
-    href: `https://jadoochat1.wixsite.com/jadoochat/forum/2018-byeoljari-kadeu/${array[item]}`,
+    href: `https://jadoochat1.wixsite.com/jadoochat/forum/jadu-haengun-kadeu/2018nyeon-jadu-byeoljari-unse-${array[item]}`,
   };
   const dataJSON = JSON.stringify(data);
 

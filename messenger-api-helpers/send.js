@@ -122,7 +122,11 @@ const sendStarResultMessage = async (recipientId, data, user) => {
   const starData = dataHelper.getStarData();
   const starTestData = starData[starNumber];
   const result = starTestData[index];
-  const description = 'hi';
+  const description = [
+    'mulbyeongjari', 'mulgogijari', 'yangjari', 'hwangsojari',
+    '쌍둥이자리', 'gejari', 'sajajari', 'cheonyeojari',
+    'cheonchingjari', 'jeongaljari', 'sasujari', 'yeomsojari',
+  ];
 
   const last = starTestData && (index + 2) > starTestData.length;
   let message = null;
@@ -131,7 +135,7 @@ const sendStarResultMessage = async (recipientId, data, user) => {
     message = concat(
       messages.starResultMessage(result),
       messages.sendImageMessage(`media/star-images/words/${starNumber}.png`),
-      messages.sendShareButton(starNumber, description),
+      messages.sendShareButton(starNumber, description[starNumber]),
       messages.reviewReplies(MODE_REVIEW, stateName),
     );
     user.setValue({ modes: MODE_REVIEW });

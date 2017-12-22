@@ -24,20 +24,20 @@ export const MODE_DATE = 'MODE_DATE';
 export const MODE_REVIEW = 'MODE_REVIEW';
 
 const dataHelper = (() => {
-  // let psyData = null;
+  let psyData = null;
   let tarotData = null;
   let starTest = null;
 
   return {
     setData: (json) => {
       const {
-        // psyTest,
+        psyTest,
         tarotName,
         tarotDescription,
         starTestResult,
       } = json;
 
-      // psyData = psyTest;
+      psyData = psyTest;
 
       tarotData = {
         tarotName,
@@ -89,7 +89,6 @@ const dataHelper = (() => {
         .then(saveReview);
     },
 
-    
     firstEntityValue: (entities, entity) => {
       const val = entities && entities[entity] &&
       Array.isArray(entities[entity]) &&
@@ -100,11 +99,11 @@ const dataHelper = (() => {
       }
       return typeof val === 'object' ? val.value : val;
     },
-    
+
     // tarot 선택 알고리즘
     selectTarot: (text) => {
       let result = reduce(text, (sum, n) => { return parseInt(sum, 10) + parseInt(n, 10); });
-      
+
       if (result < 23) {
         if (result === 22) result = 0;
       } else {
@@ -112,7 +111,7 @@ const dataHelper = (() => {
       }
       return result;
     },
-    
+
     // 별자리 선택 알고리즘
     selectStarTest: (month, day) => {
       const name = [
@@ -142,31 +141,31 @@ const dataHelper = (() => {
     },
 
     // for PSY TEST
-    // setPsyTest: (user, initialize) => {
-    //   // 심리테스트를 호출할때 마다 변경위해서
-    //   if (initialize || !user.psyTestId) {
-    //     const psyTestId = String(Math.floor(Math.random() * psyData.length));
-    //     const current = '0'; // start id
-    //     user.setValue({
-    //       psyTestId, current, stateName: USER_STATE_PSY, messageStatus: USER_STATUS_START,
-    //     });
-    //   }
-    // },
+    setPsyTest: (user, initialize) => {
+      // 심리테스트를 호출할때 마다 변경위해서
+      if (initialize || !user.psyTestId) {
+        const psyTestId = String(Math.floor(Math.random() * psyData.length));
+        const current = '0'; // start id
+        user.setValue({
+          psyTestId, current, stateName: USER_STATE_PSY, messageStatus: USER_STATUS_START,
+        });
+      }
+    },
 
-    // getQustionData: (user) => {
-    //   const { questionList } = psyData[user.psyTestId];
-    //   const question = questionList[user.current];
-    //   return question;
-    // },
+    getQustionData: (user) => {
+      const { questionList } = psyData[user.psyTestId];
+      const question = questionList[user.current];
+      return question;
+    },
 
-    // getDescription: (user) => {
-    //   const { description, questionList } = psyData[user.psyTestId];
-    //   const question = questionList[user.current];
-    //   return {
-    //     psyTestDescription: description,
-    //     questionDescription: question.description,
-    //   };
-    // },
+    getDescription: (user) => {
+      const { description, questionList } = psyData[user.psyTestId];
+      const question = questionList[user.current];
+      return {
+        psyTestDescription: description,
+        questionDescription: question.description,
+      };
+    },
   };
 })();
 
