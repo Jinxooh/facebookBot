@@ -23,7 +23,7 @@ const setDomainWhitelisting = () => {
     },
   );
 }
-
+// https://www.facebook.com/v2.11/dialog/share
 /**
  * Sets the persistent menu for the application
  *
