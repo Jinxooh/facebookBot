@@ -107,7 +107,7 @@ const handleNlpMessage = async (senderId, message) => {
           user.setValue({ modes: MODE_NORMAL });
         }
       } else {
-        sendApi.sendTarotFailureMessage(senderId, user);
+        sendApi.sendDateTypeFailureMessage(senderId, user);
       }
     }
 
@@ -131,8 +131,7 @@ const handleNlpMessage = async (senderId, message) => {
         await sendApi.sendDontUnderstandMessage(senderId);
         break;
       case MODE_DATE:
-        // should change to DATE FAILURE MESSAGE
-        sendApi.sendTarotFailureMessage(senderId, user);
+        sendApi.sendDateTypeFailureMessage(senderId, user);
         break;
       case MODE_REVIEW:
         reviewResult(senderId, user, `${stateName}:${message.text}`);
@@ -154,8 +153,8 @@ const handleQuickRepliesMessage = async (senderId, quick_reply) => {
       reviewResult(senderId, user, data);
       break;
     case 'STAR_ANSWER_NO':
-      await sendApi.sendLastResultMessage(senderId, data);
-      sendApi.sendReviewReply(senderId, 'STAR_TEST');
+      // await sendApi.sendLastResultMessage(senderId, data);
+      sendApi.sendReviewReply(senderId, USER_STATE_STAR);
       break;
     case 'STAR_ANSWER_YES':
       await sendApi.sendStarResultMessage(senderId, data, user);

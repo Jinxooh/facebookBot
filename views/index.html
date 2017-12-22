@@ -42,7 +42,7 @@
       var firstReplace = zeroReplace.replaceAll(',"","",', '],[');
       var secondReplace = firstReplace.replaceAll(',"",', '],[');
       var thirdReplace = secondReplace.replaceAll(',""', '');
-      var fourthReplace = thirdReplace.replaceAll(' (볼래/안볼래)",', '"],[');
+      var fourthReplace = thirdReplace.replaceAll(' (볼래요/안볼래요)",', '"],[');
       var result = "[" + fourthReplace + "]";
       var resultTextbox = document.getElementById('result');
       resultTextbox.value = result;

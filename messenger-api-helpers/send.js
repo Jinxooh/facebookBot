@@ -122,6 +122,7 @@ const sendStarResultMessage = async (recipientId, data, user) => {
   const starData = dataHelper.getStarData();
   const starTestData = starData[starNumber];
   const result = starTestData[index];
+  const description = 'hi';
 
   const last = starTestData && (index + 2) > starTestData.length;
   let message = null;
@@ -129,8 +130,8 @@ const sendStarResultMessage = async (recipientId, data, user) => {
   if (last) {
     message = concat(
       messages.starResultMessage(result),
-      messages.starLastResultMessage,
-      messages.sendShareButton(starNumber),
+      messages.sendImageMessage(`media/star-images/words/${starNumber}.png`),
+      messages.sendShareButton(starNumber, description),
       messages.reviewReplies(MODE_REVIEW, stateName),
     );
     user.setValue({ modes: MODE_REVIEW });
@@ -153,17 +154,6 @@ const sendReviewReply = async (recipientId, stateName) => {
   await sendMessage(
     recipientId,
     messages.reviewReplies(MODE_REVIEW, stateName),
-  );
-};
-
-const sendLastResultMessage = async (recipientId, data) => {
-  const { starNumber } = data;
-  await sendMessage(
-    recipientId,
-    concat(
-      messages.starLastResultMessage,
-      messages.sendShareButton(starNumber),
-    ),
   );
 };
 
@@ -197,12 +187,12 @@ const sendResultThanksMessage = async (recipientId) => {
   );
 };
 
-const sendTarotFailureMessage = (recipientId, user) => {
+const sendDateTypeFailureMessage = (recipientId, user) => {
   const { retries } = user;
   user.setValue({ retries: retries + 1 });
   sendMessage(
     recipientId,
-    retries > 1 ? messages.tarotAnswerFailure3times(user) : messages.tarotAnswerFailure(user),
+    retries > 1 ? messages.answerFailure3times() : messages.answerFailure(),
   );
 };
 
@@ -265,12 +255,11 @@ export default {
 
   sendStartStarTestMessage,
   sendStarResultMessage,
-  sendLastResultMessage,
 
   sendStartTarotMessage,
   sendTarotResultMessage,
   sendResultThanksMessage,
-  sendTarotFailureMessage,
+  sendDateTypeFailureMessage,
 
   // psy
   // sendStartPsyTestMessage,

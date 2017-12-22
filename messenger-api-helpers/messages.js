@@ -1,8 +1,9 @@
 import concat from 'lodash/concat';
-import dataHelper from './dataHelper';
+import dataHelper, { USER_STATE_STAR, USER_STATE_TAROT } from './dataHelper';
 
 const SERVER_URL = process.env.BOT_DEV_ENV === 'dev' ? process.env.TEST_SERVER_URL : process.env.SERVER_URL;
 const { JADOO_URL } = process.env;
+
 
 const linkButton = {
   title: '자두가 좋아요!',
@@ -135,10 +136,6 @@ const starResultMessage = (starData, username, starName) => {
   return concat(dataHelper.arrayToJsonArray(starData, username, starName));
 };
 
-const starLastResultMessage = [
-  { text: '제가 준비한 2018년 운세는 여기까지 입니다.' },
-];
-
 const startTarotMessage = (user) => {
   return [{
     text: `${user.first_name}님의 성향을 알아보는 나의 운명의 카드를 뽑아보시겠어요??`,
@@ -193,31 +190,44 @@ const tarotResultMessage = (user, tarotData) => {
   );
 };
 
+// 좋아 / 안좋아 / 그냥그래 / 더보고싶어
 const reviewReplies = (type, stateName) => {
+  let description = '?';
+  if (stateName === USER_STATE_STAR) description = '2018년 신년 운세는 어떠셨나요?';
+  if (stateName === USER_STATE_TAROT) description = '맘에 드시나요??';
+
   return {
-    text: 'is it good?',
+    text: description,
     quick_replies: [{
       content_type: 'text',
-      title: '잘맞아',
+      title: '좋아요',
       payload: JSON.stringify({
         type,
-        data: `${stateName} good`,
+        data: `${stateName} 좋아`,
       }),
     },
     {
       content_type: 'text',
-      title: '안맞아',
+      title: '안좋아요',
       payload: JSON.stringify({
         type,
-        data: `${stateName} not good`,
+        data: `${stateName} 안좋아`,
       }),
     },
     {
       content_type: 'text',
-      title: '모르겠어',
+      title: '그냥그래요',
       payload: JSON.stringify({
         type,
-        data: `${stateName} I don't know well`,
+        data: `${stateName} 그냥그래`,
+      }),
+    },
+    {
+      content_type: 'text',
+      title: '더보고싶어요',
+      payload: JSON.stringify({
+        type,
+        data: `${stateName} 더보고싶어`,
       }),
     }],
   };
@@ -244,21 +254,18 @@ const answerThanksMessage = () => {
   }];
 };
 
-const tarotAnswerFailure = (user) => {
+const answerFailure = () => {
   return [{
     text: '다시한번 생년월일을 입력해주세요!',
   },
   {
-    text: `폴레폴레 천천히 다시한번 ${user.first_name}님의 운명의 카드를 위해 기다릴게요!`,
+    text: '예시) 1991년05월19일 또는 1991/05/19 로 적어주세요.',
   }];
 };
 
-const tarotAnswerFailure3times = () => {
+const answerFailure3times = () => {
   return [{
     text: '잘 이해하지 못했어요ㅜㅜ',
-  },
-  {
-    text: '한번만 더 힘을내 입력해주세요! 운명의 카드를 찾기위해 기다리고 있어요!',
   },
   {
     text: '예시) 1991년05월19일 또는 1991/05/19 로 적어주세요.',
@@ -311,15 +318,15 @@ const sendDontUnderstandMessage = [{
   text: '무슨말인지 모르겠어요.',
 }];
 
-const sendShareButton = (starNumber) => {
+const sendShareButton = (starNumber, description) => {
   return {
     attachment: {
       type: 'template',
       payload: {
         template_type: 'button',
-        text: '공유하길 원하시면 아래 ‘공유하기’ 버튼을 눌러주세요.',
+        text: description,
         buttons: [{
-          title: '공유하기',
+          title: '타임라인에 공유하기',
           type: 'web_url',
           url: `${SERVER_URL}/share/${starNumber}`,
           webview_height_ratio: 'tall',
@@ -361,7 +368,6 @@ export default {
   // contellation
   startStarTestMessage,
   starResultMessage,
-  starLastResultMessage,
   starTestReplies,
 
   // tarot
@@ -377,8 +383,8 @@ export default {
   reviewReplies,
   answerThanksMessage,
 
-  tarotAnswerFailure,
-  tarotAnswerFailure3times,
+  answerFailure,
+  answerFailure3times,
 
   sayStartTestMessage,
   requestRestartMessage,
