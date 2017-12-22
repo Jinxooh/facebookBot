@@ -8,8 +8,8 @@ router.get('/:item', (req, res) => {
   const { item } = req.params;
   const array = [
     'mulbyeongjari', 'mulgogijari', 'yangjari', 'hwangsojari',
-    '쌍둥이자리', 'gejari', 'sajajari', 'cheonyeojari',
-    'cheonchingjari', 'jeongaljari', 'sasujari', 'yeomsojari',
+    'ssangdungijari', 'gejari', 'sajajari', 'ceonyeojari',
+    'ceoncingjari', 'jeongaljari', 'sasujari', 'yeomsojari',
   ]; // address params
 
   const data = {

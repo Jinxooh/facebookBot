@@ -123,9 +123,55 @@ const sendStarResultMessage = async (recipientId, data, user) => {
   const starTestData = starData[starNumber];
   const result = starTestData[index];
   const description = [
-    'mulbyeongjari', 'mulgogijari', 'yangjari', 'hwangsojari',
-    '쌍둥이자리', 'gejari', 'sajajari', 'cheonyeojari',
-    'cheonchingjari', 'jeongaljari', 'sasujari', 'yeomsojari',
+    `★2018’ 별자리 운세★
+♒ 물병자리 
+2018’ Key word: 성공
+Best Month: 5월~8월 
+Best Color: 노랑색, 주황색`, `★2018’ 별자리 운세★
+♓ 물고기자리
+2018’ Key word: 여행
+Best Month: 11월 
+Best Color: 금색(Gold)`, `★2018’ 별자리 운세★
+♈ 양자리
+2018’ Key word: 도전
+Best Month: 7월, 12월
+Best Color: 남보라색`, `★2018’ 별자리 운세★
+♉ 황소자리
+2018’ Key word: 네트워크
+Best Month: 4월, 9월 
+Best Color: 브라운`, `★2018’ 별자리 운세★
+♊ 쌍둥이자리 
+2018’ Key word: 변화
+Best Month: 4월, 6월
+Best Color: 초록색`, `★2018’ 별자리 운세★
+♋ 게자리
+2018’ Key word: 창조
+Best Month: 9월
+Best Color: 은색(Silver)`, `★2018’ 별자리 운세★
+♌ 사자자리
+2018’ Key word: 시작
+Best Month: 1월, 2월
+Best Color: 빨강색`, `★2018’ 별자리 운세★
+♍ 처녀자리
+2018’ Key word: 자유
+Best Month: 6월
+Best Color: 스카이블루`, `★2018’ 별자리 운세★
+♎ 천칭자리
+2018’ Key word: 풍요
+Best Month: 4월, 5월
+Best Color: 핑크색, 노란색`, `★2018’ 별자리 운세★
+♏ 전갈자리
+2018’ Key word: 전환
+Best Month: 5월
+Best Color: 오랜지색, 보라색`, `★2018’ 별자리 운세★
+♐ 사수자리
+2018’ Key word: 수확
+Best Month: 4월, 8월
+Best Color: 회색, 남색 `, `★2018’ 별자리 운세★
+♑ 염소자리
+2018’ Key word: 가능성
+Best Month: 3월, 9월
+Best Color: 민트색, 보라색`,
   ];
 
   const last = starTestData && (index + 2) > starTestData.length;
