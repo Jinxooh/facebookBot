@@ -35,11 +35,11 @@ class UserInfo {
   setValue({
     current, next, psyTestId, userQueue, retries, stateName, modes, messageStatus,
   }) {
-    console.log('====================');
-
-    if (stateName) console.log('stateName', stateName);
-    if (modes) console.log('modes', modes);
-    if (messageStatus) console.log('messageStatus', messageStatus);
+    if (process.env.BOT_DEV_ENV === 'dev') {
+      if (stateName) console.log('stateName', stateName);
+      if (modes) console.log('modes', modes);
+      if (messageStatus) console.log('messageStatus', messageStatus);
+    }
 
     if (current) this.current = current;
     if (next) this.next = next;
