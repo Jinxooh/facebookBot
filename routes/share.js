@@ -17,7 +17,7 @@ router.get('/:item', (req, res) => {
     server_url: SERVER_URL,
     share_url: 'https://www.facebook.com/v2.11/dialog/share',
     appId: APP_ID,
-    hashtag: '#2018별자리운세',
+    hashtag: '#감정케어자두',
     // href: `${SERVER_URL}/`,
     href: `https://jadoochat1.wixsite.com/jadoochat/forum/jadu-haengun-kadeu/2018nyeon-jadu-byeoljari-unse-${array[item]}`,
   };
