@@ -179,11 +179,12 @@ Best Color: 민트색, 보라색`,
 
   if (last) {
     message = concat(
-      messages.starResultMessage(result),
       messages.sendImageMessage(`media/star-images/words/${starNumber}.png`),
+      messages.starResultMessage(result),
       messages.sendShareButton(starNumber, description[starNumber]),
       messages.reviewReplies(MODE_REVIEW, stateName),
     );
+
     user.setValue({ modes: MODE_REVIEW });
   } else {
     message = concat(
