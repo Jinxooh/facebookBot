@@ -120,7 +120,7 @@ const dataHelper = (() => {
         '천칭자리', '전갈자리', '사수자리', '염소자리',
       ];
       const starArray = [20, 19, 21, 20, 21, 22, 23, 23, 24, 23, 23, 25];
-      const monthCheck = month === 0 ? month : month - 1;
+      const monthCheck = month === 0 ? 11 : month - 1;
       const starNumber = starArray[month] <= day ? month : monthCheck;
       const starName = name[starNumber];
       return { starName, starNumber };

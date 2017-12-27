@@ -205,8 +205,7 @@ const handleQuickRepliesMessage = async (senderId, quick_reply) => {
 
 const handleTestReceive = async (message, senderId) => {
   if (message.text === '11') {
-    const user = await dataHelper.getUser(senderId);
-    user.setValue({ modes: MODE_DATE });
+    dataHelper.selectStarTest(0, 11);
     return true;
   }
 
