@@ -89,12 +89,36 @@
       function(response) {
         if (response && !response.error_message) {
           console.log('Posting completed.');
-          CloseWindow();
+          getContext();
         } else {
           console.log('Error while posting.');
         }
       });
     });
+
+    function getContext(){
+      MessengerExtensions.getContext(appId,
+        function success(context){
+          sendShareData(context);
+        },
+        function error(err){
+        }
+      );
+    };
+
+    function sendShareData(context){
+      $.ajax({
+        method: 'POST',
+        url: server_url + '/shareData',
+        data: {
+          webShare: context
+        }
+      })
+      .done(function() {
+        CloseWindow();
+      })
+    }
+
     function CloseWindow(){
         MessengerExtensions.requestCloseBrowser(
             function success() {

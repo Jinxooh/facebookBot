@@ -14,6 +14,7 @@ import ThreadSetup from './messenger-api-helpers/thread-setup';
 import share from './routes/share';
 import webhooks from './routes/webhooks';
 import end from './routes/end';
+import shareData from './routes/shareData';
 
 const app = express();
 
@@ -29,6 +30,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/share', share);
 app.use('/webhook', webhooks);
 app.use('/end', end);
+app.use('/shareData', shareData);
 
 try {
   const jsonData = fs.readFileSync(path.join(__dirname, 'public/data.json'));

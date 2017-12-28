@@ -1,11 +1,18 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<title>공유하기</title>
+    <head>
+        <title>공유하기</title>
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
         <script>
+        <% if (data) { %>
+            const data = <%- data %>;
+        <% } else { %>
+            console.log('there is no data');
+        <% } %>
+        const { server_url, appId } = data;
         window.fbAsyncInit = function() {
             FB.init({
-                appId            : '1426741734040613',
+                appId            : appId,
                 autoLogAppEvents : true,
                 xfbml            : true,
                 version          : 'v2.10'
@@ -13,7 +20,7 @@
             FB.AppEvents.logPageView();
         };
         window.extAsyncInit = function() {
-            CloseWindow();
+            getContext();
         };
         (function(d, s, id){
             var js, fjs = d.getElementsByTagName(s)[0];
@@ -29,6 +36,29 @@
             js.src = "//connect.facebook.com/en_US/messenger.Extensions.js";
             fjs.parentNode.insertBefore(js, fjs);
         }(document, 'script', 'Messenger'));
+
+        function getContext(){
+            MessengerExtensions.getContext(appId, function success(context){
+                sendShareData(context);
+            },
+            function error(err){
+
+            });
+        };
+
+        function sendShareData(context){
+            $.ajax({
+                method: 'POST',
+                url: server_url + '/shareData',
+                data: {
+                    mobileShare: context
+                }
+            })
+            .done(function() {
+                CloseWindow();
+            })
+        }
+
         function CloseWindow(){
             MessengerExtensions.requestCloseBrowser(
                 function success() {
@@ -38,6 +68,6 @@
         };
         </script>
     </head>
-	<body>
+    <body>
     </body>
 </html>
