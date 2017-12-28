@@ -111,12 +111,10 @@
         method: 'POST',
         url: server_url + '/shareData',
         data: {
-          webShare: context
+          psid: context.psid,
+          type: 'web',
         }
-      })
-      .done(function() {
-        CloseWindow();
-      })
+      });
     }
 
     function CloseWindow(){

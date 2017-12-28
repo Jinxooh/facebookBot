@@ -47,16 +47,7 @@
         };
 
         function sendShareData(context){
-            $.ajax({
-                method: 'POST',
-                url: server_url + '/shareData',
-                data: {
-                    mobileShare: context
-                }
-            })
-            .done(function() {
-                CloseWindow();
-            })
+            location.href = server_url + '/shareData?psid=' + context.psid + '&type=mobile';
         }
 
         function CloseWindow(){
