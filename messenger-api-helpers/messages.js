@@ -6,7 +6,7 @@ const { JADOO_URL } = process.env;
 
 
 const linkButton = {
-  title: '자두가 좋아요!',
+  title: '자두에게 행운 나눠주기!',
   type: 'web_url',
   url: `${JADOO_URL}`,
 };
@@ -176,23 +176,20 @@ const tarotResultMessage = (user, tarotData) => {
   return concat(
     {
       text: `당신의 운명의 카드는 '${tarotData.tarotName}' 입니다.`,
-    }, {
+    },
+    {
       text: `${user.first_name} 님은`,
     },
-    tarotDescription, {
-      text: '어떠신가요?',
-    }, {
-      text: `${user.first_name}님의 운명의카드에 대한 해설이?`,
-    },
+    tarotDescription,
   );
 };
 
-// 좋아 / 안좋아 / 그냥그래 / 더보고싶어
+// 좋아요 / 안좋아요 / 그냥그래요 / 더보고싶어요
 const reviewReplies = (type, stateName) => {
-  let description = '?';
-  if (stateName === USER_STATE_STAR) description = '2018년 신년 운세는 어떠셨나요?';
-  if (stateName === USER_STATE_TAROT) description = '맘에 드시나요??';
-
+  // let description = '?';
+  // if (stateName === USER_STATE_STAR) description = '자두가 준비한 테스트는 어떠셨나요?';
+  // if (stateName === USER_STATE_TAROT) description = '맘에 드시나요??';
+  const description = '자두가 준비한 테스트는 어떠셨나요?';
   return {
     text: description,
     quick_replies: [{
@@ -230,25 +227,36 @@ const reviewReplies = (type, stateName) => {
   };
 };
 
-const answerThanksMessage = () => {
+const requestLike = () => {
   return [{
-    text: '평가해 주셔서 감사합니다. ^^',
+    text: '행운은 주변에게 나누면 나눌수록 좋은 일이 생긴데요.',
+  },
+  {
+    text: '늘 좋은 일이 생길 수 있도록 자두도 도와줄게요!',
   },
   {
     attachment: {
       type: 'template',
       payload: {
         template_type: 'button',
-        text: '앞으로 더 열심히 공부해서 좋은 서비스로 보답할게요!',
+        text: '자두에게도 "좋아요" 한번 누르고 행운을 나눠 주세요^^',
         buttons: [
           linkButton,
         ],
       },
     },
-  },
-  {
-    text: '자두랑 자주 이야기 하고 싶다면 좋아요를 눌러주세요!',
   }];
+};
+
+const answerThanksMessage = () => {
+  return [
+    {
+      text: '평가해주셔서 감사해요! ^^',
+    },
+    {
+      text: '2018년 새해 복 많이 받으시고, 원하는 일 모두 이뤄지길 자두가 응원할게요♥',
+    },
+  ];
 };
 
 const answerFailure = () => {
@@ -316,22 +324,30 @@ const sendDontUnderstandMessage = [{
 }];
 
 const sendShareButton = (starNumber, description) => {
-  return {
-    attachment: {
-      type: 'template',
-      payload: {
-        template_type: 'button',
-        text: description,
-        buttons: [{
-          title: '타임라인에 공유하기',
-          type: 'web_url',
-          url: `${SERVER_URL}/share/${starNumber}`,
-          webview_height_ratio: 'tall',
-          messenger_extensions: true,
-        }],
+  return [
+    {
+      text: '신년운세는 2월28일까지만 볼수 있습니다.',
+    },
+    {
+      text: '오늘 본 운세를 저장 해서, 간직하세요.',
+    },
+    {
+      attachment: {
+        type: 'template',
+        payload: {
+          template_type: 'button',
+          text: description,
+          buttons: [{
+            title: '타임라인에 공유하기',
+            type: 'web_url',
+            url: `${SERVER_URL}/share/${starNumber}`,
+            webview_height_ratio: 'tall',
+            messenger_extensions: true,
+          }],
+        },
       },
     },
-  };
+  ];
 };
 
 // const psyTestResultMessage = (user, questionDescription) => {
@@ -378,6 +394,7 @@ export default {
 
   // review
   reviewReplies,
+  requestLike,
   answerThanksMessage,
 
   answerFailure,

@@ -6,7 +6,7 @@ import api from './api';
 import messages from './messages';
 import dataHelper, { MODE_REVIEW, MESSAGE_PROCESS, MESSAGE_DONE } from './dataHelper';
 
-const CHATTING_SPEED = process.env.BOT_DEV_ENV === 'dev' ? 500 : 1000;
+const CHATTING_SPEED = process.env.BOT_DEV_ENV === 'dev' ? 1000 : 1000;
 
 // Turns typing indicator on.
 const typingOn = (recipientId) => {
@@ -179,9 +179,10 @@ Best Color: 민트색, 보라색`,
 
   if (last) {
     message = concat(
-      messages.sendImageMessage(`media/star-images/words/${starNumber}.png`),
+      messages.sendImageMessage(`media/star-images/words/${starNumber}.jpg`),
       messages.starResultMessage(result),
       messages.sendShareButton(starNumber, description[starNumber]),
+      messages.requestLike(),
       messages.reviewReplies(MODE_REVIEW, stateName),
     );
 
@@ -201,10 +202,20 @@ Best Color: 민트색, 보라색`,
   );
 };
 
-const sendReviewReply = async (recipientId, stateName) => {
+const sendReviewReplyWithoutLike = async (recipientId, stateName) => {
   await sendMessage(
     recipientId,
     messages.reviewReplies(MODE_REVIEW, stateName),
+  );
+};
+
+const sendReviewReply = async (recipientId, stateName) => {
+  await sendMessage(
+    recipientId,
+    concat(
+      messages.requestLike(),
+      messages.reviewReplies(MODE_REVIEW, stateName),
+    ),
   );
 };
 
@@ -321,6 +332,7 @@ export default {
 
   sendGetUserProfile,
 
+  sendReviewReplyWithoutLike,
   sendReviewReply,
   // nlp
   sendSayHiMessage,

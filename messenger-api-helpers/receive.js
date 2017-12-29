@@ -96,7 +96,7 @@ const handleNlpMessage = async (senderId, message) => {
           const tarotDate = `${KSTdate.getFullYear()}${KSTdate.getMonth() + 1}${KSTdate.getDate()}`;
           const tarotNumber = dataHelper.selectTarot(tarotDate);
           await sendApi.sendTarotResultMessage(senderId, user, tarotNumber, dataHelper.getTarotData(tarotNumber));
-          await sendApi.sendReviewReply(senderId, stateName);
+          await sendApi.sendReviewReplyWithoutLike(senderId, stateName);
           user.setValue({ modes: MODE_REVIEW });
         }
         if (stateName === USER_STATE_STAR) {
