@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>BROADCAST MESSAGE</title>
+  <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+</head>
+<style>
+  body {
+    text-align: center;
+    margin: 0 auto;
+    width: 600px;
+  }
+
+  table {
+    width: 100%;
+  }
+
+  textarea {
+    width: 80%;
+    height: 50px;
+  }
+
+  tr {
+    width: 100%;
+  }
+
+  td input[type=text] {
+    width: 350px;
+  }
+
+  #send-container {
+    padding-top: 40px;
+  }
+
+  #btn {
+    font-size: 20px;
+    width: 100%;
+    height: 80px;
+  }
+</style>
+<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+  crossorigin="anonymous"></script>
+
+<body>
+  <h1>SEND BROADCAST MESSAGE</h1>
+  <div>
+    <input type="radio" name="fruit" value="0" checked="checked" /> Only text
+    <input type="radio" name="fruit" value="1" /> Generic
+    <input type="radio" name="fruit" value="2" /> Quick Replies
+    <input type="radio" name="fruit" value="3" /> Link Button
+    <input type="radio" name="fruit" value="4" /> Image
+  </div>
+  <div>
+    Access Token :
+    <textarea id="accessToken"></textarea>
+  </div>
+  <div>
+    <button id="testApp">Input test APP TOKEN</button>
+    <button id="realApp">Input REAL APP TOKEN</button>
+  </div>
+  <div name='container' class='0'>
+    <h2>Only Text</h2>
+    <table>
+      <tr>
+        <th>name</th>
+        <th>content</th>
+      </tr>
+      <tr>
+        <td>text</td>
+        <td>
+          <textarea name="text"></textarea>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div name='container' class='1'>
+    <h2>Generic</h2>
+    <img id='imgchecker' />
+    <table>
+      <tr>
+        <th>name</th>
+        <th>content</th>
+      </tr>
+      <tr>
+        <td>title</td>
+        <td>
+          <input type="text" name="title" />
+        </td>
+      </tr>
+      <tr>
+        <td>image_url</td>
+        <td>
+          <input type="text" name="image_url" value="https://scontent-icn1-1.xx.fbcdn.net/v/t1.0-9/23380300_164251454167227_8507716224399062030_n.jpg?oh=7c2e4a723e7a53edf467c6eec38c0dfa&oe=5AF6F92E"
+          />
+        </td>
+        <td>
+          <button id='imageCheckBtn'>Check</button>
+        </td>
+      </tr>
+      <tr>
+        <td>subtitle</td>
+        <td>
+          <input type="text" name="subtitle" />
+        </td>
+      </tr>
+      <tr>
+        <td>buttons</td>
+        <td id="buttons-container">
+          <button id="addbutton">ADD</button>
+          <button id="removebutton">REMOVE</button>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div name='container' class='2'>
+    <h2>QUICK REPLIES</h2>
+    <table>
+      <tr>
+        <th>name</th>
+        <th>content</th>
+      </tr>
+      <tr>
+        <td>title</td>
+        <td>
+          <input type="text" name="title" />
+        </td>
+      </tr>
+      <tr>
+        <td>quick replies</td>
+        <td id="replies-container">
+          <button id="addbutton">ADD</button>
+          <button id="removebutton">REMOVE</button>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div name='container' class='3'>
+    <h2>LINK BUTTON</h2>
+    <table>
+      <tr>
+        <th>name</th>
+        <th>content</th>
+      </tr>
+      <tr>
+        <td>link title</td>
+        <td>
+          <input type="text" name="text" />
+        </td>
+      </tr>
+      <tr>
+        <td>button title</td>
+        <td>
+          <input type="text" name="title" />
+        </td>
+      </tr>
+      <tr>
+        <td>link url</td>
+        <td>
+          <input type="text" name="url" />
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div name='container' class='4'>
+    <h2>IMAGE</h2>
+    <img id='imgchecker' />
+    <table>
+      <tr>
+        <th>name</th>
+        <th>content</th>
+      </tr>
+      <tr>
+        <td>image_url</td>
+        <td>
+          <input type="text" name="image_url" value="https://scontent-icn1-1.xx.fbcdn.net/v/t1.0-9/23380300_164251454167227_8507716224399062030_n.jpg?oh=7c2e4a723e7a53edf467c6eec38c0dfa&oe=5AF6F92E"
+          />
+        </td>
+        <td>
+          <button id="imageCheckBtn1">Check</button>
+        </td>
+      </tr>
+    </table>
+  </div>
+
+  <div id="send-container">
+    <div>
+      SET PUSH TYPE:
+      <input type="radio" name="sendType" value="REGULAR" checked="checked" /> REGULAR
+      <input type="radio" name="sendType" value="SILENT_PUSH" /> SILENT_PUSH
+      <input type="radio" name="sendType" value="NO_PUSH" /> NO_PUSH
+    </div>
+    <button id='btn'>send me</button>
+  </div>
+
+  <script>
+    const createUrl = 'https://graph.facebook.com/v2.11/me/message_creatives?access_token=';
+    const sendUrl = 'https://graph.facebook.com/v2.11/me/broadcast_messages?access_token=';
+    let currentType = "0";
+    let sendType = "REGULAR";
+    let buttonCount = 0;
+    let repliesCount = 0;
+    const BUTTONS_LIMIT = 2;
+    const REPLIES_LIMIT = 3;
+    let buttons = [];
+    let replies = [];
+
+    const USER_STATE_STAR = 'USER_STATE_STAR';
+    const USER_STATE_TAROT = 'USER_STATE_TAROT';
+    const TEST_ACCESS_TOKEN =
+      'EAAH2FKILLlEBAJfU9mZBCR6T3QXThGgKAwGaqnDeXzyTqpj4pNH5mCZBTbxu1yzFevbZBVN4zIUZABWrwHgeqkz6IHrYkcpwUj4TBXZB6eGlKqAIGkxQNWeQG8MBgcMugZAvJY7ZAs419XZAPrvsZBW4VhjL8jQhytznXu0uj8ZCz22gZDZD';
+    const ACCESS_TOKEN =
+      'EAAH2FKILLlEBANLI5AjP7VDffNrM4cAb9zRVs81JKFZB17tpbxSKdZCgRtL9DAu7ZAKv0H4bZAB37LXERlKyIVYTvBVJN4eanIgziZAonNikZApFmBwwpXZCydkzZBpHZAAL1ZBubMXTQ6y1BIGWpqEZBunhE96y5kgZCGMrgLcLBQTuhgZDZD';
+
+    $(document).ready(function () {
+      console.log('init')
+      $('div[name=container]').hide();
+      $('.' + currentType).show();
+      $('input[type=radio][name=fruit]').change(function () {
+        $('div[name=container]').hide();
+        $('.' + this.value).show();
+        currentType = this.value;
+      });
+
+      $('input[type=radio][name=sendType]').change(function () {
+        sendType = this.value;
+      });
+    });
+
+    $('#testApp').click(function() {
+      $('#accessToken').val(TEST_ACCESS_TOKEN);
+    })
+
+    $('#realApp').click(function() {
+      if (confirm('Do you wanna input REAL APP TOKEN?!? PLEASE CHECK ONE MORE TIME!!')) {
+        $('#accessToken').val(TEST_ACCESS_TOKEN);
+      }
+    })
+    // https://scontent-icn1-1.xx.fbcdn.net/v/t1.0-9/23380300_164251454167227_8507716224399062030_n.jpg?oh=7c2e4a723e7a53edf467c6eec38c0dfa&oe=5AF6F92E
+    $('.1 #imageCheckBtn').click(function () {
+      $('.1 img').attr({
+        src: $('.1 input[name=image_url]').val(),
+        width: 200,
+        height: 200
+      });
+    });
+    $('.1 button[id=addbutton]').click(function () {
+      if (buttonCount > BUTTONS_LIMIT) {
+        alert('Too many buttons');
+        return;
+      }
+      $('.1 #buttons-container').append('<div id="btnTemplate-' + buttonCount + '">' +
+        '<input type="text" name="button-title-' + buttonCount + '" placeholder="title-' + buttonCount + '">' +
+        '<input type="text" name="button-url-' + buttonCount + '" placeholder="url-' + buttonCount +
+        '"><br /></div>');
+      buttonCount += 1;
+    });
+
+    $('.1 button[id=removebutton]').click(function () {
+      console.log($('.1 #btnTemplate-' + buttonCount));
+      if (buttonCount < 1) {
+        alert('There is no buttons');
+        return;
+      }
+      buttonCount -= 1;
+      $('.1 #btnTemplate-' + buttonCount).remove();
+    });
+
+    $('.2 button[id=addbutton]').click(function () {
+      if (repliesCount > REPLIES_LIMIT) {
+        alert('Too many replies');
+        return;
+      }
+      $('.2 #replies-container').append('<div id="repliesTemplate-' + repliesCount + '">' +
+        '<input type="text" name="replies-title-' + repliesCount + '" placeholder="replies-title-' + repliesCount +
+        '" />' +
+        '<input type="radio" name="replies-payload-' + repliesCount + '" value="' + USER_STATE_STAR +
+        '" checked >별자리 ' +
+        '<input type="radio" name="replies-payload-' + repliesCount + '" value="' + USER_STATE_TAROT +
+        '">타로<br /></div>');
+
+      repliesCount += 1;
+    });
+
+    $('.2 button[id=removebutton]').click(function () {
+      if (repliesCount < 1) {
+        alert('There is no replies');
+        return;
+      }
+      repliesCount -= 1;
+      $('.2 #repliesTemplate-' + repliesCount).remove();
+    });
+
+
+    $('.4 #imageCheckBtn1').click(function () {
+      $('.4 img').attr({
+        src: $('.4 input[name=image_url]').val(),
+        width: 200,
+        height: 200
+      });
+    });
+
+    function validate(currentType) {
+      if ($('#accessToken').val() === "") return 'Input access token';
+
+      if (currentType === '0') {
+        if ($('.0 textarea[name=text]').val() === "") return 'input text!'
+      }
+      if (currentType === '1') {
+        if ($('.1 input[name=title]').val() === "") return 'input title';
+        if ($('.1 input[name=image_url]').val() === "") return 'input image_url';
+        if ($('.1 input[name=subtitle]').val() === "") return 'input subtitle';
+        for (var i = 0; i < buttonCount; i++) {
+          if ($('.1 input[name=button-title-' + i + ']').val() === "") return 'button-title-' + i + ' title';
+          if ($('.1 input[name=button-url-' + i + ']').val() === "") return 'button-url-' + i + ' url';
+        }
+      }
+      if (currentType === '2') {
+        if ($('.2 input[name=title]').val() === "") return 'input title';
+        if ($('.2 input[name=title]').val() === "") return 'input title';
+        for (var i = 0; i < repliesCount; i++) {
+          if ($('.2 input[name=replies-title-' + i + ']').val() === "") return 'replies-' + i + ' title';
+        }
+      }
+
+      if (currentType === '3') {
+        if ($('.3 input[name=text]').val() === "") return 'input link title';
+        if ($('.3 input[name=title]').val() === "") return 'input button title';
+        if ($('.3 input[name=url]').val() === "") return 'input link url';
+      }
+
+      if (currentType === '4') {
+        if ($('.4 input[name=image_url]').val() === "") return 'input image_url';
+      }
+
+      if ($('#accessToken').val() === ACCESS_TOKEN) {
+        const message = '실제 앱에 정말 보내시겠습니까?'
+        if (!confirm(message)) return '한번더 체크체크';
+      }
+      return false;
+    }
+
+    $('#btn').click(function () {
+
+      // check validate
+      const valid = validate(currentType);
+      if (valid) {
+        alert(valid);
+        return;
+      }
+
+      if (currentType === '1') {
+        for (var i = 0; i < buttonCount; i++) {
+          buttons.push({
+            "type": "web_url",
+            "url": $('.1 input[name=button-url-' + i + ']').val(),
+            "title": $('.1 input[name=button-title-' + i + ']').val()
+          });
+        }
+      }
+
+      if (currentType === '2') {
+        for (var i = 0; i < repliesCount; i++) {
+          replies.push({
+            "content_type": "text",
+            "title": $('.2 input[name=replies-title-' + i + ']').val(),
+            "payload": '{"type": "' + $('.2 input:radio[name=replies-payload-' + i + ']:checked').val() + '" }'
+          });
+        }
+      }
+
+      const data = [{
+          "messages": [{
+            "text": $('.' + currentType + ' textarea[name=text]').val()
+          }]
+        },
+        {
+          "messages": [{
+            "attachment": {
+              "type": "template",
+              "payload": {
+                "template_type": "generic",
+                "elements": [{
+                  "title": $('.' + currentType + ' input[name=title]').val(),
+                  "image_url": $('.' + currentType + ' input[name=image_url]').val(),
+                  "subtitle": $('.' + currentType + ' input[name=subtitle]').val(),
+                  "buttons": buttons[0] ? buttons : null
+                }]
+              }
+            }
+          }]
+        },
+        {
+          "messages": [{
+            "text": $('.' + currentType + ' input[name=title]').val(),
+            "quick_replies": replies[0] ? replies : null
+          }]
+        },
+        {
+          "messages": [{
+            "attachment": {
+              "type": "template",
+              "payload": {
+                "template_type": "button",
+                "text": $('.' + currentType + ' input[name=text]').val(),
+                "buttons": [{
+                  "title": $('.' + currentType + ' input[name=title]').val(),
+                  "type": "web_url",
+                  "url": $('.' + currentType + ' input[name=url]').val(),
+                }]
+              }
+            }
+          }]
+        },
+        {
+          "messages": [{
+            attachment: {
+              type: 'image',
+              payload: {
+                url: $('.' + currentType + ' input[name=image_url]').val(),
+                is_reusable: true,
+              },
+            }
+          }]
+        }
+      ];
+
+      $('#send-container button').prop("disabled", true);
+      $.ajax({
+        url: createUrl + $('#accessToken').val(),
+        type: "post",
+        data: JSON.stringify(data[currentType]),
+        contentType: "application/json",
+        success: function (result) {
+          console.log('create result: ', result.message_creative_id);
+          const sendData = {
+            "message_creative_id": result.message_creative_id,
+            "notification_type": sendType
+          }
+          $.ajax({
+            url: sendUrl + $('#accessToken').val(),
+            type: "post",
+            data: JSON.stringify(sendData),
+            contentType: "application/json",
+            success: function (result) {
+              alert('send success!! result, ' + JSON.stringify(result));
+              $('#send-container button').prop("disabled", false);
+            },
+            error: function (err) {
+              alert('send error: ' + JSON.stringify(err.responseText));
+              $('#send-container button').prop("disabled", false);
+            }
+          });
+        },
+        error: function (error) {
+          alert('create error: ' + JSON.stringify(error.responseText));
+          $('#send-container button').prop("disabled", false);
+        }
+      });
+
+      buttons = [];
+      replies = [];
+    })
+  </script>
+</body>
+
+</html>

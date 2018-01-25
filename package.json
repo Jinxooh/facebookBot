@@ -5,7 +5,7 @@
   "author": "황진수-PC <cjswp122@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "start": "node ./bin/start.js",
+    "start": "NODE_PATH=src nodemon ./bin/start.js",
     "build": "webpack -p --progress --colors"
   },
   "dependencies": {
@@ -19,11 +19,13 @@
     "babel-preset-stage-0": "^6.24.1",
     "body-parser": "^1.18.2",
     "css-loader": "^0.28.7",
+    "dotenv": "^4.0.0",
     "ejs": "^2.5.7",
     "express": "^4.16.2",
     "lodash": "^4.17.4",
     "mongoose": "^4.13.6",
     "node-fetch": "^1.7.3",
+    "nodemon": "^1.14.11",
     "path": "^0.12.7",
     "react": "^16.1.1",
     "react-dom": "^16.1.1",

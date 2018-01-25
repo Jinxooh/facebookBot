@@ -4,10 +4,9 @@ import Store from './store';
 import UserInfo from '../models/userInfo';
 
 class UserStore extends Store {
-
   getUserByPSID(userPSID) {
     return [...this.data.values()]
-    .filter((user) => user.psid === userPSID);
+      .filter(user => user.psid === userPSID);
   }
 
   insert(user) {

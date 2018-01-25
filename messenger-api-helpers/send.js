@@ -31,6 +31,7 @@ const typingOff = (recipientId) => {
 // Wraps a message json object with recipient information.
 const messageToJSON = (recipientId, messagePayload) => {
   return {
+    messaging_type: 'UPDATE',
     recipient: {
       id: recipientId,
     },

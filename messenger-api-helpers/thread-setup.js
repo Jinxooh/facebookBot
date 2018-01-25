@@ -2,7 +2,7 @@ import messages from './messages';
 import api from './api';
 
 const SERVER_URL = process.env.BOT_DEV_ENV == 'dev' ? process.env.TEST_SERVER_URL : process.env.SERVER_URL;
-const JADOO_URL = process.env.JADOO_URL;
+const { JADOO_URL } = process.env;
 const FACEBOOK_URL_1 = 'https://www.facebook.com/';
 const FACEBOOK_URL_2 = 'https://www.messenger.com/';
 
@@ -15,14 +15,12 @@ const FACEBOOK_URL_2 = 'https://www.messenger.com/';
  * @returns {undefined}
  */
 const setDomainWhitelisting = () => {
-  api.callThreadAPI(
-    {
-      setting_type: 'domain_whitelisting',
-      whitelisted_domains: [SERVER_URL, JADOO_URL, FACEBOOK_URL_1, FACEBOOK_URL_2],
-      domain_action_type: 'add',
-    },
-  );
-}
+  api.callThreadAPI({
+    setting_type: 'domain_whitelisting',
+    whitelisted_domains: [SERVER_URL, JADOO_URL, FACEBOOK_URL_1, FACEBOOK_URL_2],
+    domain_action_type: 'add',
+  });
+};
 // https://www.facebook.com/v2.11/dialog/share
 /**
  * Sets the persistent menu for the application
