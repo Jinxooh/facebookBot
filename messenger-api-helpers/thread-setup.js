@@ -28,8 +28,13 @@ const setDomainWhitelisting = () => {
  * @returns {undefined}
  */
 const setPersistentMenu = () => {
-  api.callThreadAPI(messages.persistentMenu);
+  api.callThreadAPI({
+    setting_type: 'call_to_actions',
+    thread_state: 'existing_thread',
+    call_to_actions: [],
+  });
 };
+
 
 /**
  * Sets the Get Started button for the application
