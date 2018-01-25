@@ -21,6 +21,7 @@ const setDomainWhitelisting = () => {
     domain_action_type: 'add',
   });
 };
+
 // https://www.facebook.com/v2.11/dialog/share
 /**
  * Sets the persistent menu for the application
@@ -28,11 +29,7 @@ const setDomainWhitelisting = () => {
  * @returns {undefined}
  */
 const setPersistentMenu = () => {
-  api.callThreadAPI({
-    setting_type: 'call_to_actions',
-    thread_state: 'existing_thread',
-    call_to_actions: [],
-  });
+  api.callMessngerProfileAPI(messages.persistentMenu);
 };
 
 

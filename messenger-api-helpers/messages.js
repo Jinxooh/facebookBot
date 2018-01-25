@@ -4,11 +4,48 @@ import dataHelper, { USER_STATE_STAR, USER_STATE_TAROT } from './dataHelper';
 const SERVER_URL = process.env.BOT_DEV_ENV === 'dev' ? process.env.TEST_SERVER_URL : process.env.SERVER_URL;
 const { JADOO_URL } = process.env;
 
-
 const linkButton = {
   title: '자두에게 행운 나눠주기!',
   type: 'web_url',
   url: `${JADOO_URL}`,
+};
+
+const starButton = {
+  title: '별자리🤢',
+  type: 'postback',
+  payload: JSON.stringify({
+    type: USER_STATE_STAR,
+  }),
+};
+
+const tarotButton = {
+  title: '타로🃏',
+  type: 'postback',
+  payload: JSON.stringify({
+    type: USER_STATE_TAROT,
+  }),
+};
+
+const nestedButton = buttons => ({
+  title: '자두야 놀자!',
+  type: 'nested',
+  call_to_actions: buttons,
+});
+
+const persistentMenu = {
+  persistent_menu: [
+    {
+      locale: "default",
+      composer_input_disabled: false,
+      call_to_actions: [
+        nestedButton([
+          linkButton,
+          starButton,
+          tarotButton,
+        ]),
+      ],
+    },
+  ],
 };
 
 /**
@@ -371,6 +408,7 @@ const sendShareButton = (starNumber, description) => {
 export default {
   // init settings
   getStarted,
+  persistentMenu,
   // greetingMessage,
 
   // welcome
