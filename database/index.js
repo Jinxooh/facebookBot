@@ -1,8 +1,8 @@
 import mongoose from 'mongoose';
-import log from 'lib/log';
+import log from '../lib/log';
 
 const {
-  TEST_MONGO_URI: mongoURI,
+  MONGODB_URL: mongoURI,
 } = process.env;
 
 export default (() => {
@@ -18,4 +18,3 @@ export default (() => {
     },
   };
 })();
-
