@@ -4,6 +4,7 @@ import log from '../lib/log';
 const {
   MONGODB_URL: mongoURI,
 } = process.env;
+console.log(mongoURI);
 
 export default (() => {
   mongoose.Promise = global.Promise;

@@ -24,14 +24,5 @@ ThreadSetup.setDomainWhitelisting();
 ThreadSetup.setGetStarted();
 
 db.connect();
-// mongoose.connect(process.env.MONGODB_URL, {
-//   useMongoClient: true,
-// });
-
-// const db = mongoose.connection;
-// db.on('error', console.error);
-// db.once('open', () => {
-//   console.log('connected to mongodb server');
-// });
 
 server.listen();
