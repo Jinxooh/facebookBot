@@ -25,4 +25,6 @@ ThreadSetup.setGetStarted();
 
 db.connect();
 
-server.listen();
+// server.listen();
+server.httpListen(process.env.PORT_80 || 8080);
+server.httpsListen(process.env.SSL_PORT || 8443);
