@@ -6,7 +6,7 @@ import api from './api';
 import messages from './messages';
 import dataHelper, { MODE_REVIEW, MESSAGE_PROCESS, MESSAGE_DONE } from './dataHelper';
 
-const CHATTING_SPEED = process.env.BOT_DEV_ENV === 'dev' ? 1000 : 1000;
+const CHATTING_SPEED = process.env.BOT_DEV_ENV === 'dev' ? 500 : 1000;
 
 // Turns typing indicator on.
 const typingOn = (recipientId) => {
@@ -92,10 +92,13 @@ const sendStartMessage = async (recipientId) => {
   );
 };
 
-const sendResultMessage = async (recipientId, result, user) => {
+const sendResultMessage = async (recipientId, result, user, stateName) => {
   await sendMessage(
     recipientId,
-    messages.psyTestResultMessage(user, result),
+    concat(
+      messages.psyTestResultMessage(user, result),
+      messages.reviewReplies(MODE_REVIEW, stateName),
+    ),
   );
 };
 
@@ -291,22 +294,22 @@ const sendDontUnderstandMessage = async (recipientId) => {
   );
 };
 
-// const sendStartPsyTestMessage = (recipientId, { psyTestDescription, questionDescription }, user) => {
-//   sendMessage(
-//     recipientId,
-//     [
-//       messages.sayStartTestMessage(psyTestDescription),
-//       messages.psyTestReplies(questionDescription, user),
-//     ],
-//   );
-// };
+const sendStartPsyTestMessage = (recipientId, { psyTestDescription, questionDescription }, user) => {
+  sendMessage(
+    recipientId,
+    [
+      messages.sayStartTestMessage(psyTestDescription),
+      messages.psyTestReplies(questionDescription, user),
+    ],
+  );
+};
 
-// const sendTwoButtonMessage = (recipientId, { questionDescription }, user) => {
-//   sendMessage(
-//     recipientId,
-//     messages.psyTestReplies(questionDescription, user),
-//   );
-// };
+const sendTwoButtonMessage = (recipientId, { questionDescription }, user) => {
+  sendMessage(
+    recipientId,
+    messages.psyTestReplies(questionDescription, user),
+  );
+};
 
 export default {
   // basic
@@ -325,8 +328,8 @@ export default {
   sendDateTypeFailureMessage,
 
   // psy
-  // sendStartPsyTestMessage,
-  // sendTwoButtonMessage,
+  sendStartPsyTestMessage,
+  sendTwoButtonMessage,
 
   sendResultMessage,
   sendSuggestRestartMessage,

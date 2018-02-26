@@ -1,4 +1,6 @@
 import concat from 'lodash/concat';
+import isArray from 'lodash/isArray';
+
 import dataHelper, { USER_STATE_STAR, USER_STATE_TAROT } from './dataHelper';
 
 const SERVER_URL = process.env.BOT_DEV_ENV === 'dev' ? process.env.TEST_SERVER_URL : process.env.SERVER_URL;
@@ -56,38 +58,38 @@ const startReplies = {
       type: 'USER_STATE_TAROT',
     }),
   },
-  // {
-  //   content_type: 'text',
-  //   title: '3. 나의 허세지수 알아보기',
-  //   payload: JSON.stringify({
-  //     type: 'USER_STATE_PSY',
-  //   })
-  // },
+  {
+    content_type: 'text',
+    title: '3. 나의 허세지수 알아보기',
+    payload: JSON.stringify({
+      type: 'USER_STATE_PSY',
+    })
+  },
   ],
 };
 
-// const psyTestReplies = (description, user) => {
-//   const { yes, no } = dataHelper.getQustionData(user);
-//   return {
-//     text: description || 'f',
-//     quick_replies: [{
-//       content_type: 'text',
-//       title: '네',
-//       payload: JSON.stringify({
-//         type: 'PSY_ANSWER',
-//         data: yes || 'false',
-//       }),
-//     },
-//     {
-//       content_type: 'text',
-//       title: '아니요',
-//       payload: JSON.stringify({
-//         type: 'PSY_ANSWER',
-//         data: no || 'false',
-//       }),
-//     }],
-//   };
-// };
+const psyTestReplies = (description, user) => {
+  const { yes, no } = dataHelper.getQustionData(user);
+  return {
+    text: description || 'f',
+    quick_replies: [{
+      content_type: 'text',
+      title: '네',
+      payload: JSON.stringify({
+        type: 'PSY_ANSWER',
+        data: yes || 'false',
+      }),
+    },
+    {
+      content_type: 'text',
+      title: '아니요',
+      payload: JSON.stringify({
+        type: 'PSY_ANSWER',
+        data: no || 'false',
+      }),
+    }],
+  };
+};
 
 const starTestReplies = (text, data) => {
   const [description] = text;
@@ -350,23 +352,16 @@ const sendShareButton = (starNumber, description) => {
   ];
 };
 
-// const psyTestResultMessage = (user, questionDescription) => {
-//   let text;
-//   if (isArray(questionDescription)) {
-//     text = dataHelper.arrayToJsonArray(questionDescription);
-//   } else {
-//     text = { text: questionDescription };
-//   }
+const psyTestResultMessage = (user, questionDescription) => {
+  let text;
+  if (isArray(questionDescription)) {
+    text = dataHelper.arrayToJsonArray(questionDescription);
+  } else {
+    text = { text: questionDescription };
+  }
 
-//   return concat(
-//     text,
-//     {
-//       text: `${user.first_name}님의 허세테스트는 어떠셨어요?`,
-//     }, {
-//       text: '맘에드시나요??',
-//     },
-//   );
-// };
+  return concat([], text);
+};
 
 export default {
   // init settings
@@ -389,8 +384,8 @@ export default {
   tarotResultMessage,
 
   // psy
-  // psyTestResultMessage,
-  // psyTestReplies,
+  psyTestResultMessage,
+  psyTestReplies,
 
   // review
   reviewReplies,

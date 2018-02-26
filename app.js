@@ -23,8 +23,12 @@ ThreadSetup.setDomainWhitelisting();
 // ThreadSetup.setGreeting();
 ThreadSetup.setGetStarted();
 
+
 db.connect();
 
-// server.listen();
-server.httpListen(process.env.PORT_80 || 8080);
-server.httpsListen(process.env.SSL_PORT || 8443);
+if (process.env.BOT_DEV_ENV === 'dev') {
+  server.listen();
+} else {
+  server.httpListen(process.env.PORT_80 || 8080);
+  server.httpsListen(process.env.SSL_PORT || 8443);
+}

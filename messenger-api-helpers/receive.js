@@ -6,6 +6,8 @@ import dataHelper, {
   GET_STARTED,
   USER_STATE_TAROT,
   USER_STATE_STAR,
+  USER_STATE_PSY,
+
   MESSAGE_PROCESS, // 진행중인 상태
 
   MODE_NORMAL,
@@ -21,6 +23,15 @@ const handleReceivePostback = async (event) => {
   switch (type) {
     case GET_STARTED:
       dataHelper.getUser(senderId); // DB에 유저 추가
+      sendApi.sendWelcomeMessage(senderId);
+      break;
+    case USER_STATE_PSY:
+      sendApi.sendWelcomeMessage(senderId);
+      break;
+    case USER_STATE_STAR:
+      sendApi.sendWelcomeMessage(senderId);
+      break;
+    case USER_STATE_TAROT:
       sendApi.sendWelcomeMessage(senderId);
       break;
     default:
@@ -144,6 +155,29 @@ const handleNlpMessage = async (senderId, message) => {
   }
 };
 
+const selectAnswer = async (senderId, next) => {
+  const user = await dataHelper.getUser(senderId);
+  const { stateName, modes } = user;
+
+  user.setValue({ next });
+  if (next) {
+    user.setValue({ current: next });
+    const { result } = dataHelper.getQustionData(user);
+    if (result) {
+      await sendApi.sendResultMessage(senderId, result, user, stateName);
+      user.setValue({ modes: MODE_REVIEW });
+    } else {
+      sendApi.sendTwoButtonMessage(senderId, dataHelper.getDescription(user), user);
+    }
+  } else {
+    if (modes === MODE_REVIEW) {
+      reviewResult(senderId, user, `${stateName}:${next}`);
+    } else {
+      sendApi.sendSuggestRestartMessage(senderId);
+    }
+  }
+};
+
 const handleQuickRepliesMessage = async (senderId, quick_reply) => {
   const { type, data } = JSON.parse(quick_reply.payload);
   const user = await dataHelper.getUser(senderId);
@@ -167,41 +201,18 @@ const handleQuickRepliesMessage = async (senderId, quick_reply) => {
       user.setValue({ stateName: USER_STATE_TAROT, modes: MODE_DATE });
       sendApi.sendStartTarotMessage(senderId, user);
       break;
-    // case 'PSY_ANSWER':
-    //   selectAnswer(senderId, data);
-    //   break;
-    // case USER_STATE_PSY:
-    //   dataHelper.setPsyTest(user, true);
-    //   sendApi.sendStartPsyTestMessage(senderId, dataHelper.getDescription(user), user);
-    //   break;
+    case 'PSY_ANSWER':
+      selectAnswer(senderId, data);
+      break;
+    case USER_STATE_PSY:
+      dataHelper.setPsyTest(user, true);
+      sendApi.sendStartPsyTestMessage(senderId, dataHelper.getDescription(user), user);
+      break;
     default:
       console.log('default, ', type);
       break;
   }
 };
-
-// const selectAnswer = async (senderId, next) => {
-//   const user = await dataHelper.getUser(senderId);
-//   const { stateName, modes } = user;
-
-//   user.setValue({ next });
-//   if (next) {
-//     user.setValue({ current: next });
-//     const { result } = dataHelper.getQustionData(user);
-//     if (result) {
-//       await sendApi.sendResultMessage(senderId, result, user);
-//       user.setValue({ modes: MODE_REVIEW });
-//     } else {
-//       sendApi.sendTwoButtonMessage(senderId, dataHelper.getDescription(user), user);
-//     }
-//   } else {
-//     if (modes === MODE_REVIEW) {
-//       reviewResult(senderId, user, `${stateName}:${next}`);
-//     } else {
-//       sendApi.sendSuggestRestartMessage(senderId);
-//     }
-//   }
-// };
 
 const handleTestReceive = async (message, senderId) => {
   if (message.text === '11') {

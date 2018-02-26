@@ -22,7 +22,7 @@ router.post('/', (req, res) => {
 
   if (data.object === 'page') {
     data.entry.forEach((pageEntry) => {
-      // console.log({pageEntry});
+      // console.log({ pageEntry });
       const { messaging } = pageEntry;
       if (messaging) {
         pageEntry.messaging.forEach((messagingEvent) => {
