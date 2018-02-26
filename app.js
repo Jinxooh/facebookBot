@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import mongoose from 'mongoose';
+import db from './database';
 
 import Server from './server';
 import dataHelper from './messenger-api-helpers/dataHelper';
@@ -23,14 +23,15 @@ ThreadSetup.setDomainWhitelisting();
 ThreadSetup.setPersistentMenu();
 ThreadSetup.setGetStarted();
 
-mongoose.connect(process.env.MONGODB_URL, {
-  useMongoClient: true,
-});
+db.connect();
+// mongoose.connect(process.env.MONGODB_URL, {
+//   useMongoClient: true,
+// });
 
-const db = mongoose.connection;
-db.on('error', console.error);
-db.once('open', () => {
-  console.log('connected to mongodb server');
-});
+// const db = mongoose.connection;
+// db.on('error', console.error);
+// db.once('open', () => {
+//   console.log('connected to mongodb server');
+// });
 
 server.listen();

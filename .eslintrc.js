@@ -1,5 +1,12 @@
 module.exports = {
     "extends": "airbnb-base",
+    "settings": {
+        "import/resolver": {
+            "node": {
+                "moduleDirectory": ["node_modules", "src/"]
+            }
+        }
+    },
     "rules": {
         "no-console": 0,
         "arrow-body-style": 0,

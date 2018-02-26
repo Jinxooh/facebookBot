@@ -5,6 +5,7 @@
   "author": "황진수-PC <cjswp122@gmail.com>",
   "license": "MIT",
   "scripts": {
+    "dev": "BOT_DEV_ENV=dev NODE_PATH=src NODE_ENV=development nodemon -r dotenv/config ./node_modules/babel-cli/bin/babel-node.js app.js",
     "start": "NODE_PATH=src nodemon ./bin/start.js",
     "build": "webpack -p --progress --colors"
   },
@@ -18,11 +19,13 @@
     "babel-preset-react": "^6.24.1",
     "babel-preset-stage-0": "^6.24.1",
     "body-parser": "^1.18.2",
+    "chalk": "^2.3.0",
     "css-loader": "^0.28.7",
     "dotenv": "^4.0.0",
     "ejs": "^2.5.7",
     "express": "^4.16.2",
     "lodash": "^4.17.4",
+    "moment": "^2.20.1",
     "mongoose": "^4.13.6",
     "node-fetch": "^1.7.3",
     "nodemon": "^1.14.11",
@@ -36,6 +39,8 @@
     "webpack": "^3.8.1"
   },
   "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-preset-node6": "^11.0.0",
     "eslint": "^4.13.1",
     "eslint-config-airbnb-base": "^12.1.0",
     "eslint-plugin-import": "^2.8.0"
