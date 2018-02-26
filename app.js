@@ -20,7 +20,7 @@ try {
 }
 
 ThreadSetup.setDomainWhitelisting();
-// ThreadSetup.setGreeting();
+ThreadSetup.setPersistentMenu();
 ThreadSetup.setGetStarted();
 
 

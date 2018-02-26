@@ -20,23 +20,23 @@ const handleReceivePostback = async (event) => {
     type,
   } = JSON.parse(event.postback.payload);
   const senderId = event.sender.id;
-  switch (type) {
-    case GET_STARTED:
-      dataHelper.getUser(senderId); // DB에 유저 추가
-      sendApi.sendWelcomeMessage(senderId);
-      break;
-    case USER_STATE_PSY:
-      sendApi.sendWelcomeMessage(senderId);
-      break;
-    case USER_STATE_STAR:
-      sendApi.sendWelcomeMessage(senderId);
-      break;
-    case USER_STATE_TAROT:
-      sendApi.sendWelcomeMessage(senderId);
-      break;
-    default:
-      console.error(`Unknown Postback called: ${type}`);
-      break;
+
+  if (type === GET_STARTED) {
+    dataHelper.getUser(senderId); // DB에 유저 추가
+    sendApi.sendWelcomeMessage(senderId);
+  } else {
+    const user = await dataHelper.getUser(senderId);
+    if (type === USER_STATE_STAR) {
+      user.setValue({ stateName: USER_STATE_STAR, modes: MODE_DATE });
+      sendApi.sendStartStarTestMessage(senderId, user);
+      return;
+    }
+    if (type === USER_STATE_TAROT) {
+      user.setValue({ stateName: USER_STATE_TAROT, modes: MODE_DATE });
+      sendApi.sendStartTarotMessage(senderId, user);
+      return;
+    }
+    console.error(`Unknown Postback called: ${type}`);
   }
 };
 

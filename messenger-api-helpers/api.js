@@ -52,20 +52,16 @@ const callAPI = (endPoint, messageDataArray, retries = RETRIES) => {
     });
 };
 
-const callAsyncMessagesAPI = (ms, messageDataArray) => {
-  return new Promise(resolve => setTimeout(() => {
-    callAPI('messages', messageDataArray);
-    resolve();
-  }, ms));
-};
-
-const callMessagesAPI = (messageDataArray) => {
+const callAsyncMessagesAPI = (ms, messageDataArray) => new Promise(resolve => setTimeout(() => {
   callAPI('messages', messageDataArray);
-};
+  resolve();
+}, ms));
 
-const callThreadAPI = (messageDataArray) => {
-  return callAPI('thread_settings', messageDataArray);
-};
+const callMessagesAPI = messageDataArray => callAPI('messages', messageDataArray);
+
+const callThreadAPI = messageDataArray => callAPI('thread_settings', messageDataArray);
+
+const callMessngerProfileAPI = messageDataArray => callAPI('messenger_profile', messageDataArray);
 
 const callPsidAPI = (psid) => {
   const qs = `access_token=${encodeURIComponent(PAGE_ACCESS_TOKEN)}`;
@@ -85,5 +81,6 @@ export default {
   callAsyncMessagesAPI,
   callMessagesAPI,
   callThreadAPI,
+  callMessngerProfileAPI,
   callPsidAPI,
 };
