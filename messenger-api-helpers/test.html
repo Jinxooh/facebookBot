@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>HIHI</title>
+  <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+</head>
+
+<body>
+  <textarea id="input"></textarea>
+  <button id='btn'>click me</button>
+  <textarea id="result"></textarea>
+  <script>
+    String.prototype.toKorChars = function() {
+    var cCho = [ 'ㄱ', 'ㄲ', 'ㄴ', 'ㄷ', 'ㄸ', 'ㄹ', 'ㅁ', 'ㅂ', 'ㅃ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅉ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ' ];
+    var cJung = [ 'ㅏ', 'ㅐ', 'ㅑ', 'ㅒ', 'ㅓ', 'ㅔ', 'ㅕ', 'ㅖ', 'ㅗ', 'ㅘ', 'ㅙ', 'ㅚ', 'ㅛ', 'ㅜ', 'ㅝ', 'ㅞ', 'ㅟ', 'ㅠ', 'ㅡ', 'ㅢ', 'ㅣ' ];
+    var cJong = [ '', 'ㄱ', 'ㄲ', 'ㄳ', 'ㄴ', 'ㄵ', 'ㄶ', 'ㄷ', 'ㄹ', 'ㄺ', 'ㄻ', 'ㄼ', 'ㄽ', 'ㄾ', 'ㄿ', 'ㅀ', 'ㅁ', 'ㅂ', 'ㅄ', 'ㅅ', 'ㅆ', 'ㅇ', 'ㅈ', 'ㅊ', 'ㅋ', 'ㅌ', 'ㅍ', 'ㅎ' ];
+    var cho, jung, jong;
+    var str = this;
+    var cnt = str.length
+    var chars = [];
+    var cCode;
+
+    for (var i = 0; i < cnt; i++) {
+       cCode = str.charCodeAt(i); 
+       if (cCode == 32) { continue; } // 한글이 아닌 경우 
+       if (cCode < 0xAC00 || cCode > 0xD7A3) {
+            chars.push(str.charAt(i)); 
+            continue; 
+       } 
+
+       cCode = str.charCodeAt(i) - 0xAC00;
+       jong = cCode % 28; // 종성 
+       jung = ((cCode - jong) / 28 ) % 21;
+       cho = (((cCode - jong) / 28) - jung) / 21;
+ 
+       chars.push(cCho[cho], cJung[jung]); 
+       if (cJong[jong] !== '') { 
+          chars.push(cJong[jong]); 
+       } 
+    }
+    return chars; 
+  }
+  </script>
+</body>
+  hihi
+</html>
