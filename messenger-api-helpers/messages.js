@@ -1,7 +1,11 @@
 import concat from 'lodash/concat';
 import isArray from 'lodash/isArray';
 
-import dataHelper, { USER_STATE_STAR, USER_STATE_TAROT } from './dataHelper';
+import dataHelper, {
+  USER_STATE_STAR,
+  USER_STATE_TAROT,
+  USER_STATE_PSY,
+} from './dataHelper';
 
 const SERVER_URL = process.env.BOT_DEV_ENV === 'dev' ? process.env.TEST_SERVER_URL : process.env.SERVER_URL;
 const { JADOO_URL } = process.env;
@@ -13,7 +17,7 @@ const linkButton = {
 };
 
 const starButton = {
-  title: '별자리🤢',
+  title: '별자리✨',
   type: 'postback',
   payload: JSON.stringify({
     type: USER_STATE_STAR,
@@ -25,6 +29,14 @@ const tarotButton = {
   type: 'postback',
   payload: JSON.stringify({
     type: USER_STATE_TAROT,
+  }),
+};
+
+const psyButton = {
+  title: '허세💎',
+  type: 'postback',
+  payload: JSON.stringify({
+    type: USER_STATE_PSY,
   }),
 };
 
@@ -42,8 +54,9 @@ const persistentMenu = {
       call_to_actions: [
         nestedButton([
           linkButton,
-          starButton,
+          // starButton,
           tarotButton,
+          psyButton,
         ]),
       ],
     },
@@ -81,27 +94,28 @@ const startMessage = [
 
 const startReplies = {
   text: '채팅창 하단에 있는 두가지 버튼 중 원하는 메뉴를 선택해 주세요.',
-  quick_replies: [{
-    content_type: 'text',
-    title: '1. 나의 2018년 별자리운세',
-    payload: JSON.stringify({
-      type: 'USER_STATE_STAR',
-    }),
-  },
-  {
-    content_type: 'text',
-    title: '2. 나의 운명의 카드 찾기',
-    payload: JSON.stringify({
-      type: 'USER_STATE_TAROT',
-    }),
-  },
-  {
-    content_type: 'text',
-    title: '3. 나의 허세지수 알아보기',
-    payload: JSON.stringify({
-      type: 'USER_STATE_PSY',
-    })
-  },
+  quick_replies: [
+    // {
+    //   content_type: 'text',
+    //   title: '1. 나의 2018년 별자리운세',
+    //   payload: JSON.stringify({
+    //     type: 'USER_STATE_STAR',
+    //   }),
+    // },
+    {
+      content_type: 'text',
+      title: '1. 나의 운명의 카드 찾기',
+      payload: JSON.stringify({
+        type: 'USER_STATE_TAROT',
+      }),
+    },
+    {
+      content_type: 'text',
+      title: '2. 나의 허세지수 알아보기',
+      payload: JSON.stringify({
+        type: 'USER_STATE_PSY',
+      })
+    },
   ],
 };
 
@@ -364,12 +378,6 @@ const sendDontUnderstandMessage = [{
 
 const sendShareButton = (starNumber, description) => {
   return [
-    {
-      text: '신년운세는 2월28일까지만 볼수 있습니다.',
-    },
-    {
-      text: '오늘 본 운세를 저장 해서, 간직하세요.',
-    },
     {
       attachment: {
         type: 'template',

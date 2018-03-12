@@ -27,13 +27,18 @@ const handleReceivePostback = async (event) => {
   } else {
     const user = await dataHelper.getUser(senderId);
     if (type === USER_STATE_STAR) {
-      user.setValue({ stateName: USER_STATE_STAR, modes: MODE_DATE });
+      user.setValue({ stateName: type, modes: MODE_DATE });
       sendApi.sendStartStarTestMessage(senderId, user);
       return;
     }
     if (type === USER_STATE_TAROT) {
-      user.setValue({ stateName: USER_STATE_TAROT, modes: MODE_DATE });
+      user.setValue({ stateName: type, modes: MODE_DATE });
       sendApi.sendStartTarotMessage(senderId, user);
+      return;
+    }
+    if (type === USER_STATE_PSY) {
+      dataHelper.setPsyTest(user, true);
+      sendApi.sendStartPsyTestMessage(senderId, dataHelper.getDescription(user), user);
       return;
     }
     console.error(`Unknown Postback called: ${type}`);

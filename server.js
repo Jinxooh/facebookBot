@@ -29,13 +29,13 @@ export default class Server {
 
     app.use('/', routes);
 
-    // httpRedirect.all('*', (req, res, next) => {
-    //   if (/^http$/.test(req.protocol)) {
-    //     const host = req.headers.host.replace(/:[0-9]+$/g, ""); // strip the port # if any
-    //     return res.redirect(301, `https://${host}${req.url}`);
-    //   }
-    //   return next();
-    // });
+    httpRedirect.all('*', (req, res, next) => {
+      if (/^http$/.test(req.protocol)) {
+        const host = req.headers.host.replace(/:[0-9]+$/g, ""); // strip the port # if any
+        return res.redirect(301, `https://${host}${req.url}`);
+      }
+      return next();
+    });
   }
 
   listen() {
